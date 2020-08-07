@@ -19,17 +19,21 @@ global nespp4 ${data_raw}/dealer_nespp4_codes${vintage_string}.dta
 global itis ${data_raw}/species_itis_ne${vintage_string}.dta 
 
 
+global deflatorsY "$data_external/deflatorsY_${vintage_string}.dta" 
+global deflatorsQ "$data_external/deflatorsQ_${vintage_string}.dta" 
+
+
 /*don't extract observations with prices higher thatn 40 per pound */
 global upper_price   40
 
 
 
 /********************************************/
-/*extract 
+/*extract */
 A01: landings at nespp4-permit-vtrserno
 A02: lengths at the nespp4 level
 Takes a long while
-Requires VPN*/
+Requires VPN
 
 do "${extraction_code}/extractA01_dealer_prices_hedonic.do"
 
@@ -38,3 +42,6 @@ do "${extraction_code}/extractA02_dealer_length.do"
 
 
 do "${extraction_code}/extractA03_dealer_code_names.do"
+
+
+do "${extraction_code}/extractZ01_external_data_FRED.do"

@@ -9,7 +9,7 @@ pause off
 timer on 1
 
 global oracle_cxn " $mysole_conn lower"
-local in_data ${data_raw}/raw_dealer_prices_${vintage_string}.dta 
+local in_data ${data_intermediate}/dealer_prices_real${vintage_string}.dta 
 
 global linear_table1 ${my_tables}/silver_hake1.tex
 
@@ -28,10 +28,10 @@ label values nespp4 marketcats
 gen nespp3=floor(nespp4/10)
 keep if nespp3==509
 
-gen price=value/landings
-gen date=mdy(month,day, year)
+gen priceR_GDPDEF=valueR_GDPDEF/landings
 drop if date==.
-
+assert _merge==3
+drop _merge
 
 /* construct daily landings */
 preserve
