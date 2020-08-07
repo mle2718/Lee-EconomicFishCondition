@@ -26,15 +26,33 @@ I have set a bunch of stuff using the first chunk above.
 
 
 
-```{r , fig.show = "hold", out.width = "48%", fig.cap="monkfish prices", fig.align = "center", echo=FALSE}
+```{r , fig.show = "hold", out.width = "48%", fig.cap="monkfish prices,1994-2019", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(my_images,c("monkfish_prices.png")))
 ```
 
 
 
-```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices", fig.align = "center", echo=FALSE}
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices, 1994-2019", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(my_images,c("silver_hake_prices.png")))
 ```
+
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="King Silver Hake prices", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("king_silver.png")))
+```
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Small Silver Hake prices", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("small_silver.png")))
+```
+
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Juvenile Silver Hake prices", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("juvenile_silver.png")))
+```
+
 
 <!-- ## LaTeX way -->
 
@@ -46,17 +64,6 @@ knitr::include_graphics(file.path(my_images,c("silver_hake_prices.png")))
 <!--       \includegraphics[width=0.5\textwidth]{./images/scatterplot.png}  -->
 <!--   \end{center} -->
 <!-- \end{figure} -->
-
-
-<!-- This won't work ontil you figure out how to pass in globals to stata. But you might be fine with running a wrapper that sets up the globals  -->
-<!-- # Run some regressions for Silver Hake   -->
-<!-- ```{r wrapper32, echo=TRUE, results='hide'} -->
-<!-- dofile<-file.path("analysis","regressions", "silver_hake01.do") -->
-<!-- full.path.dofile<-file.path(stata_codedir,dofile) -->
-<!-- cmd<-paste(stataexe, "/e do ",full.path.dofile) -->
-<!-- system(cmd, wait=TRUE) -->
-<!-- ``` -->
-
 
 <!-- # Here is a table -->
 
