@@ -1,0 +1,82 @@
+---
+title: "Economic Fish Condition"
+author: "DePiper Lee"
+date: "5/14/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+my_projdir<-"C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition"
+# This file needs to be run 1 time (ever). It sets up folders. After your first knit, you can comment it out (although leaving it in will not hurt
+#source(file.path(my_projdir,"project_logistics","R_paths_libraries_setup.R"))
+source(file.path(my_projdir,"R_code","project_logistics","R_paths_libraries.R"))
+setwd(my_projdir)
+```
+
+# Setups
+I have set a bunch of stuff using the first chunk above. 
+
+1. You will have a my_projdir directory. 
+1. You set up libraries.
+1. There is a line of code that automagically finds your stata executable. We also shQuote it, to faciltate working with R's system.
+
+
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="monkfish prices", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("monkfish_prices.png")))
+```
+
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("silver_hake_prices.png")))
+```
+
+<!-- ## LaTeX way -->
+
+<!-- The straight to LaTeX way for figure \ref{scatterplot_fig} will cause fails if we're going to make an html or word. -->
+
+<!-- \begin{figure} -->
+<!--   \begin{center} -->
+<!--     \caption{Same scatterplot from the auto dataset, inserted and captioned LaTeX style\label{scatterplot_fig}} -->
+<!--       \includegraphics[width=0.5\textwidth]{./images/scatterplot.png}  -->
+<!--   \end{center} -->
+<!-- \end{figure} -->
+
+
+<!-- This won't work ontil you figure out how to pass in globals to stata. But you might be fine with running a wrapper that sets up the globals  -->
+<!-- # Run some regressions for Silver Hake   -->
+<!-- ```{r wrapper32, echo=TRUE, results='hide'} -->
+<!-- dofile<-file.path("analysis","regressions", "silver_hake01.do") -->
+<!-- full.path.dofile<-file.path(stata_codedir,dofile) -->
+<!-- cmd<-paste(stataexe, "/e do ",full.path.dofile) -->
+<!-- system(cmd, wait=TRUE) -->
+<!-- ``` -->
+
+
+<!-- # Here is a table -->
+
+Table \ref{silverhake} was construted using outreg2 in stata. Outreg2 is nice because it only make the meat of the table (tabular environment), that makes inclusion easier.  Estout has that capacity too.
+
+\begin{table}
+  \begin{center}
+    \input{./tables/silver_hake1.tex}
+        \caption{A Table of Regression coefficients \label{silverhake}}
+
+  \end{center}
+\end{table}
+
+
+
+<!-- \begin{table} -->
+<!--   \begin{center} -->
+<!--     \input{./tables/regression_tableB.tex} -->
+<!--         \caption{Here is regression table B, produced by that wrapper \label{regression_coefsB}} -->
+<!--   \end{center} -->
+<!-- \end{table} -->
+
+
