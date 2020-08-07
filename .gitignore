@@ -1,0 +1,11 @@
+*.Rproj.user
+*.Rhistory
+*.RData
+*.Rds
+*.Ruserdata
+*.pptx
+*.docx
+.Rproj.user
+*.url
+*.pdf
+*.dta
