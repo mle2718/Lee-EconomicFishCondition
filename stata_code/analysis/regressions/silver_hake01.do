@@ -49,23 +49,23 @@ merge m:1 date using `daily'
 drop if price>=8
 drop if nespp4==5097
 /* ols, absorbing various things */
-reg price lnq ibn.nespp4 i.year
-outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Model, OLS) drop(`years') replace
+reg price lnq rGDPcapita ibn.nespp4 i.year
+outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Vessel Effects, No,  Model, OLS) drop(`years') replace ctitle("Real Price")
 
-reg price lnq ibn.nespp4 i.month  i.year
-outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,Model, OLS) drop(`months' `years')
+reg price lnq rGDPcapita ibn.nespp4 i.month  i.year
+outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Model, OLS) drop(`months' `years')  ctitle("Real Price")
 
-areg price lnq ib5091.nespp4 ib7.month  i.year, absorb(permit)
-outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, vessel, Yes, Model,OLS) drop(`months' `years')
+areg price lnq rGDPcapita ib5096.nespp4 ib7.month  i.year, absorb(permit)
+outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Model,OLS) drop(`months' `years')  ctitle("Real Price")
 
 
 /*IV, using lag of quantities as an instrument */
-ivregress 2sls price ibn.nespp4  i.year (lnq=lnq_lag1)
+ivregress 2sls price rGDPcapita ibn.nespp4  i.year (lnq=lnq_lag1)
 
-outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Model, IV) drop(`years')
+outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Model, IV) drop(`years')  ctitle("Real Price")
 
-ivregress 2sls price ibn.nespp4 i.month  i.year (lnq=lnq_lag1)
-outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Model, IV) drop(`months' `years')
+ivregress 2sls price rGDPcapita ibn.nespp4 i.month  i.year (lnq=lnq_lag1)
+outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Model, IV) drop(`months' `years')  ctitle("Real Price")
  
 
 /*
