@@ -21,13 +21,14 @@ clear;
 		where spplndlb is not null and
 		nespp3 in (${specieslist}) and
 		spplndlb>=1 and sppvalue/spplndlb<=$upper_price  
-		group by link, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone;") $mysole_conn;
-	renvarlab, lower;
-	destring, replace;
-	compress;
+		group by link, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone;") allstring $mysole_conn;
+
 	quietly save `new5555';
 };
 
 clear;
 append using `dsp1';
+	renvarlab, lower;
+	destring, replace;
+	compress;
 save $dealer_prices, replace;

@@ -24,17 +24,17 @@ global deflatorsQ "$data_external/deflatorsQ_${vintage_string}.dta"
 
 
 /*don't extract observations with prices higher thatn 40 per pound */
-global upper_price   40
+global upper_price 40
 
 
 
 /********************************************/
-/*extract */
+/*extract 
 A01: landings at nespp4-permit-vtrserno
 A02: lengths at the nespp4 level
 Takes a long while
 Requires VPN
-
+*/
 do "${extraction_code}/extractA01_dealer_prices_hedonic.do"
 
 
