@@ -49,15 +49,18 @@ keep if nespp3==509;
 graph box price, over(nespp4, label(angle(45)) sort(mp)) nooutsides;
 graph export ${my_images}/silver_hake_prices.png, replace as(png);
 
-graph box price if nespp4==5091, over(year, label(angle(45)))  nooutsides title("King Silver Hake")  yscale(range(0 3)) ylabel(0(.5)3);
+local yearly_opts over(year, label(angle(45)))  nooutsides yscale(range(0 3)) ylabel(0(.5)3) ymtick(##2)
+
+
+graph box price if nespp4==5091, title("King Silver Hake") `yearly_opts';
 graph export ${my_images}/king_silver.png, replace as(png);
 
 
-graph box price if nespp4==5092, over(year, label(angle(45)))  nooutsides title("Small Silver Hake")  yscale(range(0 3)) ylabel(0(.5)3);
+graph box price if nespp4==5092, title("Small Silver Hake")   `yearly_opts'; 
 graph export ${my_images}/small_silver.png, replace as(png);
 
 
-graph box price if nespp4==5094, over(year, label(angle(45)))  nooutsides title("Juvenile Silver Hake")  yscale(range(0 3)) ylabel(0(.5)3);
+graph box price if nespp4==5094, title("Juvenile Silver Hake")  `yearly_opts';
 graph export ${my_images}/juvenile_silver.png, replace as(png);
 restore;
 
@@ -76,5 +79,18 @@ preserve;
 keep if inlist(nespp3,147,148);
 graph box price, over(nespp4, label(angle(45)) sort(mp)) nooutsides;
 graph export ${my_images}/haddock_prices.png, replace as(png);
+
+local yearly_opts over(year, label(angle(45)))  nooutsides yscale(range(0 6)) ylabel(0(2)6) ymtick(##4)
+graph box price if nespp4==1470, title("Large Haddock")  `yearly_opts';
+graph export ${my_images}/large_haddock.png, replace as(png);
+
+
+graph box price if nespp4==1475, title("Scrod Haddock")  `yearly_opts';
+graph export ${my_images}/scrod_haddock.png, replace as(png);
+
+
+graph box price if nespp4==1476,  title("Snapper Haddock")   `yearly_opts'; 
+graph export ${my_images}/snapper_haddock.png, replace as(png);
+
 
 restore;
