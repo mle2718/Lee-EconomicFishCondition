@@ -35,6 +35,7 @@ drop if _merge==1;
 cap drop _merge;
 merge m:1 nespp4 using `marketcats', keep(1 3);
 assert _merge==3;
+labmask nespp4, value(sp_mkt);
 drop _merge;
 
 gen priceR_GDPDEF=valueR_GDPDEF/landings;
