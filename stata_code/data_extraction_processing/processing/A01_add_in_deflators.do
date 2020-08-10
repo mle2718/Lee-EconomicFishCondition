@@ -13,6 +13,9 @@ local  out_data ${data_intermediate}/dealer_prices_real${vintage_string}.dta
 
 local deflators $data_external/deflatorsQ_${vintage_string}.dta
 
+
+local income "$data_external/incomeQ_${vintage_string}.dta" 
+
 /* bring in deflators and construct real compensation */
 
 
@@ -35,11 +38,22 @@ format date $td
 gen dateq=qofd(date)
 format dateq %tq
 merge m:1 dateq using `deflators', keep(1 3)
-drop dateq
-
+assert _merge~=2
+drop _merge
 
 gen valueR_GDPDEF=value/fGDP
 
 gen valueR_fresh_frozen=value/ffresh_frozen
 gen valueR_prepared=value/fprepared
+
+
+
+/* bring in income */
+
+
+merge m:1 dateq using `income', keep(1 3)
+
+
+drop dateq
+
 save `out_data', replace

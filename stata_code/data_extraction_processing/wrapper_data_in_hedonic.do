@@ -22,6 +22,7 @@ global itis ${data_raw}/species_itis_ne${vintage_string}.dta
 global deflatorsY "$data_external/deflatorsY_${vintage_string}.dta" 
 global deflatorsQ "$data_external/deflatorsQ_${vintage_string}.dta" 
 
+global incomeQ "$data_external/incomeQ_${vintage_string}.dta" 
 
 /*don't extract observations with prices higher thatn 40 per pound */
 global upper_price 40
