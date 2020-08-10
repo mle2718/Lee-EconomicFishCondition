@@ -41,7 +41,7 @@ global memberids ${data_raw}/memberids;
 global data_internal "${my_datadir}/internal";
 global data_external"${my_datadir}/external";
 
-global data_master "${my_datadir}/master";
+global data_main "${my_datadir}/main";
 
 global data_intermediate "${my_datadir}/intermediate";
 
