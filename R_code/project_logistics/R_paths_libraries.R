@@ -35,7 +35,7 @@ data_raw <-file.path(my_datadir, "raw")
 data_internal <-file.path(my_datadir, "internal")
 data_external<-file.path(my_datadir, "external")
 
-data_master <-file.path(my_datadir, "master")
+data_main <-file.path(my_datadir, "main")
 data_intermediate <-file.path(my_datadir, "intermediate")
 
 
