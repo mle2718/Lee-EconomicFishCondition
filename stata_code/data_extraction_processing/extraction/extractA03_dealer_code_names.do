@@ -14,7 +14,10 @@ renvarlab, lower;
 destring, replace;
 drop if nespp3<=0;
 bysort nespp4: assert _N==1;
-gen sp_mkt=sppnm + mktnm;
+gen sp_mkt=sppnm + " " + mktnm;
+
+labmask nespp4, value(sp_mkt);
+
 
 save $nespp4, replace;
 
