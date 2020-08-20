@@ -6,7 +6,7 @@ Code to examine the lengths distribution of various market categories of fish.
 
 #delimit;
 version 15.1;
-pause off;
+pause on;
 
 timer on 1;
 
@@ -17,12 +17,14 @@ local marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
 
 clear;
 use `in_data', clear;
-drop if _merge==1;
 cap drop _merge;
 merge m:1 nespp4 using `marketcats', keep(1 3);
+drop if nespp4==5099;
+/* there some 5099 market category in 2008 */;
 assert _merge==3;
+
 drop _merge;
-pause;
+labmask nespp4, value(mktnm);
 
 drop if year>=2020;
 
@@ -37,7 +39,7 @@ gen pdf=numlen/tt;
 preserve;
 keep if nespp3==509 & period==1;
 tsset nespp4 length;
-xtline pdf, overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2005-2010");
+xtline pdf if length<=200, overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2005-2010");
 graph export ${my_images}/silver_hake_length2005_2010.png, replace as(png);
 
 restore;
@@ -48,7 +50,7 @@ restore;
 preserve;
 keep if nespp3==509 & period==2;
 tsset nespp4 length;
-xtline pdf, overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2011-2019");
+xtline pdf if length<=200,  overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2011-2019");
 graph export ${my_images}/silver_hake_length2011_2019.png, replace as(png);
 
 
