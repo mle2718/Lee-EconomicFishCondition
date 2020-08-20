@@ -12,7 +12,7 @@ pause off;
 timer on 1;
 
 local  in_data ${data_main}/dealer_prices_real_lags${vintage_string}.dta ;
-local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
+local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
 
 clear;
 use `in_data', clear;
