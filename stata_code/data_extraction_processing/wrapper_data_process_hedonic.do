@@ -10,4 +10,4 @@ do "${processing_code}/A01_add_in_deflators.do"
 do "${processing_code}/A02_construct_daily_and_lags.do"
 
 /* process and merge fish conditions */
-do "${processing_code}/A03_fish_condition_annual.do"
+do "${processing_code}/A03_fish_conditions_annual.do"
