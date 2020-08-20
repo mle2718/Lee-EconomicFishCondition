@@ -31,8 +31,9 @@ collapse (mean) meancond[fw=ncond], by(svspp year group)
 destring, replace
 
 tsset group year
+/*
 xtline mean, overlay
-
+*/
 
 
 import delimited `in_relcond_leng', clear
@@ -43,8 +44,9 @@ collapse (mean) meancond[fw=ncond], by(svspp year group epu)
 destring, replace
 egen gid=group(group year epu)
 tsset gid year
+/*
 xtline mean, overlay
-
+*/
 
 /* aggregate, by() */
 
