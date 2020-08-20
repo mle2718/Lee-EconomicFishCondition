@@ -81,7 +81,7 @@ ivregress 2sls price rGDPcapita ibn.nespp4 i.month  i.year (lnq=lnq_lag1)  `ifco
 outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,  Day of week effects, No, Model, IV) drop(`months' `years')  ctitle("Real Price")
  
 /* try the IV model using the inverse hyperbolic sin transform */
- ivregress 2sls price rGDPcapita ibn.nespp4  i.year (ihs_ownq ihs_other_landings=ihs_ownq_lag1 ihs_other_landings_lag1)  `ifconditional', robust
+ ivregress 2sls price rGDPcapita ibn.nespp4  i.year (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', robust
 
  *outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Model, IV) drop(`years')  ctitle("Real Price")
 
