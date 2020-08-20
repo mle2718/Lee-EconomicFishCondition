@@ -112,5 +112,5 @@ assert date==. if _merge==1
 assert _merge==1 if date==.
 drop _merge
 
-save `out_data'
+save `out_data', replace
 
