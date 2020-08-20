@@ -133,9 +133,9 @@ sort dateq
 order dateq f*`b1' 
 tsset dateq
 
-notes A939RX0Q048SBEA:	Real gross domestic product per capita.  Chained 2012 Dollars, Seasonally Adjusted Annual Rate.  BEA Account Code: A939RX
-notes A792RC0Q052SBEA: Personal income per capita.  Dollars, Seasonally Adjusted Annual Rate. BEA Account Code: A792RC. 
-notes A229RX0Q048SBEA: Real Disposable Personal Income Per Capita (A229RX0Q048SBEA). Chained 2012 Dollars, Seasonally Adjusted Annual Rate.. BEA Account Code: A229RX
+notes A939RX0Q048SBEA: Quarterly Real gross domestic product per capita.  Chained 2012 Dollars, Seasonally Adjusted Annual Rate.  BEA Account Code: A939RX
+notes A792RC0Q052SBEA: Quarterly Personal income per capita.  Dollars, Seasonally Adjusted Annual Rate. BEA Account Code: A792RC. 
+notes A229RX0Q048SBEA: Quarterly Real Disposable Personal Income Per Capita (A229RX0Q048SBEA). Chained 2012 Dollars, Seasonally Adjusted Annual Rate.. BEA Account Code: A229RX
 
 rename A939RX0Q048SBEA rGDPcapita
 rename A792RC0Q052SBEA personal_income_capita
@@ -145,6 +145,9 @@ rename A229RX0Q048SBEA realDPIcapita
 rename fA939RX0Q048SBEA frGDPcapita
 rename fA792RC0Q052SBEA fpersonal_income_capita
 rename fA229RX0Q048SBEA frealDPIcapita
+notes fA939RX0Q048SBEA: Quarterly Real gross domestic product per capita. Base year `b1'=1
+notes fA792RC0Q052SBEA: Quarterly Personal income per capita.  Base year `b1'=1
+notes fA229RX0Q048SBEA: Quarterly Real Disposable Personal Income Per Capita (A229RX0Q048SBEA).  Base year `b1'=1
 
 
 tsset dateq
