@@ -4,6 +4,7 @@ pause on
 
 
 local  in_data ${data_main}/dealer_prices_real_lags${vintage_string}.dta 
+local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
 global linear_table1 ${my_tables}/silver_hake1.tex
 
