@@ -112,6 +112,26 @@ drop daten datestr
 format dateq %tq
 notes: deflators extracted on $vintage_string
 
+local b1 "2019Q1"
+local baseq=quarterly("`b1'","Yq")
+
+
+
+foreach var of varlist  `importlist'{
+	replace `var'=`var'/1000
+	gen base`var'=`var' if dateq==`baseq'
+	sort base`var'
+	replace base`var'=base`var'[1] if base`var'==.
+
+	gen f`var'_`b1'=`var'/base`var'
+	notes f`var'_`b1': divide a nominal price or value by this factor to get real `basey' prices or values
+	notes f`var'_`b1': multiply a real `basey' price or value by this factor to get nominal prices or values
+	notes `var': raw index value
+	drop base`var'
+}
+sort dateq 
+order dateq f*`b1' 
+tsset dateq
 
 notes A939RX0Q048SBEA:	Real gross domestic product per capita.  Chained 2012 Dollars, Seasonally Adjusted Annual Rate.  BEA Account Code: A939RX
 notes A792RC0Q052SBEA: Personal income per capita.  Dollars, Seasonally Adjusted Annual Rate. BEA Account Code: A792RC. 
@@ -120,6 +140,19 @@ notes A229RX0Q048SBEA: Real Disposable Personal Income Per Capita (A229RX0Q048SB
 rename A939RX0Q048SBEA rGDPcapita
 rename A792RC0Q052SBEA personal_income_capita
 rename A229RX0Q048SBEA realDPIcapita
+
+
+rename fA939RX0Q048SBEA frGDPcapita
+rename fA792RC0Q052SBEA fpersonal_income_capita
+rename fA229RX0Q048SBEA frealDPIcapita
+
+
 tsset dateq
+
+
+
+
+
+
 save "$incomeQ", replace
 tsline rGDPcapita personal_income_capita realDPIcapita
