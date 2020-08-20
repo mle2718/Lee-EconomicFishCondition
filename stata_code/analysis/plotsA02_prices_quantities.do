@@ -16,10 +16,10 @@ local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta
 
 clear;
 use `in_data', clear;
-merge m:1 nespp4 using `marketcats', keep(1 3)
-assert _merge==3
-labmask nespp4, value(sp_mkt)
-drop _merge
+merge m:1 nespp4 using `marketcats', keep(1 3);
+assert _merge==3;
+labmask nespp4, value(sp_mkt);
+drop _merge;
 
 
 
