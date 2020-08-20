@@ -107,6 +107,10 @@ foreach lag of numlist 1 7 14 28{
 
 }
 compress
+/* _merge=1 iff date==. */
+assert date==. if _merge==1
+assert _merge==1 if date==.
+drop _merge
 
 save `out_data'
 
