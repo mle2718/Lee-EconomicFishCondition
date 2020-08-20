@@ -14,7 +14,7 @@ local  out_data ${data_intermediate}/dealer_prices_real${vintage_string}.dta
 local deflators $data_external/deflatorsQ_${vintage_string}.dta
 
 
-local income "$data_external/incomeQ_${vintage_string}.dta" 
+local income $data_external/incomeQ_${vintage_string}.dta 
 
 /* bring in deflators and construct real compensation */
 
@@ -31,8 +31,10 @@ save `deflators'
 
 
 use  `in_prices', replace 
-
-gen date=mdy(month, day, year)
+gen ds=day
+replace ds=1 if ds==0
+gen date=mdy(month, ds, year)
+drop ds
 format date $td
 
 gen dateq=qofd(date)
@@ -40,6 +42,7 @@ format dateq %tq
 merge m:1 dateq using `deflators', keep(1 3)
 assert _merge~=2
 drop _merge
+
 
 gen valueR_GDPDEF=value/fGDP
 
@@ -54,6 +57,7 @@ gen valueR_prepared=value/fprepared
 merge m:1 dateq using `income', keep(1 3)
 
 
-drop dateq
-
+cap drop dateq 
+cap drop date
+notes: there are 12 observations without a month. such is life.
 save `out_data', replace
