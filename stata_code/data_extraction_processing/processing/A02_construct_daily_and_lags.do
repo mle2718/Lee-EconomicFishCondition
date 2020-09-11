@@ -22,14 +22,6 @@ gen weekend=inlist(dow,0,6)
 
 
 
-cap drop nespp3
-gen nespp3=floor(nespp4/10)
-/* deal with species that span multiple nespp3 groups */
-replace nespp3=012 if nespp3==011
-replace nespp3=147 if nespp3==148
-
-
-
 
 
 /* construct daily landings */
