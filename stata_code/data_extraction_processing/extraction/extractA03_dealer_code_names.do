@@ -17,6 +17,7 @@ bysort nespp4: assert _N==1;
 gen sp_mkt=sppnm + " " + mktnm;
 
 labmask nespp4, value(sp_mkt);
+replace svspp==78 if nespp3=662
 
 
 save $nespp4, replace;
@@ -38,3 +39,18 @@ sort nespp3;
 
 destring, replace;
 save $itis, replace;
+
+
+
+
+clear;
+
+
+odbc load,  exec("select * from svdbs.itis_lookup;") $mysole_conn;
+renvarlab, lower;
+destring, replace;
+duplicates drop;
+
+
+destring, replace;
+save $svdbs, replace;
