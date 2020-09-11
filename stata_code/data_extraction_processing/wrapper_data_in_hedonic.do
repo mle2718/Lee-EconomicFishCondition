@@ -8,7 +8,7 @@ global yearstart 1994
 global yearend 2019
 
 
-global specieslist 011, 012, 147, 148, 509 
+global specieslist 011, 012, 147, 148, 509,119,120, 121,122,123,124
 
 
 /* globals for where to store the raw data */
@@ -17,6 +17,7 @@ global dealer_prices ${data_raw}/raw_dealer_prices_${vintage_string}.dta
 global length_data ${data_raw}/raw_dealer_length_${vintage_string}.dta 
 global nespp4 ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 global itis ${data_raw}/species_itis_ne${vintage_string}.dta 
+global svdbs ${data_raw}/svdbs_itis_lookup${vintage_string}.dta 
 
 
 global deflatorsY "$data_external/deflatorsY_${vintage_string}.dta" 
