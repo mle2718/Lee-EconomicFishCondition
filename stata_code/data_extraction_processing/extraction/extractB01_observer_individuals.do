@@ -1,21 +1,5 @@
 
-/*
-Code to extract 
-Monk and silver hake prices
-silver hake:
-King 5091
-Large 5095
-Medium 5096
-Small 5092
-Juvenile 5094
-
-"Round" 5090
-Dressed 5093
-	Convert dressed to round by multiplying landings  1.66
-	
-Unclassifed 5097 (not in the time series) 
-
-*/
+/*This is not the proper query.*/
 
 
 #delimit;
