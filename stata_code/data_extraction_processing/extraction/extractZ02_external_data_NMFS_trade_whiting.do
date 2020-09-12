@@ -1,0 +1,86 @@
+/* need to 
+4. write some clean up code
+	assert
+		*/
+
+/* code to extract trade data related to whiting*/
+/* modified from 
+https://github.com/cameronspeir/NOAA-Foreign-Fishery-Trade-Data-API
+*/
+
+
+
+#delimit ;
+clear;
+pause off;
+
+**** Don't forget that you need two packages
+
+*ssc install insheetjson;
+*ssc install libjson;
+
+
+**** set up an empty data set with names of the columns that we will import;
+* define a local macro, called invars, with the column names;
+local invars year month hts_number name cntry_code fao cntry_name district_code 
+			 district_name edible_code kilos val source association rfmo 
+			 nmfs_region_code;
+
+* Define a local macro, called quote_invars, that contains nothing.;
+* We will use this to contain the elements of invars, but wrapped in double quotations;
+
+local quote_invars ;
+
+* loop through each varname and create an empty string variable;
+* Add the double quoted name to the quoted local macro. 	;		 
+foreach l of local invars {;
+	gen str60 `l'="";
+	local quote_invars `" `quote_invars' "`l'" "' ;
+
+};
+/* get all the rows with 
+	a name like whiting 
+	from 1992 to present
+This will include blue whiting.  */
+local chunksize 5000;
+
+local url_root https://www.st.nmfs.noaa.gov/ords/foss/trade_data;
+local url_subset ?q={%22year%22:{%22%24gte%22:1992},%22name%22:{%22%24like%22:%22%25WHITING%25%22}};
+local url_offset &offset=0;
+local url_limit &limit=`chunksize';
+local url_request `url_root'`url_subset'`url_offset'`url_limit';
+mac list _url_request;
+pause;
+
+local keep_going="true";
+while "`keep_going'"=="true"{;
+qui count;
+local nobs=r(N);
+local url_offset &offset=`nobs';
+local url_request `url_root'`url_subset'`url_offset'`url_limit';
+mac list _url_request;
+insheetjson `invars' using "`url_request'",	column(`quote_invars') tableselector("items") offset(`nobs') topscalars;
+local keep_going="`r(hasMore)'";
+};
+* take a look at the result;
+describe;
+
+* convert some of the string variables to numeric;
+destring year month cntry_code fao district_code kilos val, replace;
+*might not want to destring the hts code;
+
+compress;
+assert edible_code=="E";
+drop edible_code;
+
+collapse (sum) kilos val, by(year month hts_number name district_code district_name source);
+
+
+/* what do you want to filter out? 
+	Frozen?
+	Blue Whiting?
+	Mainland US, East Coast US? Northeast Region?
+	Re-Exports?
+	*/
+save	$whiting_trade, replace ;
+

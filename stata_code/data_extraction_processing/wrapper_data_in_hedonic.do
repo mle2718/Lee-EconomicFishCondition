@@ -20,11 +20,13 @@ global itis ${data_raw}/species_itis_ne${vintage_string}.dta
 global svdbs ${data_raw}/svdbs_itis_lookup${vintage_string}.dta 
 
 
+
 global deflatorsY "$data_external/deflatorsY_${vintage_string}.dta" 
 global deflatorsQ "$data_external/deflatorsQ_${vintage_string}.dta" 
 
 global incomeQ "$data_external/incomeQ_${vintage_string}.dta" 
 
+global whiting_trade ${data_external}/whiting_trade${vintage_string}.dta 
 /*don't extract observations with prices higher thatn 40 per pound */
 global upper_price 40
 
@@ -47,3 +49,5 @@ do "${extraction_code}/extractA03_dealer_code_names.do"
 
 
 do "${extraction_code}/extractZ01_external_data_FRED.do"
+
+do "${extraction_code}/extractZ02_external_data_NMFS_trade_whiting.do"
