@@ -47,6 +47,7 @@ do "${extraction_code}/extractA02_dealer_length.do"
 
 do "${extraction_code}/extractA03_dealer_code_names.do"
 
+do "${extraction_code}/extractC01_fish_conditions.do"
 
 do "${extraction_code}/extractZ01_external_data_FRED.do"
 
