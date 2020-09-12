@@ -17,7 +17,7 @@ bysort nespp4: assert _N==1;
 gen sp_mkt=sppnm + " " + mktnm;
 
 labmask nespp4, value(sp_mkt);
-replace svspp==78 if nespp3=662
+replace svspp=78 if nespp3==662;
 
 
 save $nespp4, replace;
