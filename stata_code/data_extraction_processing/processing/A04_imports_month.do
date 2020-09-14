@@ -1,4 +1,7 @@
-
+/* code to aggregate the NMFS trade data 
+It's a little silly to bring along nominal values, pounds, and real values, when all I need at the end of the day are real prices.  But whatever.
+This is especially so, since I need to get Lags anyway.
+*/
 global kg_to_lbs 2.20462
 
 use $trade, clear
