@@ -17,6 +17,7 @@ clear
 use `in_data', clear
 cap drop _merge
 keep if nespp3==509
+gen nominal=value/landings
 
 /* pull in market categories*/
 
@@ -29,15 +30,15 @@ drop _merge
 
 /* Normalize */
 gen priceR_GDPDEF=valueR_GDPDEF/landings
+
+
+
 gen ihspriceR=asinh(priceR_GDPDEF)
 gen ihsrGDPcapita=asinh(rGDPcapita)
 
-foreach var of varlist nominal_value_trade_noblueEXP nominal_value_trade_allEXP nominal_value_trade_noblueIMP nominal_value_trade_allIMP nominal_value_trade_noblueREX nominal_value_trade_allREX{
-local newvar: subinstr local var "nominal_" ""
-gen `newvar'R_GDPDEF=`var'/fGDP
+foreach var of varlist price_noblueEXP price_allEXP price_noblueIMP price_allIMP price_noblueREX price_allREX{
+gen `var'_R_GDPDEF=`var'/fGDP
 }
-
-gen import_priceR_GDPDEF=value_trade_allIMPR_GDPDEF/whiting_trade_all_poundsIMP
 
 /********************************************************/
 /********************************************************/
@@ -52,13 +53,12 @@ gen date=mdy(month,day,year)
 
 gen markin=1
 replace markin=0 if date==.
-replace markin=0 if price>8 
+replace markin=0 if nominal>8 
 replace markin=0 if inlist(nespp4,5097)==1
 
 local ifconditional "if markin==1"
 cap drop _merge
 
-/* Verify the merge worked properly. There will be some rows that do not match, because the day or month field =0 so date is broken.*/
 /* there will also be a few rows that do not match because there are zero landings. */
 
 
@@ -81,32 +81,32 @@ We don't really want to estimate a full blown demand system (for whiting).  One 
 
 
 /* ols, absorbing various things */
-reg price lnq rGDPcapita ib5090.nespp4 i.year `ifconditional', robust
+reg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 i.year `ifconditional', robust
 pause
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Day of week effects, No, Vessel Effects, No,  Model, OLS) drop(`years') replace ctitle("Real Price")
 
-reg price lnq rGDPcapita ib5090.nespp4 i.month  i.year  `ifconditional',robust
+reg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 i.month  i.year  `ifconditional',robust
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,  Day of week effects, No, Vessel Effects, No, Model, OLS) drop(`months' `years')  ctitle("Real Price")
 
-reg price lnq rGDPcapita ib5090.nespp4 i.month  i.year  i.dow `ifconditional', robust
+reg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 i.month  i.year  i.dow `ifconditional', robust
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,  Day of week effects, Yes, Vessel Effects, No, Model, OLS) drop(`months' `years' `dow')  ctitle("Real Price")
 
 
-areg price lnq rGDPcapita ib5090.nespp4 ib7.month  i.year i.dow  `ifconditional', absorb(permit) robust
+areg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 ib7.month  i.year i.dow  `ifconditional', absorb(permit) robust
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Model,OLS) drop(`months' `years' `dow')  ctitle("Real Price")
 
 
 /*IV, using lag of quantities as an instrument */
-ivregress 2sls price rGDPcapita ib5090.nespp4  i.year (lnq=lnq_lag1)  `ifconditional' , robust
+ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4  i.year (lnq=lnq_lag1)  `ifconditional' , robust
 outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No,  Day of week effects, No, Model, IV) drop(`years')  ctitle("Real Price")
 
-ivregress 2sls price rGDPcapita ib5090.nespp4 i.month  i.year (lnq=lnq_lag1)  `ifconditional',robust
+ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4 i.month  i.year (lnq=lnq_lag1)  `ifconditional',robust
 outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,  Day of week effects, No, Model, IV) drop(`months' `years')  ctitle("Real Price")
  
  
  
 /* try the IV model using the inverse hyperbolic sin transform */
- ivregress 2sls price ihsrGDPcapita ib5090.nespp4  i.year (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
+ ivregress 2sls priceR_GDPDEF ihsrGDPcapita ib5090.nespp4  i.year (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 
  *outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Model, IV) drop(`years')  ctitle("Real Price")
 
@@ -152,7 +152,7 @@ est store YearDums
 	
 /*models with condition factor */
  
- ivregress 2sls price rGDPcapita ib5090.nespp4  i.month meancond_Annual stddevcond_Annual (lnq=lnq_lag1)  `ifconditional' , robust
+ ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4  i.month meancond_Annual stddevcond_Annual (lnq=lnq_lag1)  `ifconditional' , robust
 est store IVcondition
  
  
@@ -160,5 +160,5 @@ est store IVcondition
 est store IHScondition
 
 
-  ivregress 2sls price rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual) import_priceR_GDPDEF i.dow (own4landings other_landings=ownq_lag1 other_landings_lag1)   `ifconditional', cluster(date)
+  ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual) price_allIMP_R_GDPDEF i.dow (own4landings other_landings=ownq_lag1 other_landings_lag1)   `ifconditional', cluster(date)
 est store LEVELcondition
