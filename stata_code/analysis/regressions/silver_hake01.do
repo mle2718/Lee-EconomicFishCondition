@@ -15,7 +15,7 @@ local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow
 
 clear
 use `in_data', clear
-
+cap drop _merge
 keep if nespp3==509
 
 /* pull in market categories*/
@@ -29,13 +29,21 @@ drop _merge
 
 /* Normalize */
 gen priceR_GDPDEF=valueR_GDPDEF/landings
-
-
-
 gen ihspriceR=asinh(priceR_GDPDEF)
-
 gen ihsrGDPcapita=asinh(rGDPcapita)
 
+foreach var of varlist nominal_value_trade_noblueEXP nominal_value_trade_allEXP nominal_value_trade_noblueIMP nominal_value_trade_allIMP nominal_value_trade_noblueREX nominal_value_trade_allREX{
+local newvar: subinstr local var "nominal_" ""
+gen `newvar'R_GDPDEF=`var'/fGDP
+}
+
+gen import_priceR_GDPDEF=value_trade_allIMPR_GDPDEF/whiting_trade_all_poundsIMP
+
+/********************************************************/
+/********************************************************/
+/* you really need to do more data cleaning and look at some descriptive statistics */
+/********************************************************/
+/********************************************************/
 
 /* mark the estimation sample */
 cap drop date
@@ -50,10 +58,6 @@ replace markin=0 if inlist(nespp4,5097)==1
 local ifconditional "if markin==1"
 cap drop _merge
 
-
-
-
-
 /* Verify the merge worked properly. There will be some rows that do not match, because the day or month field =0 so date is broken.*/
 /* there will also be a few rows that do not match because there are zero landings. */
 
@@ -61,8 +65,20 @@ cap drop _merge
 /* don't estimate for invalid dates, prices that are too high, or 5097 market category*/
 
 
-*drop if price>=8
-*drop if nespp4==5097
+
+/* Some of these models aren't really well thought out. Here are some ideas for improvement.
+We don't really want to estimate a full blown demand system (for whiting).  One specification allows the own-quantity and other-quantity effects to be different.
+		However, another way to do it might be to group them into three groups: own, smaller-, and larger-sized
+
+		
+	We could allow the condition effects to vary across the market categories : c.meancond_Annual c.stddevcond_Annual)##ib5090.nespp4 
+	I'm not sure how to interpret these either.
+	
+	
+	*/
+
+
+
 
 /* ols, absorbing various things */
 reg price lnq rGDPcapita ib5090.nespp4 i.year `ifconditional', robust
@@ -134,11 +150,15 @@ est store YearDums
 
 	
 	
-
+/*models with condition factor */
  
  ivregress 2sls price rGDPcapita ib5090.nespp4  i.month meancond_Annual stddevcond_Annual (lnq=lnq_lag1)  `ifconditional' , robust
 est store IVcondition
  
  
-  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
+  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual import_priceR_GDPDEF i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 est store IHScondition
+
+
+  ivregress 2sls price rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual) import_priceR_GDPDEF i.dow (own4landings other_landings=ownq_lag1 other_landings_lag1)   `ifconditional', cluster(date)
+est store LEVELcondition
