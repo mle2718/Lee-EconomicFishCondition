@@ -23,8 +23,10 @@ http://www.fao.org/3/x5952e/x5952e01.htm
 preserve
 collapse (sum) pounds nominal_value, by(year month source)
 
-rename pounds whiting_trade_all_pounds
-rename nominal_value nominal_value_trade_all
+gen price_all=nominal_value/pounds
+
+keep year month source price_all
+
 
 tempfile all
 save `all', replace
@@ -33,19 +35,15 @@ restore
 
 drop if inlist(name,"GROUNDFISH BLUE WHITING*")
 collapse (sum) pounds nominal_value, by(year month source)
-
-rename pounds whiting_trade_noblue_pounds
-rename nominal_value nominal_value_trade_noblue
-
+gen price_noblue=nominal_value/pounds
+keep year month source price_noblue
 merge 1:1 year month source using `all'
 
 drop _merge
 
-reshape wide  whiting_trade_noblue_pounds nominal_value_trade_noblue nominal_value_trade_all whiting_trade_all_pounds, i(year month) j(source) string
 
-foreach var of varlist whiting_trade_noblue_pounds* nominal_value_trade_noblue* nominal_value_trade_all* whiting_trade_all_pounds*{
-	replace `var'=0 if `var'==.
-}
-compress
+reshape wide price_noblue price_all, i(year month) j(source) string
+
+
 
 save $trade_out, replace

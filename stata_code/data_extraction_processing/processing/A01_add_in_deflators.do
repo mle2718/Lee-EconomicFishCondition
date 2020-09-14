@@ -8,14 +8,12 @@ pause off
 
 timer on 1
 
-local  out_data ${data_intermediate}/dealer_prices_real${vintage_string}.dta 
-
 local deflators $data_external/deflatorsQ_${vintage_string}.dta
 local income $data_external/incomeQ_${vintage_string}.dta 
 
 /* bring in deflators and construct real compensation */
 
-
+preserve
 use  `deflators', clear
 keep dateq  f*
 rename fGDPDEF fGDP
@@ -24,10 +22,9 @@ rename fPCU31171031171021_2019Q1 fpreparedfish
 
 tempfile deflatorsW
 save `deflatorsW'
+restore
 
 
-
-use  $in_prices, replace 
 gen ds=day
 replace ds=1 if ds==0
 gen date=mdy(month, ds, year)
