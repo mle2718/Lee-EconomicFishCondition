@@ -43,7 +43,12 @@ drop _merge
 
 
 reshape wide price_noblue price_all, i(year month) j(source) string
+gen monthly=ym(year, month)
+tsset monthly
 
-
+foreach var of varlist price_noblue* price_all*{
+	gen `var'_lag1=L1.`var'
+	gen `var'_lag12=l12.`var'
+}
 
 save $trade_out, replace
