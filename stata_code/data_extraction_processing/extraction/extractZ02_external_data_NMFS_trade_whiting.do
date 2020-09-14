@@ -13,6 +13,8 @@ https://github.com/cameronspeir/NOAA-Foreign-Fishery-Trade-Data-API
 #delimit ;
 clear;
 pause off;
+global kg_to_lbs 2.20462;
+
 
 **** Don't forget that you need two packages
 
@@ -75,6 +77,11 @@ drop edible_code;
 
 collapse (sum) kilos val, by(year month hts_number name district_code district_name source);
 
+/* this is 'merica, and in 'merica, we use pounds. Except when we use metric tons. */
+
+replace kilos=round(kilos*$kg_to_lbs);
+rename kilos pounds;
+rename val nominal_value;
 
 /* what do you want to filter out? 
 	Frozen?
