@@ -8,12 +8,9 @@ pause off
 
 timer on 1
 
-local in_prices ${data_raw}/raw_dealer_prices_${vintage_string}.dta 
 local  out_data ${data_intermediate}/dealer_prices_real${vintage_string}.dta 
 
 local deflators $data_external/deflatorsQ_${vintage_string}.dta
-
-
 local income $data_external/incomeQ_${vintage_string}.dta 
 
 /* bring in deflators and construct real compensation */
@@ -25,12 +22,12 @@ rename fGDPDEF fGDP
 rename fPCU3117103117102_2019Q1 ffresh_frozen
 rename fPCU31171031171021_2019Q1 fpreparedfish
 
-tempfile deflators
-save `deflators'
+tempfile deflatorsW
+save `deflatorsW'
 
 
 
-use  `in_prices', replace 
+use  $in_prices, replace 
 gen ds=day
 replace ds=1 if ds==0
 gen date=mdy(month, ds, year)
@@ -39,7 +36,7 @@ format date $td
 
 gen dateq=qofd(date)
 format dateq %tq
-merge m:1 dateq using `deflators', keep(1 3)
+merge m:1 dateq using `deflatorsW', keep(1 3)
 assert _merge~=2
 drop _merge
 
@@ -60,4 +57,3 @@ merge m:1 dateq using `income', keep(1 3)
 cap drop dateq 
 cap drop date
 notes: there are 12 observations without a month. such is life.
-save `out_data', replace

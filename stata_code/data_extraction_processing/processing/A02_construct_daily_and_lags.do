@@ -7,10 +7,6 @@ version 15.1
 pause off
 timer on 1
 
-local  in_data ${data_intermediate}/dealer_prices_real${vintage_string}.dta 
-local  out_data ${data_main}/dealer_prices_real_lags${vintage_string}.dta 
-
-use  `in_data', replace 
 
 cap drop _merge
 cap drop date
@@ -103,6 +99,4 @@ compress
 assert date==. if _merge==1
 assert _merge==1 if date==.
 drop _merge
-
-save `out_data', replace
 

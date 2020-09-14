@@ -14,12 +14,10 @@ local  in_relcond_leng ${data_raw}/annual_condition_indexEPU_length_${vintage_st
 local in_relcond_Year ${data_raw}/annual_condition_index_${vintage_string}.dta 
 
 
-local  price_raw ${data_main}/dealer_prices_real_lags${vintage_string}.dta 
-local  price_done ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta 
 
-
-use `price_raw', replace
 merge m:1 nespp3 year using `in_relcond_Year', keep(1 3)
 assert _merge==3
 drop _merge
-save `price_done', replace
+
+
+
