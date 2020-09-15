@@ -7,8 +7,11 @@ local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta
 
 global linear_table1 ${my_tables}/silver_hake1.tex
 
+global linear_table2 ${my_tables}/silver_hake2.tex
+
+
 /* don't show year or month coeficients in outreg */
-local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month
+local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month 0.month 0b.month 12o.month
 local years 1995.year 1996.year 1997.year 1998.year 1999.year 2000.year 2001.year 2002.year 2003.year 2004.year 2005.year 2006.year 2007.year 2008.year 2009.year 2010.year 2011.year 2012.year 2013.year 2014.year 2015.year 2016.year 2017.year 2018.year 2019.year 2020.year
 local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow 
 
@@ -117,8 +120,13 @@ outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year
  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.year i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 est store YearDums
  
+ outreg2 using ${linear_table2}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Day of week effects, YES, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') replace ctitle("IHS Price")
+
+ 
+ 
  /* try the IV model using the inverse hyperbolic sin transform */
  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.month  i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
+ outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
 
  est store YearMonthDums
  
@@ -161,10 +169,12 @@ est store IVcondition
  
   ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual price_allIMP_R_GDPDEF i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 est store IHScondition
+ outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, No, Month Effects, no, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
 
 
   ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual)  i.dow (price_allIMP_R_GDPDEF own4landings other_landings=ownq_lag1 other_landings_lag1 price_allIMP_lag1_R_GDPDEF price_allIMP_lag12_R_GDPDEF )   `ifconditional', cluster(date)
   est store LEVELcondition
 
   
-    ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual  i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional', cluster(date)
+    ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual i.month i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional', cluster(date)
+ outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, No, Month Effects, Yes, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
