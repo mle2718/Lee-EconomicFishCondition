@@ -28,17 +28,20 @@ drop _merge
 
 
 
-/* Normalize */
+/* Normalize 
+Need to deflate */
 gen priceR_GDPDEF=valueR_GDPDEF/landings
 
-
+foreach var of varlist price_noblueEXP price_allEXP price_noblueIMP price_allIMP price_noblueREX price_allREX price_*IMP_lag* {
+gen `var'_R_GDPDEF=`var'/fGDP
+}
 
 gen ihspriceR=asinh(priceR_GDPDEF)
 gen ihsrGDPcapita=asinh(rGDPcapita)
 
-foreach var of varlist price_noblueEXP price_allEXP price_noblueIMP price_allIMP price_noblueREX price_allREX{
-gen `var'_R_GDPDEF=`var'/fGDP
-}
+gen ihsimportR=asinh(price_allIMP_R_GDPDEF)
+gen ihsimport_lag1=asinh(price_allIMP_lag1_R_GDPDEF)
+gen ihsimport_lag12=asinh(price_allIMP_lag12_R_GDPDEF)
 
 /********************************************************/
 /********************************************************/
@@ -156,9 +159,12 @@ est store YearDums
 est store IVcondition
  
  
-  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual import_priceR_GDPDEF i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
+  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual price_allIMP_R_GDPDEF i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 est store IHScondition
 
 
-  ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual) price_allIMP_R_GDPDEF i.dow (own4landings other_landings=ownq_lag1 other_landings_lag1)   `ifconditional', cluster(date)
-est store LEVELcondition
+  ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual)  i.dow (price_allIMP_R_GDPDEF own4landings other_landings=ownq_lag1 other_landings_lag1 price_allIMP_lag1_R_GDPDEF price_allIMP_lag12_R_GDPDEF )   `ifconditional', cluster(date)
+  est store LEVELcondition
+
+  
+    ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual  i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional', cluster(date)
