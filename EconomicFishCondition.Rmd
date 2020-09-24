@@ -1,10 +1,19 @@
 ---
-title: "Economic Fish Condition"
-author: "DePiper Lee"
-date: "5/14/2020"
+title: 'Economic Fish Condition'
+author: Min-Yang Lee, Geret DePiper
+date: "`r format(Sys.time(), '%B %d, %Y')`" 
+csl: ajae_mod.csl
 output:
-  pdf_document: default
-  html_document: default
+  pdf_document: 
+    includes:
+      in_header: preamble-latex.tex
+    keep_tex: yes
+    pandoc_args: --pdf-engine=pdflatex
+    number_sections: true
+  html_document: null
+  word_document: null
+fontsize: 12pt
+bibliography: 'C:/Users/Min-Yang.Lee/Documents/library.bib'
 ---
 
 ```{r setup, include=FALSE}
@@ -16,21 +25,138 @@ source(file.path(my_projdir,"R_code","project_logistics","R_paths_libraries.R"))
 setwd(my_projdir)
 ```
 
-# Setups
-I have set a bunch of stuff using the first chunk above. 
+# Introduction
 
-1. You will have a my_projdir directory. 
-1. You set up libraries.
-1. There is a line of code that automagically finds your stata executable. We also shQuote it, to faciltate working with R's system.
+## Empirical Setting, Silver Hake
 
 
+### CRD 06-09 (42nd SAW)
+> Silver hake grow rapidly (Figure A3). Growth rates vary over time and among areas but
+in an inconsistent fashion (Helser 1996; Brodziak et al. 2001). Based on Brodziak et al.
+(2001), growth has been rapid and almost linear in silver hake during recent years based
+on Brodziak et al. (2001). However, scarcity of older fish makes growth curves
+estimated from recent data difficult to compare to growth curves estimated from historic
+data (Brodziak et al. 2001). Growth and maturity rates may depend on stock biomass
+(Helser and Brodziak 1998).
+
+>Silver hake were landed in six commercial market categories during 1995-2004 including
+the category “5095 (Large round)” that was new in 2004 (Table A2). Intensity of
+sampling was measured as number of length measurements divided by metric tons landed
+(Table A3). Sampling was highest (intensity > 1.5) for the hook & line gear group,
+gillnet gear group, and for the 5091 (King round) market category.
+Length composition data for commercial landings indicate that the fishery has taken
+smaller silver hake since 1997 and that recruitment to the fishery begins to occur at about
+20 cm TL (Figure A10). The shift in commercial length frequencies may be due to
+management measures, other changes in the fishery, or a change in the silver hake
+population.
 
 
-```{r , fig.show = "hold", out.width = "48%", fig.cap="monkfish prices,1994-2019", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("monkfish_prices.png")))
-```
+### CRD 11-02 (51nd SAW)
+> The seasonality of landings from the two stocks is different, with most of the northern
+stock landings occurring in the second half of the year and the first half of the year
+accounting for a approximately less than 20% of the annual. Landings from the southern
+stock appear to be landed more consistently throughout the year than in the north (Tables
+A6-A8, Figures A7-A8).
+
+>Silver hake are landed in seven commercial categories: unclassified round, medium,
+small, dressed, juvenile, king and large. The vast majorities of landings are reported as
+round or dressed market category, with other market categories appearing sporadically
+over time (Tables A9-A10, Figures A9-A10). King silver hake were separated starting in
+1981, with smalls appearing in 1982. Large silver hake were further separated in 2004. A
+juvenile market category appeared in 1994 and was a larger component of the southern
+stock landings (Tables A9-A10, Figures A11-A12).
+
+>Therefore, landings from the northern stock are considered to be silver hake while southern landings
+are potentially a mixture of silver and offshore hake. In order to estimate landings of
+silver hake from the southern region, two alternative methods were developed.
 
 
+> Length-based species composition. The first method used the port length samples directly. Length samples of silver and
+offshore hake were combined by stock (Tables A11-A13). In examining the silver hake
+length samples by market category, it appeared that most of the market categories were
+similar in length composition to the round category (Figures A11-A12). Therefore, only
+three market categories were used for stratification: round, king, and large.
+
+> For the southern stock, length compositions for each species were estimated for the
+spring and fall surveys from 1968-2009. The species length-weight equations were then
+applied to determine weight-at-length by species. The proportions at length by species for
+both number and weight were applied to the commercial landings-at-length to estimate
+landings-at-length by species (Figures A13-A14). The lengths had to be grouped into
+intervals to avoid zero cells in the survey. To hind-cast the species proportions back to
+1955, the average proportion of silver hake for the time series was used and applied to the
+total silver hake landings
+
+### CRD 18-02 (Assessment Update)
+
+>Southern mixed landings of silver and offshore hake were estimated using a length-based species-split algorithm to disaggregate total commercial landings of silver hake from offshore hake.
+
+## Something on Fish Condition
+Probably going to need an equation or two here.
+
+
+# Theoretical Model
+Hah.  This is the first stage of a hedonic model; there's no theory.
+
+# Empirical Model 
+We will want to try linear, log-linear, and log-log functional forms. Also IHS to deal with some zero quantities when quantity enters in a disaggregated form.  
+
+Generally, the price per pound ($p_{ijtk}$) of fish that is sold by seller (vessel) $i$ to buyer $j$ on day $t$ is a function of the characteristics of that fish ($X_{ijtk}$) and other characteristics that account for daily market conditions ($Z_{t}$).[^fn_basic]  Multiple sales between a vessel-buyer pair may occur on any day; these sales are indexed by $k$. The equilibrium price function for fish is:
+\begin{equation}
+\label{basic_equation}
+p_{ijtk}=  X_{ijtk}\beta + Z_{t}\gamma + u_{i} + v_{j} +w_{t}+\varepsilon_{itjk}
+\end{equation}
+
+[^fn_basic]: Might be a bad move to highligh the $t$ in $Z_t$, especially when fish condition is measured yearly.
+
+While equation \ref{basic_equation} could be estimated with OLS, unobserved heterogeneity, whether at the buyer-, seller-, or day- level will lead to inconsistent estimates of $\beta$ and $\gamma$.  Fixed-effects estimators may be useful.  Day-level heterogeneity is most likely related to quantity supplied.  Seller-specific heterogeneity might arise if particular fishing vessels systematically deliver high- or low-quality product, perhaps due to good handling practices after fish are caught. Buyer-specific heterogeneity might arise if particular buyers are selling into different markets in  geographical or product space, or are vertically integrated with downstream components of the supply chain.  Finally, buyer-seller pairs , although not explictly treated here, can have unobserved heterogenity as well [@Gobillon2017].   
+
+At the time a sales transaction occurs, the characteristics $X_{ijtk}$ have been determined and cannot be changed by either buyer or seller. In the Northeast US market for silver hake, most fish are caught and brought to market before the price is negotiated.  Therefore, the characteristics of a particular lot of cod sold on a particular day are functions of previous fishing effort and can reasonably be thought of as exogenous.  However, total quantity supplied is quite likely to be endogenous; vessels may have insight into prices that economists do not or may adjust the timing of their trip slightly in response to (expected) prices.
+
+We experiment with various ways to model the price equation. We estimate models with "all silver hake" quantities and a version that aggregates into own- and other- market category quantities.  We estimate linear-, log-log, and inverse hyperbolic sine (IHS) transformed models.  The other-market category quantity is occasionally zero; this presents some problems for a specification that is estimated in logs, but does not present such a problem for the IHS models. Stata's reghdfe, ivreg2, and ivreghdfe might be necessary.
+
+
+# Data overview
+
+## NMFS Data
+The dataset used for estimating the hedonic price model was constructed from NEFSC’s mandatory dealer reports from 1994 to 2019.  We excluded transactions with prices higher than $40 per pound (nominal).  An observation is defined at a unique vessel-dealer-market category-date-vtrrecord combination. 
+
+Here is some super boring "inside baseball" detail  on the NEFSC data.
+1.  I'm using the AA tables. 
+1.  The raw query groups on link, nespp3, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone.
+1.  Some species have multiple nespp3 codes, I accounted for this by reclassifying the nespp3, but not the nespp4.  There are 3 numeric keys we need to deal with -- NESPP3/4; itis; and obspp.
+1.  I've extracted length data from port samplers (CFLEN), but I'm not doing anything with it.
+
+Fish conditions come from Laurel; basically I'm just using the annual data.  There's a bit of finessing the data links for a couple species (spotted hake and chub mackerel). 
+
+## External Data
+
+### Trade Imports
+I've extracted trade data from NMFS S&T. These data are monthly and also contain "point-of-entry" (Seattle, WA; Boston, MA; etc) and source country information. Some decision points for whiting:
+1. Fresh, or Fresh and Frozen. Closely related to region.  There's very little fresh imported, particularly early in the time series.  Frozen is a different product though. If we're going to use frozen, I think continental US or CONUS + Alaska is reasonable.  If we're going to use fresh, then I think we can use Northeast and Mid-atlantic.
+1. Product form -- closely related to fresh-frozen too. Exclude the "highly processed stuff?" But do we want to keep frozen blocks?  
+1. Prices or quantities on the right hand side?  I don't have a good argument for either.  Both will be endogenous; we can instrument with lags.  FAO's fish production is only annual. 
+1. Imports, Export, or "Net trade inflows" (Imports-Exports+re-exports).  This presumes quantities on the right hand side.  If we use prices on the right hand side, I think we just go with import prices.
+
+### Normalization
+
+In the Atlantic Cod paper, I used PPI Unprocessed Finfish. In the scallop hedonic paper, Greg and I used GDP implicit price deflator.  Stick with GDP implicit price deflator. The PPI for unprocessed finfish is too volatile.  I also pulled the PPI for "Seafood Product Preparation and Packaging -- Fresh and frozen seafood processing"and "Prepared fresh fish/seafood, inc. surimi/surimi-based products."  The second is a subset of the first and also probably too volatile.
+
+## Some Data summaries
+
+## An incomplete list of specification and data issues that I'm worried about
+
+Along with a rating about how worried I am (1-10; 10 will make the paper unpublishable)
+1.  Changes in market category definitions over time (5)
+1.  Changes in market category definitions over space (4?) - don't know why I'm less worried, since we'd need state*category interactions.
+1.  Heterogenity due to  Broad Stock Areas(3) this is probably more of a fishing time issue than an intrinsic quality issue. 
+1.  Misreporting (3)
+1.  Definition of imports (2)
+1.  Outliers (1) -I just have to do this
+1.  Proper disaggregation of $q_s$ -- too fancy will have people ask why we aren't estimating an inverse demand system like in @Sjoberg2015. No good answer, except I don't want to.
+1.  Proper standard errors for year-level rhs variables (7): I just need to be 100\% sure that cluster(year) is fine for some variables and cluster(date) or cluster(blah) is fine for others. Or we could just bootstrap it.
+1.  I need to winnow down the functional forms and start estimating more rigorous models.
+
+ Gonna need some summary stats.
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices, 1994-2019", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(my_images,c("silver_hake_prices.png")))
@@ -54,6 +180,50 @@ knitr::include_graphics(file.path(my_images,c("juvenile_silver.png")))
 ```
 
 
+# Results
+
+We get expected signs on the quantity coefficient. The OLS coefficient on lnq is attenuated, as expected if we have some endogeneity in quantity supplied (positive shocks to expected prices will also lead to higher landings).  King and Large whiting seem to get the same prices.  Juvenile whiting also gets a higher price than medium; which is a bit unexpected.  Small whiting gets a discount.  So does dressed whiting, which is a little strange.
+
+We also have a negative coefficient on income. I'm not sure if this is really an indication of an "inferior" good or increasing US income is simply correlated with decreasing world prices or increasing supply of substitutes. 
+
+
+\begin{table}
+  \begin{center}
+    \input{./tables/silver_hake1.tex}
+        \caption{A Table of Regression coefficients.  The omitted category is "medium".   \label{silverhake}}
+
+  \end{center}
+\end{table}
+
+I need to put in the tables of month and year fixed effects, but there's lower prices from June -December. 2000-2009 had somewhat lower prices. Same for 2012-2019.  This is benchmarked to 1994. 
+
+
+
+\begin{table}
+  \begin{center}
+    \input{./tables/silver_hake2.tex}
+        \caption{A Table of Regression coefficients - IHS transformed variables.  The omitted category is "medium".   \label{silverhake2}}
+
+  \end{center}
+\end{table}
+
+
+# Meta
+This is the section that contains "how to do stuff."  I may eventually move this to another document.  
+
+
+# Setups
+I have set a bunch of stuff using the first chunk above. 
+
+1. You will have a my_projdir directory. 
+1. You set up libraries.
+1. There is a line of code that automagically finds your stata executable. We also shQuote it, to faciltate working with R's system.
+
+
+
+Table \ref{silverhake} was construted using outreg2 in stata. Outreg2 is nice because it only make the meat of the table (tabular environment), that makes inclusion easier.  Estout has that capacity too.
+
+
 <!-- ## LaTeX way -->
 
 <!-- The straight to LaTeX way for figure \ref{scatterplot_fig} will cause fails if we're going to make an html or word. -->
@@ -67,17 +237,6 @@ knitr::include_graphics(file.path(my_images,c("juvenile_silver.png")))
 
 <!-- # Here is a table -->
 
-Table \ref{silverhake} was construted using outreg2 in stata. Outreg2 is nice because it only make the meat of the table (tabular environment), that makes inclusion easier.  Estout has that capacity too.
-
-\begin{table}
-  \begin{center}
-    \input{./tables/silver_hake1.tex}
-        \caption{A Table of Regression coefficients \label{silverhake}}
-
-  \end{center}
-\end{table}
-
-
 
 <!-- \begin{table} -->
 <!--   \begin{center} -->
@@ -86,4 +245,50 @@ Table \ref{silverhake} was construted using outreg2 in stata. Outreg2 is nice be
 <!--   \end{center} -->
 <!-- \end{table} -->
 
+## Elasticities
+From @Bellemare2019:
 
+\begin{equation}
+\tilde{x}=arcinh(x)=ln(x+\sqrt{x^2+1})
+\end{equation}
+ and the derivative of this wrt x is:
+ $\frac{1}{\sqrt{x^2+1}}$
+ 
+ For 
+\begin{equation}
+y=\alpha + \beta \tilde{x} +\varepsilon, 
+\end{equation}
+the elasticity is:
+\begin{equation}
+\eta=\frac{\hat{\beta}}{y}\frac{x}{\sqrt{x^2+1}}
+\end{equation}
+For 
+\begin{equation}
+\tilde{y} =\alpha + \beta x+\varepsilon, 
+\end{equation}
+the elasticity is:
+\begin{equation}
+\eta=\hat{\beta}x*\frac{\sqrt{y^2+1}}{y}
+\end{equation}
+
+
+ For 
+\begin{equation}
+\tilde{y} =\alpha + \beta D+\varepsilon, 
+\end{equation}
+the "elasticity" is:
+\begin{equation}
+\eta=\frac{sinh(\alpha + \beta + \varepsilon)}{sinh(\alpha +  \varepsilon)} -1
+\end{equation}
+Note, you need to have all of the RHS variables and estimated coefficients in the elasticity formula.
+
+For 
+\begin{equation}
+\tilde{y} =\alpha + \beta \tilde{x}+\varepsilon, 
+\end{equation}
+the elasticity is:
+\begin{equation}
+\eta= \hat{\beta}\frac{\sqrt{y^2+1}}{y}\frac{x}{\sqrt{x^2+1}}
+\end{equation}
+
+Note that some of the elasticities are undefined when $y=0$.  @Bellemare2019 illustrates computing at means of the data; since we don't have any $y=0$ in our dataset, we can also sample enumerate.
