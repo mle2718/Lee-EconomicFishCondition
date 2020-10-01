@@ -17,11 +17,11 @@ clear;
 	tempfile new5555;
 	local dsp1 `"`dsp1'"`new5555'" "'  ;
 	clear;
-	odbc load,  exec("select link, nespp3, sum(spplndlb) as landings, sum(sppvalue) as value, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone from cfdbs.cfdets`yr'aa 
+	odbc load,  exec("select port, link, nespp3, sum(spplndlb) as landings, sum(sppvalue) as value, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone from cfdbs.cfdets`yr'aa 
 		where spplndlb is not null and
 		nespp3 in (${specieslist}) and
 		spplndlb>=1 and sppvalue/spplndlb<=$upper_price  
-		group by link, nespp3, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone;") allstring $mysole_conn;
+		group by port, link, nespp3, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone;") allstring $mysole_conn;
 
 	quietly save `new5555';
 };
