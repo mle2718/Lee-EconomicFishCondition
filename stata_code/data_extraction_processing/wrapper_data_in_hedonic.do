@@ -10,6 +10,7 @@ global yearend 2019
 
 global specieslist 011, 012, 147, 148, 509,119,120, 121,122,123,124
 
+global specieslist 509
 
 /* globals for where to store the raw data */
 /* prices */
