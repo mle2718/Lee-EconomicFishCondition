@@ -1,8 +1,6 @@
 /*
 Syntax
 
-No_arguments
-
 first argument contains the name of the column with stock areas in it.  It must be numeric
 Second argument contains the variable name you want to come out.
 
