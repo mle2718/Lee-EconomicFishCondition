@@ -16,7 +16,8 @@ gen date=mdy(month,day,year)
 gen dow=dow(date)
 gen weekend=inlist(dow,0,6)
 
-
+label define days_of_week 0 "Sunday" 1 "Monday" 2 "Tuesday" 3 "Wednesday" 4 "Thursday" 5 "Friday" 6 "Saturday" 
+label values dow days_of_week
 
 
 
