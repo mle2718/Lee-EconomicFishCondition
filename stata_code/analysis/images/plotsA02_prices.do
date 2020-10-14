@@ -10,7 +10,7 @@ pause on;
 
 timer on 1;
 
-local  in_data ${data_main}/dealer_prices_real_lags${vintage_string}.dta ;
+local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta ;
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
 
 
@@ -23,6 +23,8 @@ assert _merge==3;
 labmask nespp4, value(sp_mkt);
 drop _merge;
 
+gen price=value/landings;
+keep if price<=10;
 
 gen priceR_GDPDEF=valueR_GDPDEF/landings;
 
@@ -30,8 +32,6 @@ label var priceR "Real Price per pound";
 keep if price<=10;
 bysort nespp4: egen mp=mean(price);
 
-gen monthly=ym(year, month);
-tab monthly;
 preserve;
 keep if nespp3==509;
 
@@ -53,6 +53,7 @@ graph box price if nespp4==5094, title("Juvenile Silver Hake")  `yearly_opts';
 graph export ${my_images}/juvenile_silver.png, replace as(png);
 restore;
 
+/*Comment out, I'm just doing silver hake for now.
 
 
 preserve;
@@ -147,7 +148,7 @@ graph box price if nespp4==1242 & year>=2009 & year<=2010, over(monthly, `relabe
 graph export ${my_images}/plaice_small_2009_2010.png, replace as(png);
 restore;
 
-
+*/
 /*
 
 graph box price if nespp4==1203 & year>=2011 & year<=2012, over(monthly, label(angle(45))) title("Unclass Winter, 2011-2012")  nooutside cwhisker lines(lcolor(none));

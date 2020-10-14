@@ -11,7 +11,7 @@ pause off;
 
 timer on 1;
 
-local  in_data ${data_main}/dealer_prices_real_lags${vintage_string}.dta ;
+local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta ;
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
 
 clear;
@@ -37,6 +37,7 @@ graph export ${my_images}/silver_hake_prices.png, replace as(png);
 restore;
 
 
+/*Comment out, I'm just doing silver hake for now.
 
 preserve;
 keep if nespp3==12;
@@ -53,3 +54,4 @@ graph box price, over(nespp4, label(angle(45)) sort(mp));
 graph export ${my_images}/haddock_prices.png, replace as(png);
 
 restore;
+*/

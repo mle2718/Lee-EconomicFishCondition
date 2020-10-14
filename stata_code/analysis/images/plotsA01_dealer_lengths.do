@@ -55,7 +55,7 @@ graph export ${my_images}/silver_hake_length2011_2019.png, replace as(png);
 
 
 restore;
-
+/*Comment out, I'm just doing silver hake for now.
 
 preserve;
 keep if nespp3==12 & period==1;
@@ -93,3 +93,4 @@ xtline pdf, overlay legend(rows(1)) ttitle("cm") ytitle("fraction") tmtick(##4) 
 graph export ${my_images}/haddock_length2011_2019.png, replace as(png);
 
 restore;
+*/
