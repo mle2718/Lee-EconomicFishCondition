@@ -2,9 +2,9 @@
 cap log close
 
 
-local logfile "silver_hake02.smcl"
-log using ${my_results}/`logfile', replace
 
+local logfile "silver_hake_import_pounds.smcl"
+log using ${my_results}/`logfile', replace
 
 version 15.1
 pause off
@@ -14,18 +14,21 @@ postutil clear
 estimates clear
 
 
+
+
+
 local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
-global linear_table3 ${my_tables}/silver_hake3.tex
+global linear_table3 ${my_tables}/silver_hake3Q.tex
 
-global condition_table ${my_tables}/silver_hake_condition.tex
-global ihs_table ${my_tables}/silver_hake_ihs.tex
+global condition_table ${my_tables}/silver_hake_conditionQ.tex
+global ihs_table ${my_tables}/silver_hake_ihsQ.tex
 
 
-global year_table ${my_tables}/silver_hake_years.tex
-global month_week_table ${my_tables}/silver_hake_month_week.tex
-global bse ${my_tables}/bse.dta
+global year_table ${my_tables}/silver_hake_yearsQ.tex
+global month_week_table ${my_tables}/silver_hake_month_weekQ.tex
+global bse ${my_tables}/bse_silver_hakeQ.dta
 
 
 /* don't show year or month coeficients in outreg */
@@ -93,8 +96,6 @@ gen ihs`var'=asinh(`var')
 gen ln`var'=ln(`var')
 }
 
-
-
 gen ihsimport_lag1=asinh(price_allIMP_lag1_R_GDPDEF)
 gen ihsimport_lag12=asinh(price_allIMP_lag12_R_GDPDEF)
 
@@ -144,6 +145,16 @@ label var lnrGDPcapita "Log Real GDP cap"
 label var rGDPcapita "Real GDP cap"
 
 label var price_allIMP_R_GDPDEF "Real Import Price"
+
+label var pounds_allIMP "Import Quantity"
+label var pounds_allIMP_lag1 "Import Quantity, 1 month lag"
+
+ label var lnpounds_allIMP "Log Import Quantity"
+label var lnpounds_allIMP_lag1 "Log Import Quantity, 1 month lag"
+
+label var ihspounds_allIMP "IHS Import Quantity"
+label var ihspounds_allIMP_lag1 "IHS Import Quantity, 1 month lag"
+
 /**************************************************/
 
 
@@ -152,8 +163,8 @@ label var price_allIMP_R_GDPDEF "Real Import Price"
 /* IVs log-log  with permit and dealer effects; */
 local modelname iv_log_fe
 local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA
-local endog lnq  lnprice_allIMP_R_GDPDEF
-local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+local endog lnq  lnpounds_allIMP
+local excluded lnq_lag1 lnpounds_allIMP_lag1
 
 
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
@@ -216,8 +227,8 @@ local replacer
 local modelname iv_log_nofe
 
 local depvars lnrGDPcapita ib5090.nespp4   i.dow  i.fzone i.BSA ib7.month i.year
-local endog lnq  lnprice_allIMP_R_GDPDEF
-local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+local endog lnq  lnpounds_allIMP
+local excluded lnq_lag1 lnpounds_allIMP_lag1
 
 ivreg2 lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', robust
 est store iv_log_nofe
@@ -244,12 +255,12 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 /* OLS in logs log-log  is okay-ish; */
 local modelname ols_log_fe
 
-local depvars  lnrGDPcapita lnq  lnprice_allIMP_R_GDPDEF ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
+local depvars  lnrGDPcapita lnq  lnpounds_allIMP ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
 reghdfe lnpriceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
 
 
 
-local regression_vars lnrGDPcapita lnq lnprice_allIMP_R_GDPDEF  `months2' `years2' `dow' `sizes' `areas' 
+local regression_vars lnrGDPcapita lnq  lnpounds_allIMP  `months2' `years2' `dow' `sizes' `areas' 
 foreach r of local regression_vars {
     post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
 }
@@ -290,13 +301,13 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 /* ols in levels */
 local modelname ols_linear_fe
 
-local depvars daily_landings rGDPcapita price_allIMP_R_GDPDEF ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
+local depvars daily_landings rGDPcapita pounds_allIMP ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
 
 
 reghdfe priceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
 est store ols
 
-local regression_vars daily_landings rGDPcapita price_allIMP_R_GDPDEF  `months2' `years2' `dow' `sizes' `areas' 
+local regression_vars daily_landings rGDPcapita pounds_allIMP  `months2' `years2' `dow' `sizes' `areas' 
 foreach r of local regression_vars {
     post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
 }
@@ -329,8 +340,13 @@ Small
 local modelname iv_linear_fe
 
 local depvars rGDPcapita   ib5090.nespp4 ib7.month  i.year ib7.month i.dow  i.fzone i.BSA
-local endog daily_landings price_allIMP_R_GDPDEF
-local excluded q_lag1 price_allIMP_lag1_R_GDPDEF
+local endog daily_landings pounds_allIMP
+local excluded q_lag1 lnpounds_allIMP_lag1
+
+
+
+
+
 
 
 ivreghdfe priceR_GDPDEF     `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
@@ -360,8 +376,8 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 Cannot include FY specific effects */
 local modelname iv_log_condition
 local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA meancond_Annual stddevcond_Annual
-local endog lnq  lnprice_allIMP_R_GDPDEF
-local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+local endog lnq  lnpounds_allIMP
+local excluded lnq_lag1 lnpounds_allIMP_lag1
 
 
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
@@ -384,8 +400,8 @@ foreach r of local regression_vars {
 Cannot include FY specific effects */
 local modelname iv_log_condition2
 local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA lnmeancond_Annual lnstddevcond_Annual
-local endog lnq  lnprice_allIMP_R_GDPDEF
-local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+local endog lnq  lnpounds_allIMP
+local excluded lnq_lag1 lnpounds_allIMP_lag1
 
 
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
@@ -409,8 +425,9 @@ foreach r of local regression_vars {
 /* IVs ihs and disaggregate the quantities */
 local modelname iv_ihs
 local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.year i.fzone i.BSA 
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
-local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
+local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
+local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
+
 
 
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
@@ -419,6 +436,7 @@ est store iv_ihs
 local replacer replace
 local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
 outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years' `dow')  `table_opts' `replacer'
+local replacer
 
 
 local regression_vars ihsrGDPcapita  `months2' `dow' `sizes' `areas' `endog'  `years2'
@@ -433,8 +451,9 @@ foreach r of local regression_vars {
 /* IVs ihs with condition */
 local modelname iv_ihs_cond
 local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
-local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
+local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
+local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
+
 
 
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
@@ -442,6 +461,7 @@ est store iv_ihs
 
 local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
 outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
+local replacer
 
 
 local regression_vars ihsrGDPcapita ihsmeancond_Annual ihsstddevcond_Annual `months2' `dow' `sizes' `areas' `endog'  
@@ -453,14 +473,13 @@ foreach r of local regression_vars {
 
 
 
-
-
+postclose handle
 
 
 /* IVs ihs with condition and dpi */
 local modelname iv_ihs_dpi
 local depvars ihsrealDPIcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
+local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
 
@@ -468,14 +487,8 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs_dpi
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
-outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
-
-
-local regression_vars ihsrealDPIcapita ihsmeancond_Annual ihsstddevcond_Annual `months2' `dow' `sizes' `areas' `endog'  
-foreach r of local regression_vars {
-    post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
-}
+*local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
+*outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
 
 
 
@@ -483,7 +496,7 @@ foreach r of local regression_vars {
 /* IVs ihs with condition and personal_income */
 local modelname iv_ihs_pi
 local depvars ihspersonal_income_capita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
+local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
 
@@ -491,15 +504,9 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs_pi
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
-outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
+*local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
+*outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
 
-
-local regression_vars ihspersonal_income_capita ihsmeancond_Annual ihsstddevcond_Annual `months2' `dow' `sizes' `areas' `endog'  
-foreach r of local regression_vars {
-    post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
-}
-postclose handle
 
 
 log close

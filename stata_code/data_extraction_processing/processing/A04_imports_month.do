@@ -24,8 +24,8 @@ preserve
 collapse (sum) pounds nominal_value, by(year month source)
 
 gen price_all=nominal_value/pounds
-
-keep year month source price_all
+rename pounds pounds_all
+keep year month source price_all pounds_all
 
 
 tempfile all
@@ -36,17 +36,19 @@ restore
 drop if inlist(name,"GROUNDFISH BLUE WHITING*")
 collapse (sum) pounds nominal_value, by(year month source)
 gen price_noblue=nominal_value/pounds
-keep year month source price_noblue
+rename pounds pounds_noblue
+
+keep year month source price_noblue pounds_noblue
 merge 1:1 year month source using `all'
 
 drop _merge
 
 
-reshape wide price_noblue price_all, i(year month) j(source) string
+reshape wide price_noblue price_all pounds_noblue pounds_all, i(year month) j(source) string
 gen monthly=ym(year, month)
 tsset monthly
 
-foreach var of varlist price_noblue* price_all*{
+foreach var of varlist price_noblue* price_all* pounds_noblue* pounds_all*{
 	gen `var'_lag1=L1.`var'
 	gen `var'_lag12=l12.`var'
 }
