@@ -11,5 +11,8 @@ do "${analysis_code}/images/plotsA02_prices.do"
 do "${analysis_code}/images/plotsA02_prices_quantities.do"
 
 
-/* process and merge fish conditions */
+/* graph fish conditions */
 do "${analysis_code}/images/plotsA03_fish_conditions_annual.do"
+
+
+do "${analysis_code}/images/plotsA04_fish_condition_and_macro.do"
