@@ -385,11 +385,10 @@ outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))
 
 
 
-local regression_vars lnrGDPcapita ln_std_cond `months2' `dow' `sizes' `areas' `endog'  
+local regression_vars lnrGDPcapita lnmeancond_Annual lnstddevcond_Annual `months2' `dow' `sizes' `areas' `endog'  
 foreach r of local regression_vars {
     post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
 }
-postclose handle
 
 
 
@@ -412,7 +411,7 @@ outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop
 local replacer
 
 
-local regression_vars lnrGDPcapita meancond_Annual stddevcond_Annual `months2' `dow' `sizes' `areas' `endog'  `years2'
+local regression_vars ihsrGDPcapita  `months2' `dow' `sizes' `areas' `endog'  `years2'
 foreach r of local regression_vars {
     post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
 }
@@ -436,7 +435,7 @@ outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop
 local replacer
 
 
-local regression_vars lnrGDPcapita meancond_Annual stddevcond_Annual `months2' `dow' `sizes' `areas' `endog'  
+local regression_vars ihsrGDPcapita ihsmeancond_Annual ihsstddevcond_Annual `months2' `dow' `sizes' `areas' `endog'  
 foreach r of local regression_vars {
     post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
 }
@@ -445,6 +444,7 @@ foreach r of local regression_vars {
 
 
 
+postclose handle
 
 
 
