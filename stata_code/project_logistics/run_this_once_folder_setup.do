@@ -15,13 +15,13 @@ if strmatch("$user","minyang"){;
 global my_projdir "/home/mlee/Documents/projects/fishcondition";
 };
 if strmatch("$user","minyangWin"){;
-global my_projdir "C:/Users/Min-Yang.Lee/Documents/fishcondition";
+global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
 
 };
 
 
 if strmatch("$user","cameron"){;
-global my_projdir "U:/incomemobility";
+global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
 };
 cap mkdir $my_projdir;
 
