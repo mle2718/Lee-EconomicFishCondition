@@ -32,7 +32,16 @@ setwd(my_projdir)
 
 1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about $1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a $0.01 change in silver hake prices.  The effects on a monthly level are much larger in magnitude.
 
+
+1. Weighting observations by pounds in that transaction. Yea or Nay.
+
 # Introduction
+
+This is an introduction.
+<!--
+
+
+
 
 ## Empirical Setting, Silver Hake
 
@@ -98,7 +107,9 @@ total silver hake landings
 >Southern mixed landings of silver and offshore hake were estimated using a length-based species-split algorithm to disaggregate total commercial landings of silver hake from offshore hake.
 
 ## Something on Fish Condition
+
 Probably going to need an equation or two here.
+-->
 
 
 # Theoretical Model
@@ -119,7 +130,7 @@ While equation \ref{basic_equation} could be estimated with OLS, unobserved hete
 
 At the time a sales transaction occurs, the characteristics $X_{ijtk}$ have been determined and cannot be changed by either buyer or seller. In the Northeast US market for silver hake, most fish are caught and brought to market before the price is negotiated.  Therefore, the characteristics of a particular lot of cod sold on a particular day are functions of previous fishing effort and can reasonably be thought of as exogenous.  However, total quantity supplied is quite likely to be endogenous; vessels may have insight into prices that economists do not or may adjust the timing of their trip slightly in response to (expected) prices.
 
-We experiment with various ways to model the price equation. We estimate models with "all silver hake" quantities and a version that aggregates into own- and other- market category quantities.  We estimate linear-, log-log, and inverse hyperbolic sine (IHS) transformed models.  The other-market category quantity is occasionally zero; this presents some problems for a specification that is estimated in logs, but does not present such a problem for the IHS models. Stata's reghdfe, ivreg2, and ivreghdfe might be necessary.
+We experiment with various ways to model the price equation. We estimate models with "all silver hake" quantities and a version that aggregates into own- and other- market category quantities.  We estimate linear-, log-log, and inverse hyperbolic sine (IHS) transformed models.  The other-market category quantity is occasionally zero; this presents some problems for a specification that is estimated in logs, but does not present such a problem for the IHS models. 
 
 
 # Data overview
@@ -139,6 +150,7 @@ Fish conditions come from Laurel; basically I'm just using the annual data.  The
 
 ### Trade Imports
 I've extracted trade data from NMFS S&T. These data are monthly and also contain "point-of-entry" (Seattle, WA; Boston, MA; etc) and source country information. Some decision points for whiting:
+
 1. Fresh, or Fresh and Frozen. Closely related to region.  There's very little fresh imported, particularly early in the time series.  Frozen is a different product though. If we're going to use frozen, I think continental US or CONUS + Alaska is reasonable.  If we're going to use fresh, then I think we can use Northeast and Mid-atlantic.
 1. Product form -- closely related to fresh-frozen too. Exclude the "highly processed stuff?" But do we want to keep frozen blocks?  
 1. Prices or quantities on the right hand side?  I don't have a good argument for either.  Both will be endogenous; we can instrument with lags.  FAO's fish production is only annual. 
@@ -153,6 +165,7 @@ In the Atlantic Cod paper, I used PPI Unprocessed Finfish. In the scallop hedoni
 ## An incomplete list of specification and data issues that I'm worried about
 
 Along with a rating about how worried I am (1-10; 10 will make the paper unpublishable)
+
 1.  Changes in market category definitions over time (5)
 1.  Changes in market category definitions over space (4?) - don't know why I'm less worried, since we'd need state*category interactions.
 1.  Heterogenity due to  Broad Stock Areas(3) this is probably more of a fishing time issue than an intrinsic quality issue. 
@@ -161,7 +174,6 @@ Along with a rating about how worried I am (1-10; 10 will make the paper unpubli
 1.  Outliers (1) -I just have to do this
 1.  Proper disaggregation of $q_s$ -- too fancy will have people ask why we aren't estimating an inverse demand system like in @Sjoberg2015. No good answer, except I don't want to.
 1.  Proper standard errors for year-level rhs variables (7): I just need to be 100\% sure that cluster(year) is fine for some variables and cluster(date) or cluster(blah) is fine for others. Or we could just bootstrap it.
-1.  I need to winnow down the functional forms and start estimating more rigorous models.
 
  Gonna need some summary stats.
 
@@ -208,11 +220,19 @@ knitr::include_graphics(file.path(my_images,c("condition509_GDPC.png")))
 
 # Results
 
+## OLS 
+
 We get expected signs on the quantity coefficient. The OLS coefficient on lnq is attenuated, as expected if we have some endogeneity in quantity supplied (positive shocks to expected prices will also lead to higher landings).  King and Large whiting seem to get the same prices.  Juvenile whiting also gets a higher price than medium; which is a bit unexpected.  Small whiting gets a discount.  So does dressed whiting, which is a little strange.
 
 We also have a negative coefficient on income. I'm not sure if this is really an indication of an "inferior" good or increasing US income is simply correlated with decreasing world prices or increasing supply of substitutes. 
 
+## IV
+
+The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The negative R^2 should be disregarded, I'll use RMSE instead. 
+
 \newpage
+
+
 \begin{landscape}
   \begin{table}
     \begin{center}
@@ -227,7 +247,6 @@ We also have a negative coefficient on income. I'm not sure if this is really an
 
 
 \newpage
-\begin{landscape}
   \begin{table}
     \begin{center}
         {\scriptsize
@@ -236,11 +255,9 @@ We also have a negative coefficient on income. I'm not sure if this is really an
         }
     \end{center}
   \end{table}
-\end{landscape}
 
 
 \newpage
-\begin{landscape}
   \begin{table}
     \begin{center}
       {\scriptsize
@@ -249,11 +266,9 @@ We also have a negative coefficient on income. I'm not sure if this is really an
       }
     \end{center}
   \end{table}
-\end{landscape}
 
 
 \newpage
-\begin{landscape}
   \begin{table}
     \begin{center}
         {\scriptsize
@@ -262,26 +277,68 @@ We also have a negative coefficient on income. I'm not sure if this is really an
         }
     \end{center}
   \end{table}
+
+\newpage
+
+\begin{landscape}
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silver_hake3Q.tex}
+          \caption{Coefficents when we use import quantities on the RHS.  \label{importQ}}
+        }
+    \end{center}
+  \end{table}
 \end{landscape}
 
 
 
+\newpage
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silver_hake_conditionQ.tex}
+          \caption{Coefficents when we use import quantities on the RHS and include condition factors.  \label{conditionQ}}
+        }
+    \end{center}
+  \end{table}
 
 
+
+
+\newpage
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silver_hake_ihs.tex}
+          \caption{Inverse hyperbolic sine transform instead of logs and disaggregated daily quantities.  \label{IHS}}
+        }
+    \end{center}
+  \end{table}
+
+\newpage
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silver_hake_ihsQ.tex}
+          \caption{Inverse hyperbolic sine transform, disaggregated daily quantities. Import Quantities  \label{IHS_Q}}
+        }
+    \end{center}
+  \end{table}
 
 
 # Meta
 This is the section that contains "how to do stuff."  I may eventually move this to another document.  
 
 
-# Setups
+## Setups
 I have set a bunch of stuff using the first chunk above. 
 
 1. You will have a my_projdir directory. 
 1. You set up libraries.
 1. There is a line of code that automagically finds your stata executable. We also shQuote it, to faciltate working with R's system.
 
-
+Stata's reghdfe, ivreg2, and ivreghdfe are being used.
 
 Table \ref{silverhake} was construted using outreg2 in stata. Outreg2 is nice because it only make the meat of the table (tabular environment), that makes inclusion easier.  Estout has that capacity too.
 
@@ -354,3 +411,9 @@ the elasticity is:
 \end{equation}
 
 Note that some of the elasticities are undefined when $y=0$.  @Bellemare2019 illustrates computing at means of the data; since we don't have any $y=0$ in our dataset, we can also sample enumerate.
+
+\newpage
+
+# References
+<div id="refs"></div>
+
