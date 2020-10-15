@@ -25,6 +25,13 @@ source(file.path(my_projdir,"R_code","project_logistics","R_paths_libraries.R"))
 setwd(my_projdir)
 ```
 
+# Overview and Decisions
+1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem? 1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
+
+1. Import Pounds or import prices on the RHS.  Both are endogenous.  Both IV coefficents are in the "right direction" compared to the OLS coefficients.
+
+1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about $1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a $0.01 change in silver hake prices.  The effects on a monthly level are much larger in magnitude.
+
 # Introduction
 
 ## Empirical Setting, Silver Hake
@@ -179,6 +186,25 @@ knitr::include_graphics(file.path(my_images,c("small_silver.png")))
 knitr::include_graphics(file.path(my_images,c("juvenile_silver.png")))
 ```
 
+## Condition and Macro
+
+
+```{r , fig.show = "hold", out.width = "75%", fig.cap="GDP/cap, Personal Income, Disposable Income", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("macro_income.png")))
+```
+
+
+There isn't a massive correlation between condition and the macro variables (r=0.25 ish)
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Condition and Personal Income", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("condition509_PIC.png")))
+```
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Condition and GDPC ", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("condition509_GDPC.png")))
+```
+
 
 # Results
 
@@ -186,26 +212,62 @@ We get expected signs on the quantity coefficient. The OLS coefficient on lnq is
 
 We also have a negative coefficient on income. I'm not sure if this is really an indication of an "inferior" good or increasing US income is simply correlated with decreasing world prices or increasing supply of substitutes. 
 
+\newpage
+\begin{landscape}
+  \begin{table}
+    \begin{center}
+       {\scriptsize
+          \input{./tables/silver_hake3.tex}
+          \caption{A Table of Regression coefficients.  The omitted category is "medium".   \label{silverhake}}
+       }
+    \end{center}
+  \end{table}
 
-\begin{table}
-  \begin{center}
-    \input{./tables/silver_hake1.tex}
-        \caption{A Table of Regression coefficients.  The omitted category is "medium".   \label{silverhake}}
-
-  \end{center}
-\end{table}
-
-I need to put in the tables of month and year fixed effects, but there's lower prices from June -December. 2000-2009 had somewhat lower prices. Same for 2012-2019.  This is benchmarked to 1994. 
+\end{landscape}
 
 
+\newpage
+\begin{landscape}
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silver_hake_years.tex}
+          \caption{Year coeffs\label{silverhakeY}}
+        }
+    \end{center}
+  \end{table}
+\end{landscape}
 
-\begin{table}
-  \begin{center}
-    \input{./tables/silver_hake2.tex}
-        \caption{A Table of Regression coefficients - IHS transformed variables.  The omitted category is "medium".   \label{silverhake2}}
 
-  \end{center}
-\end{table}
+\newpage
+\begin{landscape}
+  \begin{table}
+    \begin{center}
+      {\scriptsize
+        \input{./tables/silver_hake_month_week.tex}
+        \caption{Month and Week  coeffs\label{silverhakeMW}}
+      }
+    \end{center}
+  \end{table}
+\end{landscape}
+
+
+\newpage
+\begin{landscape}
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silver_hake_condition.tex}
+          \caption{Coefficents when we include condition factor coeffs\label{condition_coefs}}
+        }
+    \end{center}
+  \end{table}
+\end{landscape}
+
+
+
+
+
 
 
 # Meta
