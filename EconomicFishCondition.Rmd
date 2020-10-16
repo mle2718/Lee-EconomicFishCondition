@@ -176,6 +176,13 @@ Along with a rating about how worried I am (1-10; 10 will make the paper unpubli
 1.  Proper standard errors for year-level rhs variables (7): I just need to be 100\% sure that cluster(year) is fine for some variables and cluster(date) or cluster(blah) is fine for others. Or we could just bootstrap it.
 
  Gonna need some summary stats.
+ 
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake landings by market cat",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("silver_hake_monthly_nespp4_shares.png")))
+```
+On Jan 1, 2004, the market category coding changed.  It's not super well documented in the databases, but it looks like there are 3 new categories Large, Medium, and Dressed. I should interact Round with an indicator for post Jan 1, 2004.  I might need to interact King and Small as well.
+
+Changing the market category variables to something like this: ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift will do it. That will enter the all market categories, plus a market*shift interaction for the three market cats that were around prior to 2004. I'm expecting that King-Post will have higher prices (smallish King fish get diverted to Large).  Round will have lower prices (larger round get culled into Large). Idk on small.
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices, 1994-2019", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(my_images,c("silver_hake_prices.png")))

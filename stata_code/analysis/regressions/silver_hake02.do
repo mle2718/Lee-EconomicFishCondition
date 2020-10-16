@@ -146,11 +146,13 @@ label var rGDPcapita "Real GDP cap"
 label var price_allIMP_R_GDPDEF "Real Import Price"
 /**************************************************/
 
-
+gen mkt_shift=date>=mdy(1,1,2004)
 
 
 /* IVs log-log  with permit and dealer effects; */
 local modelname iv_log_fe
+
+local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA i1.mkt_shift#ib5090.nespp4 i0.mkt_shift#io(5093 5095 5096 5097).nespp4
 local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
