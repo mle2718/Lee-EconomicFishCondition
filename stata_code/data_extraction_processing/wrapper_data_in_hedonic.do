@@ -21,6 +21,7 @@ global itis ${data_raw}/species_itis_ne${vintage_string}.dta
 global svdbs ${data_raw}/svdbs_itis_lookup${vintage_string}.dta 
 
 
+global recession "$data_external/recessionM_${vintage_string}.dta" 
 
 global deflatorsY "$data_external/deflatorsY_${vintage_string}.dta" 
 global deflatorsQ "$data_external/deflatorsQ_${vintage_string}.dta" 
@@ -52,4 +53,7 @@ do "${extraction_code}/extractC01_fish_conditions.do"
 
 do "${extraction_code}/extractZ01_external_data_FRED.do"
 
+
 do "${extraction_code}/extractZ02_external_data_NMFS_trade_whiting.do"
+
+do "${extraction_code}/extractZ03_external_data_FRED_recession.do"

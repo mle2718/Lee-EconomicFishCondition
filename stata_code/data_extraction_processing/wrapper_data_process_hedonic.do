@@ -32,6 +32,11 @@ do "${processing_code}/A02_construct_daily_and_lags.do"
 /* process and merge fish conditions */
 do "${processing_code}/A03_fish_conditions_annual.do"
 
+
+/* Bring in monthly recession indicators */
+do "${processing_code}/A05_add_in_recession_indicators.do"
+
+
 save `price_done', replace
 
 
