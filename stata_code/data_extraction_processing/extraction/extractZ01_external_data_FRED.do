@@ -22,7 +22,7 @@ Commodity classification. The commodity classification structure of the PPI orga
 version 15.1
 clear
 
-local importlist  GDPDEF  PCU3117103117102 PCU31171031171021
+local importlist  GDPDEF  PCU3117103117102 PCU31171031171021 
 
 local basey=2019
 
@@ -67,7 +67,7 @@ local b1 "2019Q1"
 local baseq=quarterly("`b1'","Yq")
 
 
-import fred `importlist',  daterange(1991-01-01 .) aggregate(quarterly,avg) clear
+import fred `importlist' ,  daterange(1991-01-01 .) aggregate(quarterly,avg) clear
 gen dateq=qofd(daten)
 drop daten datestr
 format dateq %tq
@@ -92,7 +92,6 @@ tsset dateq
 notes fGDPDEF_2019Q1: GDP Implicit Price Deflator 
 notes fPCU3117103117102_2019Q1: PPI industry data for Seafood product preparation and packaging-Fresh and frozen seafood processing, not seasonally adjusted
 notes fPCU31171031171021_2019Q1: PPI industry data for Seafood product preparation and packaging-Prepared fresh fish/seafood, inc. surimi/surimi-based products, not seasonally adjusted	
-
 save "$deflatorsQ", replace
 
 
@@ -106,7 +105,7 @@ tsline f*
 */
 local importlist A939RX0Q048SBEA A792RC0Q052SBEA A229RX0Q048SBEA
 
-import fred `importlist',  daterange(1994-01-01 .) aggregate(quarterly,avg) clear
+import fred `importlist' JHGDPBRINDX,  daterange(1994-01-01 .) aggregate(quarterly,avg) clear
 gen dateq=qofd(daten)
 drop daten datestr
 format dateq %tq
@@ -149,6 +148,7 @@ rename fA939RX0Q048SBEA frGDPcapita
 rename fA792RC0Q052SBEA fpersonal_income_capita
 rename fA229RX0Q048SBEA frealDPIcapita
 
+notes JHGDPBRINDX:  GDP-Based Recession Indicator Index econbrowser.com/recession-index.
 
 tsset dateq
 
