@@ -19,6 +19,10 @@ do "${processing_code}/A04_imports_month.do"
 
 
 use `in_prices', replace
+replace value=value/1000
+replace landings=landings/1000
+label var landings "000s of lbs"
+label var value "000s of dollars"
 merge m:1 year month using $trade_out, keep(1 3)
 drop _merge
 
