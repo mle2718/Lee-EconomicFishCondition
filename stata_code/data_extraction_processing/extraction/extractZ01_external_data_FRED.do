@@ -117,7 +117,7 @@ local baseq=quarterly("`b1'","Yq")
 
 
 foreach var of varlist  `importlist'{
-	replace `var'=`var'/1000
+	replace `var'=`var'/10000
 	gen base`var'=`var' if dateq==`baseq'
 	sort base`var'
 	replace base`var'=base`var'[1] if base`var'==.
@@ -132,9 +132,9 @@ sort dateq
 order dateq f*`b1' 
 tsset dateq
 
-notes A939RX0Q048SBEA: Quarterly Real gross domestic product per capita.  FRED: A939RX0Q048SBEA.  Chained 2012 Dollars, Seasonally Adjusted Annual Rate.  BEA Account Code: A939RX
-notes A792RC0Q052SBEA: Quarterly Nominal Personal income per capita.  FRED: A792RC0Q052SBEA.  Dollars, Seasonally Adjusted Annual Rate. BEA Account Code: A792RC. 
-notes A229RX0Q048SBEA: Quarterly Real Disposable Personal Income Per Capita (FRED: A229RX0Q048SBEA). Chained 2012 Dollars, Seasonally Adjusted Annual Rate.. BEA Account Code: A229RX
+notes A939RX0Q048SBEA: Quarterly Real gross domestic product per capita. 10,000USD. FRED: A939RX0Q048SBEA.  Chained 2012 Dollars, Seasonally Adjusted Annual Rate.  BEA Account Code: A939RX
+notes A792RC0Q052SBEA: Quarterly Nominal Personal income per capita. 10,000USD. FRED: A792RC0Q052SBEA.  Dollars, Seasonally Adjusted Annual Rate. BEA Account Code: A792RC. 
+notes A229RX0Q048SBEA: Quarterly Real Disposable Personal Income Per Capita (FRED: A229RX0Q048SBEA). 10,000USD. Chained 2012 Dollars, Seasonally Adjusted Annual Rate.. BEA Account Code: A229RX
 
 rename A939RX0Q048SBEA rGDPcapita
 rename A792RC0Q052SBEA personal_income_capita

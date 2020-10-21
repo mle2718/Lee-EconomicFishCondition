@@ -19,7 +19,8 @@ gen weekend=inlist(dow,0,6)
 label define days_of_week 0 "Sunday" 1 "Monday" 2 "Tuesday" 3 "Wednesday" 4 "Thursday" 5 "Friday" 6 "Saturday" 
 label values dow days_of_week
 
-
+replace landings=landings/1000
+label var landings "000s of lbs"
 
 /* construct daily landings */
 /* you need to make the ihs transform because you need to handle zeros */

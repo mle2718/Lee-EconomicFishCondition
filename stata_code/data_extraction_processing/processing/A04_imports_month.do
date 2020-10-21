@@ -7,6 +7,12 @@ global kg_to_lbs 2.20462
 use $trade, clear
 cap replace kilos=round(kilos*$kg_to_lbs)
 cap rename kilos pounds
+replace pounds=pounds/1000
+label var pounds "pounds 000s"
+
+replace nominal_value=nominal_value/1000
+label var nominal_value "nominal 000s"
+
 /*All CONUS */
 drop if inlist(district_name,"SAN JUAN, PR", "ANCHORAGE, AK","HONOLULU, HI")
 
@@ -25,6 +31,7 @@ collapse (sum) pounds nominal_value, by(year month source)
 
 gen price_all=nominal_value/pounds
 rename pounds pounds_all
+label var pounds_all "import pounds 000s"
 keep year month source price_all pounds_all
 
 
@@ -37,6 +44,8 @@ drop if inlist(name,"GROUNDFISH BLUE WHITING*")
 collapse (sum) pounds nominal_value, by(year month source)
 gen price_noblue=nominal_value/pounds
 rename pounds pounds_noblue
+rename pounds_noblue pounds_noblue
+label var pounds_noblue "import pounds , no blue whiting, 000s"
 
 keep year month source price_noblue pounds_noblue
 merge 1:1 year month source using `all'
