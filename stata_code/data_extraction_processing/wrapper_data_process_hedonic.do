@@ -41,6 +41,10 @@ do "${processing_code}/A03_fish_conditions_annual.do"
 do "${processing_code}/A05_add_in_recession_indicators.do"
 
 
+/* and add in daily fishery landings and value*/
+
+do "${processing_code}/A06_merge_daily_landings.do"
+
 save `price_done', replace
 
 
