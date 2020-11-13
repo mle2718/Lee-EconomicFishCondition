@@ -35,7 +35,6 @@ bysort nespp4: egen mp=mean(price);
 keep if nespp3==509;
 
 egen t=tag(date); 
-replace daily_landings=daily_landings/1000;
 label var daily_landings "daily landings ('000s)";
 
 /* landings by DOW */
