@@ -17,9 +17,11 @@ pause off
 postutil clear
 estimates clear
 
-
+/*setup input and output files */
 local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
+local  statecodes ${data_raw}/state_codes${vintage_string}.dta 
+
 
 global linear_table3 ${my_tables}/silver_hake3A.tex
 
@@ -30,6 +32,11 @@ global ihs_table ${my_tables}/silver_hake_ihsA.tex
 global year_table ${my_tables}/silver_hake_yearsA.tex
 global month_week_table ${my_tables}/silver_hake_month_weekA.tex
 global bse ${my_tables}/bseA.dta
+
+
+local  ster_out ${my_results}/silver_hake_${vintage_string}.ster 
+
+
 
 
 /* don't show year or month coeficients in outreg */
@@ -82,6 +89,13 @@ labmask nespp4, value(sp_mkt)
 drop _merge
 
 
+/* construct states */
+gen statecd=floor(port/10000)
+merge m:1 statecd using `statecodes', keep(1 3)
+assert _merge==3
+labmask statecd, value(stateabb)
+
+
 
 gen priceR_GDPDEF=valueR_GDPDEF/landings
 
@@ -118,11 +132,15 @@ format date %td
 tsset xid date
 
 
-
 /* mark the estimation sample */
 cap drop date
 cap drop markin
 gen date=mdy(month,day,year)
+
+
+gen quarterly=qofd(date)
+bysort quarterly: egen quarterly_land=total(landings)
+gen lnql=ln(quarterly_land)
 
 gen markin=1
 replace markin=0 if date==.
@@ -130,23 +148,23 @@ replace markin=0 if inlist(nespp4,5097)==1
 replace markin=0 if nominal>8 
 replace markin=0 if nominal<=0.05
 replace markin=0 if fzone==4
-
+replace markin=0 if inlist(stateabb,"DE", "PA","NK")
 local ifconditional "if markin==1"
 cap drop _merge
 
 /*set a local for weights */
 
-local wtype "A"
+local wtype "U"
 if "`wtype'"=="A"{
 local weighted [aw=landings]
 display "Estimating with analytic weights"
 } 
-else if "`wtype'"==F {
+else if "`wtype'"=="F" {
 local weighted [fw=landings]
 display "Estimating with frequency weights"
 
 } 
-else if "`wtype'"==U {
+else if "`wtype'"=="U" {
 local weighted
 display "Estimating unweighted"
 }
@@ -173,15 +191,54 @@ gen mkt_shift=date>=mdy(1,1,2004)
 
 /* IVs log-log  with permit and dealer effects; */
 local modelname iv_log_fe`wtype'
-local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA
-
-local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM
+local replacer1 replace
+local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
 
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, FE. No condition.
 est store iv_log`wtype'
+est save `ster_out', `replacer1'
+local replacer1 append
+
+
+
+
+
+/* IVs log-log  with permit and dealer effects; */
+local modelname iv_log_fe`wtype'2
+local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd lnql
+local endog lnq  lnprice_allIMP_R_GDPDEF
+local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+
+
+ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, FE. No condition.
+est store iv_log`wtype'2
+est save `ster_out', `replacer1'
+
+
+
+
+
+/* IVs log-log  with permit and dealer effects; */
+local modelname iv_log_fe`wtype'3
+local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd lnql
+local endog lnq  lnprice_allIMP_R_GDPDEF
+local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+
+
+ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, FE. No condition.
+est store iv_log`wtype'3
+est save `ster_out', `replacer1'
+
+
+
+
+
 
 
 /* IVs log-log  is better fitting; 
@@ -211,15 +268,36 @@ Norther has slighly higher prices than southern.
 /* IVs log-log  WITHOUT permit and dealer effects; */
 local modelname iv_log_nofe`wtype'
 
-local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM
+local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
 ivreg2 lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', robust
+est title: IV, Log-log, No FE. No condition.
+
 est store iv_log_nofe`wtype'
 
+est save `ster_out', `replacer1'
 
+
+
+
+
+/* IVs log-log  with permit and dealer effects; */
+local modelname iv_log_fe`wtype'
+local depvars  ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA
+local depvars  ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
+local endog lnq  lnpounds_allIMP
+local excluded lnq_lag1 lnpounds_allIMP_lag1
+
+
+
+ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, import pounds on RHS.
+est store iv_logQ`wtype'
+est save `ster_out', `replacer1'
+local replacer1 append
 
 
 
@@ -228,38 +306,35 @@ est store iv_log_nofe`wtype'
 
 /* OLS in logs log-log  is okay-ish; */
 local modelname ols_log_fe`wtype'
-
-local depvars lnrGDPcapita lnq  lnprice_allIMP_R_GDPDEF ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM
-
+local depvars  lnq  lnprice_allIMP_R_GDPDEF ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 reghdfe lnpriceR_GDPDEF `depvars' `ifconditional' `weighted', absorb(permit dealnum) vce(robust)
-
-
+est title: least squares, Log-log, FE. No condition.
 
 est store ols_log`wtype'
+est save `ster_out', `replacer1'
 
 
 /* ols in levels */
 local modelname ols_linear_fe`wtype'
-
-local depvars daily_landings rGDPcapita price_allIMP_R_GDPDEF ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM
-
-
+local depvars daily_landings  price_allIMP_R_GDPDEF ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 reghdfe priceR_GDPDEF `depvars' `ifconditional' `weighted', absorb(permit dealnum) vce(robust)
+est title: IV, linear , FE. No condition.
+
 est store ols`wtype'
+est save `ster_out', `replacer1'
 
 /* linear IV
 The linear model is poorly scaled  - problem seems to be worst when I include permit + Dealer FEs in a weighted regression.  It goes away when I don't have any permit FE's in a non-weighted regression.
 */
 local modelname iv_linear_fe`wtype'
-
-local depvars  rGDPcapita  ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM
-
+local depvars   ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 local endog daily_landings price_allIMP_R_GDPDEF
 local excluded q_lag1 price_allIMP_lag1_R_GDPDEF
-
-
 ivreghdfe priceR_GDPDEF     `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, linear, FE. No condition.
+
 est store iv_linear`wtype'
+est save `ster_out', `replacer1'
 
 
 
@@ -271,42 +346,67 @@ est store iv_linear`wtype'
 
 Cannot include FY specific effects */
 local modelname iv_log_condition`wtype'
-local depvars  lnrGDPcapita  ib7.month  i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift meancond_Annual stddevcond_Annual
-
+local depvars   ib7.month  i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift meancond_Annual stddevcond_Annual  i.statecd
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
 
+
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, no year effects. Condition in levels.
+
 est store iv_log_condition`wtype'
+est save `ster_out', `replacer1'
 
 
 /* IVs log-log condition factor with permit and dealer effects
 
 Cannot include FY specific effects */
 local modelname iv_log_condition2`wtype'
-local depvars  lnrGDPcapita  ib7.month  i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift lnmeancond_Annual lnstddevcond_Annual
+local depvars   ib7.month  i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift lnmeancond_Annual lnstddevcond_Annual  i.statecd
 
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
 
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, no year effects. Condition in logs.
+
 est store iv_log2_condition`wtype'
+est save `ster_out', `replacer1'
 
 
 
 
-/* IVs ihs and disaggregate the quantities */
+/* IVs ihs aggregate quantities */
 local modelname iv_ihs`wtype'
-local depvars  ihsrGDPcapita  ib7.month  i.year i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift 
+local depvars   ib7.month  i.year i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  i.statecd
+
+local endog ihsq ihsprice_allIMP_R_GDPDEF
+local excluded ihsq_lag1 ihsimport_lag1
+
+
+ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, IHS, year effects. 
+
+est store iv_ihs1`wtype'
+est save `ster_out', `replacer1'
+
+
+/* IVs ihs disaggregate quantities */
+
+local modelname iv_ihs`wtype'
+local depvars   ib7.month  i.year i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift   i.statecd
 
 local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
 
 
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
-est store iv_ihs`wtype'
+est title: IV, IHS, year effects disaggregated quantities. 
+
+est store iv_ihs2`wtype'
+est save `ster_out', `replacer1'
 
 
 
@@ -315,63 +415,39 @@ est store iv_ihs`wtype'
 
 /* IVs ihs with condition */
 local modelname iv_ihs_cond`wtype'
-local depvars  ihsrGDPcapita  ib7.month   i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual
+local depvars   ib7.month   i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual  i.statecd
 
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
+local endog ihs_ownq ihs_other_landings ihsprice_allIMP_R_GDPDEF
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
 
 
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, IHS, no year effects, disaggregated quantities, condition. 
+
 est store iv_ihs_cond`wtype'
+est save `ster_out', `replacer1'
 
 
 
 
 
+/* IVs ihs with condition */
+local modelname iv_ihs_cond`wtype'
+local depvars  ib7.month   i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual  i.statecd
 
-
-
-/* IVs ihs with condition and dpi */
-local modelname iv_ihs_dpi`wtype'
-local depvars  ihsrealDPIcapita  ib7.month i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual
-
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
-local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
-
+local endog  ihsq ihsprice_allIMP_R_GDPDEF
+local excluded ihsq_lag1 ihsimport_lag1
 
 
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
-est store iv_ihs_dpi`wtype'
+est title: IV, IHS, no year effects, aggregated quantities, condition. 
 
-
-
-/* IVs ihs with condition and personal_income */
-local modelname iv_ihs_pi`wtype'
-local depvars  ihspersonal_income_capita  ib7.month  i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual
-
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
-local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
-
-
-
-ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
-est store iv_ihs_pi`wtype'
+est store iv_ihs_cond`wtype'
+est save `ster_out', `replacer1'
 
 
 
 
-
-/* IVs ihs with condition and dpi */
-local modelname iv_ihs_dpi`wtype'
-local depvars  ihsrealDPIcapita  ib7.month i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual
-
-local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
-local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
-
-
-
-ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
-est store iv_ihs_dpi`wtype'
 
 
 
@@ -385,22 +461,3 @@ est store iv_ihs_dpi`wtype'
 
 log close
 
-
-/*
-
-/*models with condition factor */
- 
- ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4  i.month meancond_Annual stddevcond_Annual (lnq=lnq_lag1)  `ifconditional' `weighted', robust
-est store IVcondition
- 
- 
-  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual price_allIMP_R_GDPDEF i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional' `weighted', cluster(date)
-est store IHScondition
-
-
-  ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual)  i.dow (price_allIMP_R_GDPDEF own4landings other_landings=ownq_lag1 other_landings_lag1 price_allIMP_lag1_R_GDPDEF price_allIMP_lag12_R_GDPDEF )   `ifconditional' `weighted', cluster(date)
-  est store LEVELcondition
-
-  
-    ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual i.month i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional' `weighted', cluster(date)
-*/

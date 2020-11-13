@@ -83,6 +83,10 @@ We don't really want to estimate a full blown demand system (for whiting).  One 
 	
 	*/
 
+/* market categories changed a bit over time */
+
+gen mkt_shift=date>=mdy(1,1,2004)
+reg priceR_GDPDEF lnq rGDPcapita ib1.mkt_shift#ib5090.nespp4 i.year `ifconditional', robust
 
 
 
