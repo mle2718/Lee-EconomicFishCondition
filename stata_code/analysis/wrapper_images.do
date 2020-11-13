@@ -16,3 +16,6 @@ do "${analysis_code}/images/plotsA03_fish_conditions_annual.do"
 
 
 do "${analysis_code}/images/plotsA04_fish_condition_and_macro.do"
+
+
+do "${analysis_code}/images/plotsA06_silverhake_and_allqs_by_time.do"

@@ -1,11 +1,12 @@
 /* code to examine quarterly prices, value, and macroeconomic */
 version 15.1
-pause off
+pause on
 
 local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
 
+local  statecodes ${data_raw}/state_codes${vintage_string}.dta 
 
 /* don't show year or month coeficients in outreg */
 local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month
@@ -41,7 +42,33 @@ gen priceR_GDPDEF=valueR_GDPDEF/landings
 gen price=value/landings
 
 twoway(tsline priceR if nespp4==5090) (tsline rGDPcapita realDPIcapita if nespp4==5090, yaxis(2)), legend(order(1 "Real Price" 2 "Real GDP/cap" 3 "real disposable pers income")) ytitle("Silver Hake Real Price(5090 Round)") tmtick(##5)
-graph export ${my_images}/silver_hake_macro.png, replace as(png)
+graph export ${my_images}/silver_hake_5090macro.png, replace as(png)
+
+twoway(tsline priceR if nespp4==5090) (tsline landings if nespp4==5090, yaxis(2)), legend(order(1 "Real Price" 2 "landings (000s)" )) ytitle("Silver Hake Real Price(5090 Round)") tmtick(##5)
+graph export ${my_images}/silver_hake_5090_pq.png, replace as(png)
+
+twoway(tsline landings if nespp4==5090) (tsline rGDPcapita realDPIcapita if nespp4==5090, yaxis(2)), legend(order(1 "landings (000s)" 2 "Real GDP/cap" 3 "real disposable pers income")) ytitle("Silver Hake landings (5090 Round)") tmtick(##5)
+graph export ${my_images}/silver_hake_5090_qmacro.png, replace as(png)
+
+
+xtline landings
+graph export ${my_images}/silver_hake_quarterly.png, replace as(png)
+
+collapse (sum) value valueR_GDPDEF landings (first) rGDPcapita personal_income_capita realDPIcapita fGDP ffresh_frozen fpreparedfish, by(year quarterly)
+
+tsset quarterly
+gen priceR_GDPDEF=valueR_GDPDEF/landings
+gen price=value/landings
+twoway(tsline landings ) (tsline rGDPcapita realDPIcapita, yaxis(2)), legend(order(1 "landings (000s)" 2 "Real GDP/cap" 3 "real disposable pers income")) ytitle("All Silver Hake landings") tmtick(##5)
+graph export ${my_images}/silver_hake_qmacro.png, replace as(png)
+
+
+twoway(tsline priceR ) (tsline rGDPcapita realDPIcapita, yaxis(2)), legend(order(1 "Real Price" 2 "Real GDP/cap" 3 "real disposable pers income")) ytitle("All Silver Hake prices") tmtick(##5)
+graph export ${my_images}/silver_hake_pmacro.png, replace as(png)
+
+twoway(tsline priceR ) (tsline landings, yaxis(2)), legend(order(1 "Real Price" 2 "landings")) ytitle("All Silver Hake prices") tmtick(##5)
+graph export ${my_images}/silver_hake_pq.png, replace as(png)
+
 restore
 
 keep if nespp4==5090
@@ -57,3 +84,34 @@ graph export ${my_images}/silver_hake_early_box.png, replace as(png)
 
 graph box priceR if quarterly>=tq(2012q1), over(quarterly, label(format(%tq) angle(45))) nooutside cwhiskers lines(lwidth(none))
 graph export ${my_images}/silver_hake_late_box.png, replace as(png)
+
+
+/* landings by state over time */
+
+gen statecd=floor(port/10000)
+collapse (sum) landings value valueR_GDPDEF, by(state year)
+label var landings "landings 000s "
+merge m:1 statecd using `statecodes', keep(1 3)
+assert _merge==3
+drop _merge
+gen priceR_GDPDEF=valueR_GDPDEF/landings
+
+tsset statecd year
+xtline priceR if inlist(stateabb,"VA","NC","DE","MD","ME","NH")==0
+graph export ${my_images}/silver_hake_state_prices.png, replace as(png)
+
+xtline landings if inlist(stateabb,"VA","NC","DE","MD","ME","NH")==0
+graph export ${my_images}/silver_hake_state_landings.png, replace as(png)
+
+
+bysort stateabb: egen tsl=total(landings)
+
+
+graph bar (asis) landings, over(stateabb,sort(tsl)) over(year, label(angle(45))) stack asyvars legend(rows(3))
+graph export ${my_images}/silver_hake_stacked_bar.png, replace as(png)
+
+bysort year: egen tl=total(landings)
+gen share=landings/tl
+graph bar (asis) share,  over(stateabb,sort(tsl)) over(year, label(angle(45))) stack asyvars legend(rows(3))
+graph export ${my_images}/silver_hake_share_stacked_bar.png, replace as(png)
+
