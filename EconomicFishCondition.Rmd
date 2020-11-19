@@ -146,6 +146,18 @@ Here is some super boring "inside baseball" detail  on the NEFSC data.
 
 Fish conditions come from Laurel; basically I'm just using the annual data.  There's a bit of finessing the data links for a couple species (spotted hake and chub mackerel). 
 
+
+ 
+```{r , fig.show = "hold", out.width = "80%", fig.cap="Fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("delta_conditions_and_prices.png")))
+```
+
+
+ 
+```{r , fig.show = "hold", out.width = "80%", fig.cap="Fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(my_images,c("scatter_conditions_and_prices.png")))
+```
+
 ## External Data
 
 ### Trade Imports
@@ -224,6 +236,52 @@ knitr::include_graphics(file.path(my_images,c("condition509_PIC.png")))
 knitr::include_graphics(file.path(my_images,c("condition509_GDPC.png")))
 ```
 
+## Weighting observations
+
+@Dumouchel1983 describes a test that looks like a Durbin-Wu-Hausman test for the applicability of Weighted OLS versus OLS.  For observations $i= 1,\ldots, n$ the weight matrix $W$ is a diagonal elements $w_i$. They describe a sampling weight setup where weights are proportional to the $\frac{\pi_j}{n_j}$, where $\pi_j$ is proportion of the population is in group $j$ and $n_j$ are the number of individuals sampled randomly from group $j$.  @Dumouchel1983 advocates for OLS when OLS is approrpriate (duh, it's BLUE). They suggest using weighted OLS if OLS does not pass diagnostics.  
+
+> if the sample sizes of the strata, $n_j$, are not proportional to the population proportions \$pi_j$ (i.e., the $w_i$ do not approach equality), then $\hat{\beta}$ need not approach $\beta^*$
+
+The specification test looks like a  Durbin-Wu-Hausman style test.  Starting with a model of 
+
+```
+regress y x
+regress y  x Wx
+```
+
+and then test all the Wx for significance (don't forget that x contains a constant, so Wx contains W). I suppose you could also do an $nR^2$ style $\chi^2$ test. @Dumouchel1983 illustrates a bunch of ways to do this (that were important when there wasn't much computing power). The writing is a little sloppy, but I think it involves
+
+```
+regress x Wx
+predict res1, residuals
+regress y x res1
+```
+There's a really nice walk though about how to diagnose/interpret your findings when you get significant coefficients on the Wx variables.  For example, the significant $Wx$ variables in their regression are mothers education, county unemployment, race, and sex. They test specifications of the form (i.sex##c.mothers income) but those are not statistically significant. They find that (i.sex##c.county_unemployment) increase model fit.  After doing that, they find that there are still some signfiicant $Wx$ variables, so they continue experimenting with the specifications.
+
+@Winship1994 basically state that OLS is BLUE. Anything that weights the observations by a positive number will increase the variance of the error term. 
+
+>Many individuals' intuition would probably suggest that weighted data should also be used for the estimation of regression models. After all, using the weighted data will give covariance and variance estimates that are unbiased and consistent estimates of the quanttiies in the population. Thus the regression estimates should also be unbiased and consistent estimates of the regression model for the entire population.
+
+@Winship1994state this is a mistake for three reasons
+1. If the original equation was homoskedastic, the new equation will be heteroskedastic.
+1. Canned software produces the wrong standard errors
+1. The variance is higher. 
+
+IMHO, 1 and 2 aren't really big deals anymore. @Winship1994state view 
+
+Diewert (2003) advocates pretty strenuously for weighting by value (compared to quantity or not weighting at all). 
+
+>Usually, discussions of how to use quantity or expenditure weights in a hedonic regression are centered around discussions on how to reduce the heteroskedasticity of error terms. In this section, we attempt a somewhat different approach based on the idea that the regression model should be representative. In other words, if model $k$ sold $q_{kt}$ times in period $t$, then perhaps model $k$ should be repeated in the period $t$ hedonic
+regression $q_{kt}$ times so that the period $t$ regression is representative of the sales that actually occurred during the period.
+
+>Thus our representative approach follows along the lines of Theil’s (1967; 136-138) stochastic approach to index number theory, which is also pursued by Rao (2002). The use of weights that reflect the economic importance of models was recommended by Griliches (1971b; 8): “But even here, we should use a weighted regression approach, since we are interested in an estimate of a weighted average of the pure price change, rather than just an unweighted average over all possible models, no matter how peculiar or rare.” However, he did not make any explicit weighting suggestions
+
+
+>The problem with quantity weighting is this: it will tend to give too little weight tomodels that have high prices and too much weight to cheap models that have low amounts of useful characteristics.  Hence it appears to us that value weighting is clearly preferable. Thus we are taking the point of view that the main purpose of the period $t$ hedonic regression is to enable us to decompose the market value of each model sold, $p_{kt}q_{kt}$, into the product of a period $t$ price for a quality adjusted unit of the hedonic commodity, say $P_{t}$, times a constant utility total quantity for model $k$, $Q_{kt}$.
+
+However, the context of Diewert is the construction of a price index.  This feels like a direct rebuttal to @Winship1994 and @Dumouchel1983.  
+
+Stata offers probability, importance, analytic, and frequency weights. p-weights are related to sampling design and are not relevant. iweights are a hack. fweights are for duplicate observations (say 1 observation represents 10 sales, or something like that).  aweights are similar, but normalize by total $N$. So each observation can be treated as an average.  
 
 # Results
 
@@ -231,7 +289,7 @@ knitr::include_graphics(file.path(my_images,c("condition509_GDPC.png")))
 
 We get expected signs on the quantity coefficient. The OLS coefficient on lnq is attenuated, as expected if we have some endogeneity in quantity supplied (positive shocks to expected prices will also lead to higher landings).  King and Large whiting seem to get the same prices.  Juvenile whiting also gets a higher price than medium; which is a bit unexpected.  Small whiting gets a discount.  So does dressed whiting, which is a little strange.
 
-We also have a negative coefficient on income. I'm not sure if this is really an indication of an "inferior" good or increasing US income is simply correlated with decreasing world prices or increasing supply of substitutes. 
+We also have a negative coefficient on income. I'm not sure if this is really an indication of an "inferior" good or increasing US income is simply correlated with decreasing world prices or increasing supply of substitutes.   When we estimate models with import prices, the large negative in income stays.  Same when we add quarterly landings (to see if this is driven by the downward long-run trend in whiting landings).  I don't really think it's a real effect; I think we're correlated with something else.
 
 ## IV
 
