@@ -101,12 +101,12 @@ gen priceR_GDPDEF=valueR_GDPDEF/landings
 
 /* Normalize 
 Need to deflate */
-foreach var of varlist price_noblueEXP price_allEXP price_noblueIMP price_allIMP price_noblueREX price_allREX price_*IMP_lag* {
+foreach var of varlist price_noblueEXP price_allEXP price_noblueIMP price_allIMP price_noblueREX price_allREX price_*IMP_lag* aggregateV aggregateV_lag1{
 gen `var'_R_GDPDEF=`var'/fGDP
 }
 
 
-foreach var of varlist priceR_GDPDEF rGDPcapita  realDPIcapita personal_income_capita price_allIMP_R_GDPDEF meancond_Annual stddevcond_Annual pounds_noblueIMP pounds_allIMP pounds_noblueIMP_lag1 pounds_allIMP_lag1{
+foreach var of varlist priceR_GDPDEF rGDPcapita  realDPIcapita personal_income_capita price_allIMP_R_GDPDEF meancond_Annual stddevcond_Annual pounds_noblueIMP pounds_allIMP pounds_noblueIMP_lag1 pounds_allIMP_lag1 aggregateV_R_GDPDEF aggregateV_lag1_R_GDPDEF {
 gen ihs`var'=asinh(`var')
 gen ln`var'=ln(`var')
 }
@@ -238,6 +238,45 @@ est save `ster_out', `replacer1'
 
 
 
+
+/* IVs log-log  with permit and dealer effects; */
+local modelname iv_log_fe`wtype'4
+local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd lnaggregateV_R_GDPDEF
+local endog lnq  lnprice_allIMP_R_GDPDEF
+local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+
+
+ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, FE. No condition.
+est store iv_log`wtype'4
+est save `ster_out', `replacer1'
+
+
+
+/* IVs log-log  with permit and dealer effects; */
+local modelname iv_log_fe`wtype'5
+local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd ln_aggregateL 
+local endog lnq  lnprice_allIMP_R_GDPDEF
+local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+
+
+ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, FE. No condition.
+est store iv_log`wtype'5
+est save `ster_out', `replacer1'
+
+
+/* IVs log-log  with permit and dealer effects; */
+local modelname iv_log_fe`wtype'6
+local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd  
+local endog lnq  lnprice_allIMP_R_GDPDEF ln_aggregateL
+local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF ln_aggregateL_lag1
+
+
+ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', absorb(permit dealnum) robust
+est title: IV, Log-log, FE. No condition.
+est store iv_log`wtype'5
+est save `ster_out', `replacer1'
 
 
 
