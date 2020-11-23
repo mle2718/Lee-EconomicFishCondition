@@ -11,7 +11,7 @@ Code to extract and wrestle data; perform some analysis of prices in support of 
 Therefore, your life will be easier if you do this
 ```
 ssc install renvarlab
-ssc install labmas
+ssc install labmask
 ssc install insheetjson
 ssc install libjson
 ```
