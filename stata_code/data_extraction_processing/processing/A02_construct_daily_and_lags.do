@@ -1,4 +1,4 @@
-/* code to construct daily totals by modified NESPP3 and NESPP4 data */
+/* code to construct and join daily totals by modified NESPP3 and NESPP4 data */
 
 
 
@@ -23,9 +23,9 @@ label values dow days_of_week
 /* construct daily landings */
 /* you need to make the ihs transform because you need to handle zeros */
 preserve
-collapse (sum) landings, by(date)
+collapse (sum) landings, by(date nespp3)
 drop if date==.
-tsset date
+tsset nespp3 date
 /* fill zeros */
 tsfill, full
 replace landings=0 if landings==.
@@ -41,10 +41,11 @@ foreach lag of numlist 1 7 14 28{
 
 
 rename landings daily_landings
+notes daily_landings: daily landings at the species level. This is nespp3, but adjusted for species that span 2 codes. .
 tempfile daily
 save `daily'
 restore
-merge m:1 date using `daily', keep(1 3)
+merge m:1 date nespp3 using `daily', keep(1 3)
 /* any merge=1 are due to day=0 or month=0 invalid dates */
 assert day==0 | month==0 if _merge==1
 
@@ -58,6 +59,7 @@ drop if date==.
 tsfill, full
 
 replace landings=0 if landings==.
+notes landings: daily landings at the nespp4 level.
 
 
 gen ihs_ownq=asinh(landings)
@@ -65,6 +67,8 @@ gen ln_ownq=ln(landings)
 rename landings own4landings
 
 
+notes own4landings: daily landings at the nespp4 level.
+label var own4landings "daily landings at the nespp4 level"
 
 /*construct lags */
 foreach lag of numlist 1 7 14 28{
