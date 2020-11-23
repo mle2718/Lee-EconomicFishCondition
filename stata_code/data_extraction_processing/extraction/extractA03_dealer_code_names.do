@@ -35,7 +35,9 @@ drop nespp4;
 duplicates drop;
 duplicates report nespp3;
 sort nespp3;
-
+rename species_itis itis_tsn;
+rename common_name common_name_itis;
+rename scientific_name scientific_name_itis;
 
 destring, replace;
 save $itis, replace;
@@ -47,10 +49,28 @@ clear;
 
 
 odbc load,  exec("select * from svdbs.itis_lookup;") $mysole_conn;
+
 renvarlab, lower;
 destring, replace;
 duplicates drop;
 
+rename itisspp itis_tsn;
+rename comname common_name_svdbs;
+rename sciname sciname_svdbs;
+
+
 
 destring, replace;
 save $svdbs, replace;
+/********************************************************************************************************/
+/********************************************************************************************************/
+/* At the end of this step, you have 3 keyfiles
+1. The CFSPP keyfile
+2. The ITIS TSNs from species_itis_ne
+3. The Survey keyfile that contains the svspp and itis tsn.
+*/
+/********************************************************************************************************/
+/********************************************************************************************************/
+
+
+

@@ -1,7 +1,5 @@
-/* extract recession indicators from St. Louis Fed
+/* extract recession indicators from St. Louis Fed	*/
 
-
-	*/
 version 15.1
 clear
 
@@ -15,4 +13,12 @@ notes USRECM: Recession, Peak to trough
 notes USREC: Recession, period after peak to trough
 notes USRECP: Recession, Peak to period before trough
 save "$recession", replace
+
+
+/********************************************************************************************************/
+/********************************************************************************************************/
+/* At the end of this step, you a dataset with 3 ways to define a recession in the US
+*/
+/********************************************************************************************************/
+/********************************************************************************************************/
 

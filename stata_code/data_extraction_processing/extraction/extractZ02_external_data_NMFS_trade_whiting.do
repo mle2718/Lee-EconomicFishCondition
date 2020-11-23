@@ -1,8 +1,3 @@
-/* need to 
-4. write some clean up code
-	assert
-		*/
-
 /* code to extract trade data related to whiting*/
 /* modified from 
 https://github.com/cameronspeir/NOAA-Foreign-Fishery-Trade-Data-API
@@ -40,11 +35,16 @@ foreach l of local invars {;
 	local quote_invars `" `quote_invars' "`l'" "' ;
 
 };
-/* get all the rows with 
-	a name like whiting 
-	from 1992 to present
-This will include blue whiting.  */
+
 local chunksize 5000;
+
+/*
+This is the business of the query. Get all rows with
+1. Name like WHITING
+2. Years 1992 to present
+
+Notably, this will include blue whiting and does not screen on product forms
+*/
 
 local url_root https://www.st.nmfs.noaa.gov/ords/foss/trade_data;
 local url_subset ?q={%22year%22:{%22%24gte%22:1992},%22name%22:{%22%24like%22:%22%25WHITING%25%22}};
@@ -52,7 +52,6 @@ local url_offset &offset=0;
 local url_limit &limit=`chunksize';
 local url_request `url_root'`url_subset'`url_offset'`url_limit';
 mac list _url_request;
-pause;
 
 local keep_going="true";
 while "`keep_going'"=="true"{;
@@ -83,11 +82,24 @@ replace kilos=round(kilos*$kg_to_lbs);
 rename kilos pounds;
 rename val nominal_value;
 
-/* what do you want to filter out? 
+/* You might want to filter out  
 	Frozen?
 	Blue Whiting?
 	Mainland US, East Coast US? Northeast Region?
 	Re-Exports?
 	*/
 save	$whiting_trade, replace ;
+
+
+
+
+
+/********************************************************************************************************/
+/********************************************************************************************************/
+/* At the end of this step, you will end up with a dataset of 
+monthly whiting imports at the district level
+*/
+/********************************************************************************************************/
+/********************************************************************************************************/
+
 

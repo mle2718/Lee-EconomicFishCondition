@@ -35,3 +35,10 @@ append using `dsp1';
 do "${extraction_code}/extractA01a_rebin_nespp3.do";
 	
 save $dealer_prices, replace;
+
+
+/* At the end of this step, you have a dataset of landings and value, grouped at the 
+port, link, nespp3, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone
+
+For a set of species in $specieslist <-see wrapper
+*/

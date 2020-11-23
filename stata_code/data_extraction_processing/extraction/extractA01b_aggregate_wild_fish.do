@@ -20,7 +20,7 @@ clear;
 	clear;
 	odbc load,  exec("select sum(spplndlb/1000) as aggregateL, sum(sppvalue/1000) as aggregateV, year, month, day from cfdbs.cfdets`yr'aa 
 		where spplndlb is not null and
-		nespp3 not in (${herrings},${salmons}) and nespp3<=700 and		
+		${exclude_me} and		
 		spplndlb>=1 and sppvalue/spplndlb<=$upper_price  
 		group by year, month, day;") allstring $mysole_conn;
 
@@ -40,23 +40,37 @@ label var aggregateV "000s of nominal dollars ";
 
 
 gen date=mdy(month, day, year);
+drop if date==.;
 tsset date;
+tsfill, full;
+format date %td;
 
-gen ln_aggregateL=ln(aggregateL);
-gen ln_aggregateV=ln(aggregateV);
-
-gen ihs_aggregateL=asinh(aggregateL);
-gen ihs_aggregateV=asinh(aggregateV);
-
-foreach lag of numlist 1 7 14{;
-gen aggregateL_lag`lag'=l`lag'.aggregateL;
-gen aggregateV_lag`lag'=l`lag'.aggregateV;
-
-gen ln_aggregateL_lag`lag'=l`lag'.ln_aggregateL;
-gen ln_aggregateV_lag`lag'=l`lag'.ln_aggregateV;
-
-gen ihs_aggregateL_lag`lag'=l`lag'.ihs_aggregateL;
-gen ihs_aggregateV_lag`lag'=l`lag'.ihs_aggregateV;
+/*take logs and inverse hyperbolic sine */
+foreach var of varlist aggregateL aggregateV{;
+	replace `var'=0 if `var'==.;
+	gen ln_`var'=ln(`var');
+	gen ihs_`var'=asinh(`var');
 };
 
+/*construct lags of those 6 variables */
+foreach lag of numlist 1 7 14{;
+	foreach var of varlist aggregateL aggregateV ln_aggregateL ln_aggregateV ihs_aggregateL ihs_aggregateV{;
+		gen `var'_lag`lag'=l`lag'.`var';
+	};
+};
+quietly compress;
 save $aggregate_fishing, replace;
+
+
+
+/********************************************************************************************************/
+/********************************************************************************************************/
+/* At the end of this step, you have a dataset of landings and value, grouped at the 
+year, month, day, dealnum
+
+You also have log and inverse hyperbolic sine transforms
+And you have 1st 7th and 14th lags. 
+You have excluded transactions with missing month or day fields.
+*/
+/********************************************************************************************************/
+/********************************************************************************************************/

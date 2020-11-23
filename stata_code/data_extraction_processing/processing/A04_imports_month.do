@@ -1,6 +1,5 @@
 /* code to aggregate the NMFS trade data 
 It's a little silly to bring along nominal values, pounds, and real values, when all I need at the end of the day are real prices.  But whatever.
-This is especially so, since I need to get Lags anyway.
 */
 global kg_to_lbs 2.20462
 
@@ -63,3 +62,9 @@ foreach var of varlist price_noblue* price_all* pounds_noblue* pounds_all*{
 }
 
 save $trade_out, replace
+
+
+/* I'm making 2 types of imports, with and without blue whiting 
+I'm also making 1st and 12th lags.
+
+*/

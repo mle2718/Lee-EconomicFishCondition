@@ -8,13 +8,11 @@ pause off
 
 timer on 1
 
-local deflators $data_external/deflatorsQ_${vintage_string}.dta
-local income $data_external/incomeQ_${vintage_string}.dta 
 
 /* bring in deflators and construct real compensation */
 
 preserve
-use  `deflators', clear
+use  $deflators, clear
 keep dateq  f*
 rename fGDPDEF fGDP
 rename fPCU3117103117102_2019Q1 ffresh_frozen
@@ -48,9 +46,9 @@ gen valueR_prepared=value/fprepared
 /* bring in income */
 
 
-merge m:1 dateq using `income', keep(1 3)
+merge m:1 dateq using $income, keep(1 3)
 
 
 cap drop dateq 
 cap drop date
-notes: there are 12 observations without a month. such is life.
+cap drop _merge
