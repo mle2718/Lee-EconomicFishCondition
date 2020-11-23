@@ -10,13 +10,18 @@ global yearend 2019
 
 global specieslist 011, 012, 147, 148, 509,119,120, 121,122,123,124
 
-global specieslist 509
+global specieslist 011, 012,509,147,148
+
+
+
+
+/* These are useufl to exclude things from the aggregate_wild_fish.do"  extraction */
 
 /* herring, alewife, menhaden */ 
 global herrings 001, 166, 167, 168, 221
 /*salmon */
-
 global salmons 305, 306, 307, 308, 309
+global exclude_me "nespp3 not in (${herrings},${salmons}) and nespp3<=700"
 /*invertebrates */
 
 /* globals for where to store the raw data */
@@ -42,14 +47,16 @@ global upper_price 40
 
 
 /********************************************/
-/*extract 
-A01: landings at nespp4-permit-vtrserno
-A02: lengths at the nespp4 level
+/*extract data: these take a long time and 
 Takes a long while
 Requires VPN
-
-do "${extraction_code}/extractA01_dealer_prices_hedonic.do"
 */
+
+global yearstart 2017
+do "${extraction_code}/extractA01_dealer_prices_hedonic.do"
+
+
+
 do "${extraction_code}/extractA01b_aggregate_wild_fish.do"
 
 do "${extraction_code}/extractA02_dealer_length.do"
@@ -60,6 +67,11 @@ do "${extraction_code}/extractA03_dealer_code_names.do"
 do "${extraction_code}/extractA10_state_codes.do"
 
 
+
+
+
+
+/* External data extraction: These are pretty small and run quickly. */
 
 do "${extraction_code}/extractC01_fish_conditions.do"
 
