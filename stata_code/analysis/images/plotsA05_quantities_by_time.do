@@ -10,7 +10,7 @@ pause on;
 
 timer on 1;
 
-local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta ;
+local  in_data ${data_main}/dealer_prices_final_spp_509_${vintage_string}.dta ;
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
 
 
@@ -64,7 +64,6 @@ cap drop monthly;
 gen monthly=mofd(date);
 collapse (sum) daily_landings, by(monthly);
 rename daily_landings landings;
-replace landings=landings/1000;
 label var landings "landings ('000s)";
 
 tsset monthly ;
@@ -92,7 +91,6 @@ graph export ${my_images}/silver_hake_Qbar2_monthly.png, replace as(png);
 
 restore;
 
-replace landings=landings/1000;
 collapse (sum) landings, by(nespp4 date);
 tsset nespp4 date;
 tsfill, full;

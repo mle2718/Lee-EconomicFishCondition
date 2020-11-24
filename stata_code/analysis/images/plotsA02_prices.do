@@ -10,7 +10,7 @@ pause on;
 
 timer on 1;
 
-local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta ;
+local  in_data ${data_main}/dealer_prices_final_full_${vintage_string}.dta ;
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
 
 

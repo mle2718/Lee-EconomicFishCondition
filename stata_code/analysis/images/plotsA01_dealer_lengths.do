@@ -10,7 +10,6 @@ pause on;
 
 timer on 1;
 
-global oracle_cxn " $mysole_conn lower";
 local in_data ${data_raw}/raw_dealer_length_${vintage_string}.dta ;
 
 local marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
