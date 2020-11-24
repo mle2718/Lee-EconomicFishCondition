@@ -7,6 +7,8 @@ version 15.1
 /*args for this wrapper, load and save data*/
 local in_prices ${data_raw}/raw_dealer_prices_${vintage_string}.dta 
 local  price_done ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta 
+local  price_done ${data_main}/dealer_prices_real_final${vintage_string}.dta 
+
 local  subset_stub ${data_main}/dealer_prices_real_lags_condition
 
 /*args for do "${processing_code}/A04_imports_month_whiting.do"*/
@@ -33,9 +35,8 @@ global daily ${data_raw}/raw_entire_fishery_${vintage_string}.dta
 
 
 
-
 /* 
- 
+
 NOTE, this pulls in very specific trade data for whiting. You will probably want to change this.
 I'd suggest copy and renaming this 
 
@@ -78,12 +79,11 @@ do "${processing_code}/A05_add_in_recession_indicators.do"
 do "${processing_code}/A06_merge_daily_landings.do"
 
 
-
+/* merge in trade data */
 merge m:1 year month using $trade_out, keep(1 3)
 drop _merge
 
-
-
+qui compress
 save `price_done', replace
 
 
@@ -97,6 +97,7 @@ save `savename', replace
 restore
 }
 
+/* when you finish this, you'll have 1 "master" dataset and many datasets with just 1 species in it */
 
 
 
