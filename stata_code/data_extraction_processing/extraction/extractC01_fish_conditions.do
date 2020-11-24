@@ -4,19 +4,6 @@
 
 
 version 15.1
-pause off
-
-timer on 1
-
-/* files for Relative condition data */
-local in_relcond ${data_external}/RelCond2019_EPU.csv
-local in_relcond_leng ${data_external}/RelCond2019_EPU_length.csv
-local in_relcond_Year ${data_external}/RelCond2019_Year.csv
-
-local codes ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
-local  out_dataYear ${data_raw}/annual_condition_index_${vintage_string}.dta 
-local  out_dataEPUYear ${data_raw}/annual_condition_indexEPU_${vintage_string}.dta 
-local  out_dataEPUlengthYear ${data_raw}/annual_condition_indexEPU_length_${vintage_string}.dta 
 
 
 /* better was is to link svspp--itis--nespp */
@@ -27,11 +14,11 @@ local  out_dataEPUlengthYear ${data_raw}/annual_condition_indexEPU_length_${vint
 
 /* YEARLY data */ 
 /* read in data with a global/local  */
-import delimited `in_relcond_Year', clear
+import delimited ${in_relcond_Year}, clear
 levelsof svspp, local(mysp) sep(,)
 preserve
 
-use `codes', clear
+use $nespp4, clear
 
 keep nespp3 svspp
 drop if svspp==.
@@ -65,7 +52,7 @@ foreach var of varlist meancond stddevcond ncond{
 rename `var' `var'_Annual
 }
 
-save `out_dataYear', replace
+save ${out_dataYear}, replace
 
 
 
@@ -73,7 +60,7 @@ save `out_dataYear', replace
 /*
 /* YEARLY EPU data */ 
 /* read in data with a global/local  */
-import delimited `in_relcond', clear
+import delimited ${in_relcond}, clear
 
 merge m:1 svspp using `sp'
 
@@ -89,7 +76,7 @@ destring, replace
 foreach var of varlist meancond stddevcond ncond{
 rename `var' `var'_EPU
 }
-save `out_dataEPUYear', replace
+save ${out_dataEPUYear}, replace
 */
 
 
@@ -99,7 +86,7 @@ save `out_dataEPUYear', replace
 
 /* YEARLY EPU-length data */ 
 /* read in data with a global/local  */
-import delimited `in_relcond_leng', clear
+import delimited ${in_relcond_leng}, clear
 
 merge m:1 svspp using `sp'
 
@@ -115,7 +102,7 @@ destring, replace
 foreach var of varlist meancond stddevcond ncond{
 rename `var' `var'_EPU_length
 }
-save `out_dataEPUlengthYear', replace
+save ${out_dataEPUlengthYear}, replace
 
 
 
