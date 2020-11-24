@@ -6,10 +6,10 @@ version 15.1
 
 /*args for this wrapper, load and save data*/
 local in_prices ${data_raw}/raw_dealer_prices_${vintage_string}.dta 
-local  price_done ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta 
-local  price_done ${data_main}/dealer_prices_real_final${vintage_string}.dta 
+/*local  price_done ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta  */
+local  price_done ${data_main}/dealer_prices_final_full_${vintage_string}.dta 
 
-local  subset_stub ${data_main}/dealer_prices_real_lags_condition
+local  subset_stub ${data_main}/dealer_prices_final_spp
 
 /*args for do "${processing_code}/A04_imports_month_whiting.do"*/
 global trade ${data_external}/whiting_trade${vintage_string}.dta 
@@ -97,7 +97,7 @@ save `savename', replace
 restore
 }
 
-/* when you finish this, you'll have 1 "master" dataset and many datasets with just 1 species in it */
+/* when you finish this, you'll have 1 "final_full" dataset and many datasets "finall_spp" with just 1 species in it */
 
 
 

@@ -49,6 +49,7 @@ global  out_dataEPUYear ${data_raw}/annual_condition_indexEPU_${vintage_string}.
 global  out_dataEPUlengthYear ${data_raw}/annual_condition_indexEPU_length_${vintage_string}.dta 
 
 
+global out_species_cond ${data_raw}/annual_nespp4_${vintage_string}.dta ;
 
 
 
@@ -84,6 +85,9 @@ do "${extraction_code}/extractA02_dealer_length.do"
 
 do "${extraction_code}/extractA03_dealer_code_names.do"
 
+
+
+
 do "${extraction_code}/extractA10_state_codes.do"
 
 
@@ -95,6 +99,7 @@ do "${extraction_code}/extractA10_state_codes.do"
 
 do "${extraction_code}/extractC01_fish_conditions.do"
 
+
 do "${extraction_code}/extractZ01_external_data_FRED.do"
 do "${extraction_code}/extractZ03_external_data_FRED_recession.do"
 
@@ -104,4 +109,8 @@ do "${extraction_code}/extractZ02_external_data_NMFS_trade_whiting.do"
 /*for example:
 do "${extraction_code}/extractZ02_external_data_NMFS_trade_haddock.do"
 */
+
+/*construct annual condition and price dataset */
+do "${extraction_code}/extractA09_annual_prices_conditions.do"
+
 
