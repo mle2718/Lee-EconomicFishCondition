@@ -2,7 +2,7 @@
 version 15.1
 pause off
 
-local  in_data ${data_main}/dealer_prices_real_lags${vintage_string}.dta 
+local  in_data ${data_main}/dealer_prices_final_spp_120_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
 global linear_table1 ${my_tables}/winter_flounder.tex

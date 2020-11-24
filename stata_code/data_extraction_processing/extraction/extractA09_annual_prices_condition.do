@@ -6,24 +6,16 @@
 version 15.1
 pause off
 
-timer on 1
+#delimit;
 
 /* files for Relative condition data, which one are you using?*/
-local in_relcond_Year ${data_raw}/annual_condition_index_${vintage_string}.dta 
 
-local out_species ${data_raw}/annual_nespp4_${vintage_string}.dta 
+use  ${out_dataYear},clear;
+levelsof nespp3, local(specieslist2) sep(",");
 
-use  `in_relcond_Year',clear
-levelsof nespp3, local(specieslist2) sep(",")
-
-clear
+clear;
 
 
-
-global yearstart 1994
-global yearend 2019
-global upper_price 40
-#delimit;
 
  forvalues yr=$yearstart/$yearend{;
 	tempfile new5555;
@@ -54,4 +46,4 @@ bysort nespp3 year: egen tmax=total(flag);
 bysort nespp3 year: assert tmax<=1;
 drop tmax tv max;
 label var flag "most valuable market category";
-save `out_species', replace;
+save ${out_species_cond}, replace;

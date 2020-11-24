@@ -18,7 +18,7 @@ postutil clear
 estimates clear
 
 /*setup input and output files */
-local  in_data ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta 
+local  in_data ${data_main}/dealer_prices_final_spp_509_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 local  statecodes ${data_raw}/state_codes${vintage_string}.dta 
 
