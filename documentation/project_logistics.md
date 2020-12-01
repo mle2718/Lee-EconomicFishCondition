@@ -75,20 +75,6 @@ do "/stata_code/project_logistics/folder_setup_globals.do"
 you will have to type in the full path for the second line.
 
 
-
-
-## user written code stata code
-As far as I can tell, we need these user written stata commands
-
-1. renvarlab
-1. egenmore
-1. lambask
-1. insheetjson
-1. libjson
-1. outreg2
-
-You will also need an API key from https://fred.stlouisfed.org/ to get macroeconomic data.
-
 # Description of the folders
 
 ## stata_code
