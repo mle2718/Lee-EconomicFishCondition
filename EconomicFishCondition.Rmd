@@ -262,12 +262,12 @@ There's a really nice walk though about how to diagnose/interpret your findings 
 
 >Many individuals' intuition would probably suggest that weighted data should also be used for the estimation of regression models. After all, using the weighted data will give covariance and variance estimates that are unbiased and consistent estimates of the quanttiies in the population. Thus the regression estimates should also be unbiased and consistent estimates of the regression model for the entire population.
 
-@Winship1994state this is a mistake for three reasons
+@Winship1994 this is a mistake for three reasons
 1. If the original equation was homoskedastic, the new equation will be heteroskedastic.
 1. Canned software produces the wrong standard errors
 1. The variance is higher. 
 
-IMHO, 1 and 2 aren't really big deals anymore. @Winship1994state view 
+IMHO, 1 and 2 aren't really big deals anymore.  
 
 Diewert (2003) advocates pretty strenuously for weighting by value (compared to quantity or not weighting at all). 
 
@@ -279,7 +279,7 @@ regression $q_{kt}$ times so that the period $t$ regression is representative of
 
 >The problem with quantity weighting is this: it will tend to give too little weight tomodels that have high prices and too much weight to cheap models that have low amounts of useful characteristics.  Hence it appears to us that value weighting is clearly preferable. Thus we are taking the point of view that the main purpose of the period $t$ hedonic regression is to enable us to decompose the market value of each model sold, $p_{kt}q_{kt}$, into the product of a period $t$ price for a quality adjusted unit of the hedonic commodity, say $P_{t}$, times a constant utility total quantity for model $k$, $Q_{kt}$.
 
-However, the context of Diewert is the construction of a price index.  This feels like a direct rebuttal to @Winship1994 and @Dumouchel1983.  
+However, the context of Diewert is pretty narrow: constructing of a price index.  This feels like a direct rebuttal to @Winship1994 and @Dumouchel1983.  
 
 Stata offers probability, importance, analytic, and frequency weights. p-weights are related to sampling design and are not relevant. iweights are a hack. fweights are for duplicate observations (say 1 observation represents 10 sales, or something like that).  aweights are similar, but normalize by total $N$. So each observation can be treated as an average.  
 
