@@ -10,11 +10,11 @@ The easist thing to do is to clone this repository to a place on your computer. 
 
 His windows computer has put the aceprice project into:
 ```
-C:\Users\Min-Yang.Lee\Documents\aceprice
+C:\Users\Min-Yang.Lee\Documents\EconomicFishCondition
 ```
 and his Linux computer has the aceprice project in:
 ```
-/home/mlee/Documents/projects/aceprice
+/home/mlee/Documents/projects/EconomicFishCondition
 ```
 
 ## Set up the rest of the folders (Run this once)
@@ -28,15 +28,15 @@ global myprojdir U:/this_project_directory
 to your project directory. Min-Yang's says
 
 ```
-global my_projdir "C:/Users/Min-Yang.Lee/Documents/aceprice";
-global my_projdir "/home/mlee/Documents/projects/aceprice";
+global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
+global my_projdir "/home/mlee/Documents/projects/EconomicFishCondition";
 ```
 
 Make the same change to "/stata_code/project_logistics/folder_setup_globals.do"
 
 3. In stata's console type
 ```
-global user cameron
+global user <your_name_here>
 ```
 4. Run this file run_this_once_folder_setup.do
 
@@ -58,11 +58,11 @@ Here are two ways to be ready to run the project.
 add the following 2 lines
 
 ```
-global user cameron
-global aceprice full\path\to\folder_setup_globals.do 
+global user <your_name_here>
+global fishcondition full\path\to\folder_setup_globals.do 
 ```
 2. Restart stata
-3. type do "$aceprice"
+3. type do "$fishcondition"
 
 Everything is set up and ready to go.
 
@@ -79,27 +79,43 @@ you will have to type in the full path for the second line.
 
 ## user written code stata code
 As far as I can tell, we need these user written stata commands
-<!---
+
 1. renvarlab
 1. egenmore
-1. tabcount
-1. ineqdeco, ineqdec0
-1. vioplot
-1. renvars
-1. mdesc
---->
+1. lambask
+1. insheetjson
+1. libjson
+1. outreg2
+
+You will also need an API key from https://fred.stlouisfed.org/ to get macroeconomic data.
+
 # Description of the folders
 
-## project_logistics
-A pair of small do files to set up folders and then make stata aware of folders.
+## stata_code
+This contains stata code organized in various folder. You shouldn't put any code into this directory.
 
-## data_extraction_processing
+### project_logistics
+A pair of small do files to set up folders and then make stata aware of folders.  Plus a sample file to get your odbc connection set up.
 
-The only "data_extraction_processing" that you may need to run is the code to re-pull deflators.  This can be done with "/data_extraction_processing/wrapper_external.do".  You'll need an API key to import fred.  Extracting OES and QCEW data is really slow. 
+### data_extraction_processing
+Code to extract and process data from various places
 
-## summary stats
+### analysis
+The code in here will do exploratory analysis and estimate models.
 
-The code in here will do a bunch of data exploration.  Violin plots take a while to run.  
+### fishcondition ado
+There are a few small .ado files that might be re-used alot. 
 
-## Sub-projects
-Code for smaller pieces of the project are all in their individual folders in "stata_code". For the most part, they produce datasets or tables in  "/results/" and images in "/images/"
+## data_folder
+This is where I store data.  The "final" data should be stored in /main/
+
+## images
+This is where I store figures and other images.  It probably make a second level here where I have subfolders for stocks.
+
+## results
+This is where I store log files and estimation results.
+
+
+
+## tables
+This is where I store .tex fragments containing tables.
