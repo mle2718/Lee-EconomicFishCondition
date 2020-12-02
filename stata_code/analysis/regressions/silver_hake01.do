@@ -1,4 +1,11 @@
 /* code to run some preliminary regressions on Silver Hake */
+
+cap log close
+
+
+local logfile "silver_hake01.smcl"
+log using ${my_results}/`logfile', replace
+
 version 15.1
 pause off
 vintage_lookup_and_reset
@@ -186,3 +193,6 @@ est store IHScondition
   
     ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual i.month i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional', cluster(date)
  outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, No, Month Effects, Yes, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
+
+ 
+ log close
