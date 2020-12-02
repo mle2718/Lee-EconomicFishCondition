@@ -35,14 +35,6 @@ drop _merge
 
 
 
-/* Process trade */
-do "${processing_code}/A04_imports_month_whiting.do"
-
-/* merge in trade data */
-merge m:1 year month using $trade_out, keep(1 3)
-drop _merge
-
-
 /* Normalize 
 Need to deflate */
 gen priceR_GDPDEF=valueR_GDPDEF/landings
