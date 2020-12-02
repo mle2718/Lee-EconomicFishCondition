@@ -27,3 +27,15 @@ before running any code.
 # External data
 
 We get external data from from https://fred.stlouisfed.org/.  You'll need an API key. 
+
+# Pre-processed data
+
+You can get the outputs of wrapper1_data_extraction.do and wrapper2_data_processing_common.do from /home2/mlee/EconomicFishCondition/data_folder/external and /home2/mlee/EconomicFishCondition/data_folder/main.  These will be updated sporadically.  
+
+
+# Running code
+
+Go here  https://github.com/minyanglee/EconomicFishCondition/blob/master/documentation/running_code.md
+
+
+

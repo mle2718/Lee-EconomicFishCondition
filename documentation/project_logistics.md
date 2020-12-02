@@ -4,6 +4,8 @@ In general, I'm trying to keep code, raw data, processed data, results, and imag
 Smaller bits of analysis that are related (or depend on previous) are collected together in a wrapper.
 
 # Cloning from Github and other setup
+
+## Github
 Min-Yang is using Rstudio to write .Rmd and git version-control to commit/push/pull from github. It works reasonably well.  You will also need git installed.
 
 The easist thing to do is to clone this repository to a place on your computer. [Here's a starting guide](https://cfss.uchicago.edu/setup/git-with-rstudio/).  Don't put spaces in the name.  This will set up many, but not all of the folders.
@@ -19,7 +21,7 @@ and his Linux computer has the aceprice project in:
 
 ## Set up the rest of the folders (Run this once)
 
-1. Open up stata and the stata do file called "/stata_code/project_logistics/run_this_once_folder_setup.do"
+1. Open up stata and the stata do file called "./stata_code/project_logistics/run_this_once_folder_setup.do"
 1. Adjust your username and project directory using the template starting on line 23.
 
 ```
@@ -60,7 +62,7 @@ It will set up directories for you. The directories I use are
 There are subdirectories in each. 
 
 
-# Running code
+# Getting Ready to Run Code
 Here are two ways to be ready to run the project.
 
 ## Automatic
@@ -82,6 +84,12 @@ Every time you want to work on the project in stata do this:
 global user <your_user_name>
 do "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition/stata_code/project_logistics/folder_setup_globals.do"
 ```
+
+# Data vintages 
+
+I have tried to append a date field <YYYY_MM_DD> onto .dta, .tex, and .png outputs.  This is automatically created in the folder_setup_globals.do based on the system date.  
+
+Because the data extraction and processing can take a bit of time and I'm impatient, I've written a small program that will check for the most recent data vintage and then allow you to resest this global to match.
 
 
 # Description of the folders
@@ -114,3 +122,7 @@ This is where I store log files and estimation results.
 
 ## tables
 This is where I store .tex fragments containing tables.
+
+
+
+
