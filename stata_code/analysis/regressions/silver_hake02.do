@@ -14,7 +14,8 @@ postutil clear
 estimates clear
 
 
-local  in_data ${data_main}/dealer_prices_final_spp_509_${vintage_string}.dta 
+global working_nespp3 509
+local  in_data ${data_main}/dealer_prices_final_spp_${working_nespp3}_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
 global linear_table3 ${my_tables}/silver_hake3.tex
