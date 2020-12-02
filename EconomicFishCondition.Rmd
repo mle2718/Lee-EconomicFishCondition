@@ -26,7 +26,9 @@ setwd(my_projdir)
 ```
 
 # Overview and Decisions
-1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem? 1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
+1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem?
+
+1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
 
 1. Import Pounds or import prices on the RHS.  Both are endogenous.  Both IV coefficents are in the "right direction" compared to the OLS coefficients.
 
