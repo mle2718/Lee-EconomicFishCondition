@@ -73,8 +73,8 @@ add the following 2 lines
 global user <your_name_here>
 global fishcondition full\path\to\folder_setup_globals.do 
 ```
-1. Restart stata
-1. type do "$fishcondition"
+2. Restart stata
+3. type do "$fishcondition"
 
 Everything is set up and ready to go.
 
