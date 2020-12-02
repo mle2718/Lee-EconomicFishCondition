@@ -20,25 +20,35 @@ and his Linux computer has the aceprice project in:
 ## Set up the rest of the folders (Run this once)
 
 1. Open up stata and the stata do file called "/stata_code/project_logistics/run_this_once_folder_setup.do"
-2. In the "if loop" change the line
+1. Adjust your username and project directory using the template starting on line 23.
 
 ```
-global myprojdir U:/this_project_directory
+/**************** 
+Set your project directory using this template
+if strmatch("$user","minyangWin"){;
+	global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
+};
+**************/
 ```
-to your project directory. Min-Yang's says
+
+Min-Yang's window's version is 
 
 ```
 global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
+```
+and his linux version is:
+
+```
 global my_projdir "/home/mlee/Documents/projects/EconomicFishCondition";
 ```
 
-Make the same change to "/stata_code/project_logistics/folder_setup_globals.do"
+1. Make the analogous change to "/stata_code/project_logistics/folder_setup_globals.do"
 
-3. In stata's console type
+1. In stata's console type
 ```
 global user <your_name_here>
 ```
-4. Run this file run_this_once_folder_setup.do
+1. Run the run_this_once_folder_setup.do file
 
 It will set up directories for you. The directories I use are
 ```
@@ -54,15 +64,15 @@ There are subdirectories in each.
 Here are two ways to be ready to run the project.
 
 ## Automatic
+
 1.  Modify or create your profile.do file that stata automatically runs on startup.  I've put mine in c:/ado/profile.do.  
 add the following 2 lines
-
 ```
 global user <your_name_here>
 global fishcondition full\path\to\folder_setup_globals.do 
 ```
-2. Restart stata
-3. type do "$fishcondition"
+1. Restart stata
+1. type do "$fishcondition"
 
 Everything is set up and ready to go.
 
@@ -70,9 +80,8 @@ Everything is set up and ready to go.
 Every time you want to work on the project in stata do this:
 ```
 global user <your_user_name>
-do "/stata_code/project_logistics/folder_setup_globals.do"
+do "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition/stata_code/project_logistics/folder_setup_globals.do"
 ```
-you will have to type in the full path for the second line.
 
 
 # Description of the folders
