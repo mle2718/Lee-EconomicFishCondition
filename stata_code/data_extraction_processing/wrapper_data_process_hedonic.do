@@ -8,9 +8,9 @@ vintage_lookup_and_reset
 /*args for this wrapper, load and save data*/
 local in_prices ${data_raw}/raw_dealer_prices_${vintage_string}.dta 
 /*local  price_done ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta  */
-local  price_done ${data_main}/dealer_prices_final_full_${vintage_string}.dta 
+local  price_done ${data_main}/dealer_prices_full_${vintage_string}.dta 
 
-local  subset_stub ${data_main}/dealer_prices_final_spp
+local  subset_stub ${data_main}/dealer_prices_spp
 
 /*args for do "${processing_code}/A04_imports_month_whiting.do"*/
 global trade ${data_external}/whiting_trade${vintage_string}.dta 

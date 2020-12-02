@@ -6,8 +6,8 @@ program vintage_lookup_and_reset
 	di "The vintage_string macro is currently set as: $vintage_string"
 
 
-	local data_vintage : dir "${data_main}" files "dealer_prices_final_full_*.dta" 
-	local data_vintage: subinstr local data_vintage "dealer_prices_final_full_" ""
+	local data_vintage : dir "${data_main}" files "dealer_prices_full_*.dta" 
+	local data_vintage: subinstr local data_vintage "dealer_prices_full_" ""
 	local data_vintage: subinstr local data_vintage ".dta" ""
 	di "The most recent data vintage found in the data_main folder is:" `data_vintage'.
 	di "If you want to use this data vintage, type it here. Otherwise, press <Enter>" _request(_vintage_string_bypass)

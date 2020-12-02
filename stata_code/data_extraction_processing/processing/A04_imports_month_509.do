@@ -3,7 +3,7 @@ It's a little silly to bring along nominal values, pounds, and real values, when
 */
 global kg_to_lbs 2.20462
 
-use $trade, clear
+use $whiting_trade, clear
 cap replace kilos=round(kilos*$kg_to_lbs)
 cap rename kilos pounds
 replace pounds=pounds/1000
@@ -61,7 +61,7 @@ foreach var of varlist price_noblue* price_all* pounds_noblue* pounds_all*{
 	gen `var'_lag12=l12.`var'
 }
 
-save $trade_out, replace
+save $whiting_trade_out, replace
 
 
 /* I'm making 2 types of imports, with and without blue whiting 
