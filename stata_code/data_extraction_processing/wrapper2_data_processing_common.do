@@ -10,7 +10,6 @@ local in_prices ${data_raw}/raw_dealer_prices_${vintage_string}.dta
 /*local  price_done ${data_main}/dealer_prices_real_lags_condition${vintage_string}.dta  */
 local  price_done ${data_main}/dealer_prices_full_${vintage_string}.dta 
 
-local  subset_stub ${data_main}/dealer_prices_spp
 
 /*args for do "${processing_code}/A04_imports_month_whiting.do"*/
 global trade ${data_external}/whiting_trade${vintage_string}.dta 
@@ -63,19 +62,5 @@ do "${processing_code}/A06_merge_daily_landings.do"
 
 qui compress
 save `price_done', replace
-
-
-levelsof nespp3, local(species)
-foreach sp of local species{
-local  savename `subset_stub'_`sp'_${vintage_string}.dta 
-di "`savename'"
-preserve
-keep if nespp3==`sp'
-save `savename', replace 
-restore
-}
-
-/* when you finish this, you'll have 1 "final_full" dataset and many datasets "finall_spp" with just 1 species in it */
-
 
 
