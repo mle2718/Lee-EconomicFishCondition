@@ -3,6 +3,8 @@ I've put in in the aceprice folder, but  there is not good reason for it to be h
 version 15.1
 #delimit cr
 
+vintage_lookup_and_reset
+
 
 do "${analysis_code}/images/plotsA01_dealer_lengths.do"
 

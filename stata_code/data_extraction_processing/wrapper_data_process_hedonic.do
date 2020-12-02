@@ -1,7 +1,8 @@
-/* this is a wrapper to get some exploratory data for hedonics
+/* this is a wrapper to get get the data ready for hedonic analysis
 I've put in in the aceprice folder, but  there is not good reason for it to be here.*/
 version 15.1
 #delimit cr
+vintage_lookup_and_reset
 
 
 /*args for this wrapper, load and save data*/
@@ -33,25 +34,6 @@ global in_relcond_leng ${data_raw}/annual_condition_indexEPU_length_${vintage_st
 /*args for do "${processing_code}/A06_merge_daily_landings.do"*/
 global daily ${data_raw}/raw_entire_fishery_${vintage_string}.dta 
 
-
-
-/* 
-
-NOTE, this pulls in very specific trade data for whiting. You will probably want to change this.
-I'd suggest copy and renaming this 
-
-do "${processing_code}/A04_imports_month_whiting.do"
-
-to a different place and using it for your code and inserting it here.
-
-Also change the globals above.
-*/
-
-/* Process trade */
-do "${processing_code}/A04_imports_month_whiting.do"
-
-
-
 use `in_prices', replace
 replace value=value/1000
 replace landings=landings/1000
@@ -78,10 +60,6 @@ do "${processing_code}/A05_add_in_recession_indicators.do"
 
 do "${processing_code}/A06_merge_daily_landings.do"
 
-
-/* merge in trade data */
-merge m:1 year month using $trade_out, keep(1 3)
-drop _merge
 
 qui compress
 save `price_done', replace

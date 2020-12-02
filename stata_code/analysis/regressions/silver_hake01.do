@@ -1,8 +1,10 @@
 /* code to run some preliminary regressions on Silver Hake */
 version 15.1
 pause off
+vintage_lookup_and_reset
 
-local  in_data ${data_main}/dealer_prices_final_spp_509_${vintage_string}.dta 
+global working_nespp3 509
+local  in_data ${data_main}/dealer_prices_final_spp_${working_nespp3}_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
 global linear_table1 ${my_tables}/silver_hake1.tex
@@ -17,18 +19,28 @@ local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow
 
 
 clear
-use `in_data', clear
+use `in_data' , clear
+assert nespp3==${working_nespp3}
 cap drop _merge
-keep if nespp3==509
 gen nominal=value/landings
 
 /* pull in market categories*/
-
 merge m:1 nespp4 using `marketcats', keep(1 3)
 assert _merge==3
 labmask nespp4, value(sp_mkt)
 drop _merge
 
+
+
+
+
+
+/* Process trade */
+do "${processing_code}/A04_imports_month_whiting.do"
+
+/* merge in trade data */
+merge m:1 year month using $trade_out, keep(1 3)
+drop _merge
 
 
 /* Normalize 

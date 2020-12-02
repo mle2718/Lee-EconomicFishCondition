@@ -2,6 +2,8 @@
 version 15.1
 pause on
 
+vintage_lookup_and_reset
+
 local  in_data ${data_main}/dealer_prices_final_spp_509_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 

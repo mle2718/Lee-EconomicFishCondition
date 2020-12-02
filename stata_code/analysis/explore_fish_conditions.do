@@ -8,6 +8,8 @@ pause off
 
 timer on 1
 
+vintage_lookup_and_reset
+
 /* files for Relative condition data, which one are you using?*/
 local  in_relcond ${data_raw}/annual_condition_indexEPU_${vintage_string}.dta 
 local  in_relcond_leng ${data_raw}/annual_condition_indexEPU_length_${vintage_string}.dta 

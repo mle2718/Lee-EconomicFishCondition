@@ -8,7 +8,7 @@ log using ${my_results}/`logfile', replace
 
 version 15.1
 pause off
-
+vintage_lookup_and_reset
 /* tidy ups */
 postutil clear
 estimates clear
