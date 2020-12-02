@@ -12,17 +12,21 @@ global user cameron;
 */
 
 if strmatch("$user","minyang"){;
-global my_projdir "/home/mlee/Documents/projects/fishcondition";
+	global my_projdir "/home/mlee/Documents/projects/fishcondition";
 };
 if strmatch("$user","minyangWin"){;
-global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
-
+	global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
 };
 
 
-if strmatch("$user","cameron"){;
-global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
+/**************** 
+Set your project directory using this template
+if strmatch("$user","minyangWin"){;
+	global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
 };
+**************/
+
+
 cap mkdir $my_projdir;
 
 global my_codedir "${my_projdir}/stata_code";

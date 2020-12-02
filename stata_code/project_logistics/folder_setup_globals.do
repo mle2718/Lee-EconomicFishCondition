@@ -24,6 +24,17 @@ quietly do "C:/Users/Min-Yang.Lee/Documents/common/odbc_setup_macros.do";
 };
 
 
+
+/**************** 
+Set your project directory and oracle connections using this template
+/*minyangWin is setup to connect to oracle yet */
+if strmatch("$user","minyangWin"){;
+global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
+quietly do "C:/Users/Min-Yang.Lee/Documents/common/odbc_setup_macros.do";
+};
+*/
+
+
 global my_codedir "${my_projdir}/stata_code";
 global extract_process "${my_codedir}/data_extraction_processing";
 global extraction_code "${extract_process}/extraction";
