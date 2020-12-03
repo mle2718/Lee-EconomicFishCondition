@@ -10,7 +10,7 @@ pause on;
 
 timer on 1;
 
-local  in_data ${data_main}/dealer_prices_final_${vintage_string}.dta ;
+local  in_data ${data_main}/dealer_prices_full_${vintage_string}.dta ;
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
 local working_nespp3 509;
 local relabelstr `"relabel(1 "J" 2 "F" 3 "M"  4 "A"  5 "M"  6 "J"  7 "J" 8 "A" 9 "S" 10 "O" 11 "N" 12 "D" 13 "J" 14 "F" 15 "M"  16 "A"  17 "M"  18 "J"  19 "J" 20 "A" 21 "S" 22 "O" 23 "N" 24 "D")"' ;
