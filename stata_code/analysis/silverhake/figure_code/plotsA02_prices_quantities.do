@@ -29,7 +29,6 @@ gen price=value/landings;
 keep if price<=10;
 bysort nespp4: egen mp=mean(price);
 preserve;
-keep if nespp3==509;
 
 graph box price, over(nespp4, label(angle(45)) sort(mp));
 graph export ${silverhake_images}/box_prices_${vintage_string}.png, replace as(png);

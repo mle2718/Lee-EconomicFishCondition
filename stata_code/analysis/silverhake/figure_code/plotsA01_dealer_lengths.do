@@ -13,13 +13,13 @@ timer on 1;
 local in_data ${data_raw}/raw_dealer_length_${vintage_string}.dta ;
 
 local marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
-local working_nespp3 509 ;
 
 clear;
-use `in_data' if inlist(nespp3, `working_nespp3'), clear;
+use `in_data' , clear;
 cap drop _merge;
 merge m:1 nespp4 using `marketcats', keep(1 3);
-drop if nespp4==5099;
+drop if nespp4<5090;
+drop if nespp4>=5099;
 /* there some 5099 market category in 2008 */;
 assert _merge==3;
 
@@ -39,7 +39,7 @@ bysort nespp4 period: egen tt=total(numlen);
 gen pdf=numlen/tt;
 
 preserve;
-keep if nespp3==509 & period==1;
+keep if period==1;
 tsset nespp4 length;
 xtline pdf if length<=200, overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("1994-2003");
 graph export ${silverhake_images}/dealer_lengths_before2003_${vintage_string}.png, replace as(png);
@@ -56,7 +56,7 @@ restore;
 
 
 preserve;
-keep if nespp3==509 & period==2;
+keep if period==2;
 tsset nespp4 length;
 xtline pdf if length<=200,  overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2004-2011");
 graph export ${silverhake_images}/dealer_lengths2004_2011_${vintage_string}.png, replace as(png);
@@ -69,7 +69,7 @@ restore;
 
 
 preserve;
-keep if nespp3==509 & period==3;
+keep if period==3;
 tsset nespp4 length;
 xtline pdf if length<=200,  overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2012-2019");
 graph export ${silverhake_images}/dealer_length2012_${vintage_string}.png, replace as(png);

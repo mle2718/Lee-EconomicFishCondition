@@ -31,8 +31,6 @@ label var priceR "Real Price per pound";
 keep if price<=10;
 bysort nespp4: egen mp=mean(price);
 
-keep if nespp3==509;
-
 egen t=tag(date); 
 label var daily_landings "daily landings ('000s)";
 
