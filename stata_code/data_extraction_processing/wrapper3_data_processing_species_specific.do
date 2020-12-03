@@ -3,6 +3,7 @@ I've put in in the aceprice folder, but  there is not good reason for it to be h
 version 15.1
 #delimit cr
 
+vintage_lookup_and_reset
 
 /*args for this wrapper, load and save data*/
 local  price_done ${data_main}/dealer_prices_full_${vintage_string}.dta 
