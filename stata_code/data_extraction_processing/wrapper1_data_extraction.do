@@ -49,7 +49,7 @@ global  out_dataEPUYear ${data_raw}/annual_condition_indexEPU_${vintage_string}.
 global  out_dataEPUlengthYear ${data_raw}/annual_condition_indexEPU_length_${vintage_string}.dta 
 
 
-global out_species_cond ${data_raw}/annual_nespp4_${vintage_string}.dta ;
+global out_species_cond ${data_raw}/annual_nespp4_${vintage_string}.dta 
 
 
 
