@@ -27,6 +27,12 @@ if strmatch("$user","minyangWin"){;
 **************/
 
 
+/*These are the species, Add your species to this list to help automatically make folders */
+local specieslist silverhake haddock winterflounder common;
+
+
+
+
 cap mkdir $my_projdir;
 
 global my_codedir "${my_projdir}/stata_code";
@@ -82,12 +88,26 @@ global my_results "${my_projdir}/results";
 cap mkdir $my_results;
 
 
-
 /* setup images folders */
 
 global my_images "${my_projdir}/images";
 cap mkdir $my_images;
 
-
 global exploratory "${my_images}/exploratory";
 cap mkdir $exploratory;
+
+global tables "${my_projdir}/tables";
+cap mkdir $tables;
+
+
+/* add subfolders */
+
+foreach l of local specieslist{;
+	cap mkdir ${my_results}/`l' ;
+	cap mkdir ${my_images}/`l';
+	cap mkdir ${my_images}/`l'/exploratory;
+	cap mkdir ${tables}/`l';
+	cap mkdir ${analysis_code}/`l';
+};
+
+
