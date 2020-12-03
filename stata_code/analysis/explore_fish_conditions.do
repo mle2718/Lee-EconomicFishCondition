@@ -61,17 +61,17 @@ bysort nespp3: egen mm=mean(meancond)
 replace mm=. if meancond==.
 label var mm "mean condition over time series"
 xtline meancond  mm if nespp3~=344, tmtick(##5) cmissing(n)
-graph export ${my_images}/fish_conditions.png, replace as(png)  width(2000)
+graph export ${my_images}/common/fish_conditions_${vintage_string}.png, replace as(png)  width(2000)
 
 
 gen del=10*(meancond-mm)/mm
 xtline del, tmtick(##5) cmissing(n)
-graph export ${my_images}/delta_conditions.png, replace as(png)  width(2000)
+graph export ${my_images}/common/delta_conditions_${vintage_string}.png, replace as(png)  width(2000)
 
 merge 1:m nespp3 year using `p2'
 
 xtline del delp, tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))
-graph export ${my_images}/delta_conditions_and_prices.png, replace as(png) width(2000)
+graph export ${my_images}/common/delta_conditions_and_prices_${vintage_string}.png, replace as(png) width(2000)
 
 scatter delp del if inlist(nespp3, 250, 366)==0, ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor")
-graph export ${my_images}/scatter_conditions_and_prices.png, replace as(png) width(2000)
+graph export ${my_images}/common/scatter_conditions_and_prices_${vintage_string}.png, replace as(png) width(2000)
