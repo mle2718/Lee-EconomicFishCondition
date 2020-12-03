@@ -6,7 +6,7 @@ Differences from silver_hake03
 cap log close
 
 
-local logfile "silver_hake03.smcl"
+local logfile "silver_hake03_${vintage_string}.smcl"
 
 global silverhake_results ${my_results}/silverhake
 global silverhake_tables ${my_tables}/silverhake

@@ -2,8 +2,7 @@
 cap log close
 
 
-
-local logfile "silver_hake_import_pounds.smcl"
+local logfile "silver_hake_import_pounds_${vintage_string}.smcl"
 log using ${my_results}/`logfile', replace
 
 version 15.1

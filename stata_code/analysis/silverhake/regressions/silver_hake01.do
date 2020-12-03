@@ -3,7 +3,7 @@
 cap log close
 
 
-local logfile "silver_hake01.smcl"
+local logfile "silver_hake01_${vintage_string}.smcl"
 
 global silverhake_results ${my_results}/silverhake
 global silverhake_tables ${my_tables}/silverhake
