@@ -111,6 +111,6 @@ do "${extraction_code}/extractZ02_external_data_NMFS_trade_haddock.do"
 */
 
 /*construct annual condition and price dataset */
-do "${extraction_code}/extractA09_annual_prices_conditions.do"
+do "${extraction_code}/extractA09_annual_prices_condition.do"
 
 
