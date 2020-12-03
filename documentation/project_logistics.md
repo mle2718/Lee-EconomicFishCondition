@@ -22,7 +22,7 @@ and his Linux computer has the aceprice project in:
 ## Set up the rest of the folders (Run this once)
 
 1. Open up stata and the stata do file called "./stata_code/project_logistics/run_this_once_folder_setup.do"
-1. Adjust your username and project directory using the template starting on line 23.
+2. Adjust your username and project directory using the template starting on line 23.
 
 ```
 /**************** 
@@ -44,13 +44,13 @@ and his linux version is:
 global my_projdir "/home/mlee/Documents/projects/EconomicFishCondition";
 ```
 
-1. Make the analogous change to "/stata_code/project_logistics/folder_setup_globals.do"
+3. Make the analogous change to "/stata_code/project_logistics/folder_setup_globals.do"
 
-1. In stata's console type
+4. In stata's console type
 ```
 global user <your_name_here>
 ```
-1. Run the run_this_once_folder_setup.do file
+5. Run the run_this_once_folder_setup.do file
 
 It will set up directories for you. The directories I use are
 ```
@@ -73,8 +73,8 @@ add the following 2 lines
 global user <your_name_here>
 global fishcondition full\path\to\folder_setup_globals.do 
 ```
-1. Restart stata
-1. type do "$fishcondition"
+2. Restart stata
+3. type do "$fishcondition"
 
 Everything is set up and ready to go.
 

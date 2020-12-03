@@ -30,10 +30,25 @@ You can get the outputs of wrapper2_data_processing_common.do from /home2/mlee/E
 # Analysis
 Analysis code is in the analysis folder.  I have a wrapper to make images -- this might only work if you actually run the data processing code.  I have a do file to explore fish conditions and silver hake.    This is a work in progress. It should probably be reorganized.
 
-# Replicability test
+# Replicability test 1
+1. Clone the repository
+1. Copy the data files from /home2/mlee/EconomicFishCondition/data_folder into the appropriate  directories
+1. Unzip as necessary.
+1. Open stata
+1. Run the file ./stata_code/project_logistics/folder_setup_globals.do
+1. Run the file ./stata_code/analysis/regressions/silver_hake01.do
 
-1.  Copy the data files from /home2/mlee/EconomicFishCondition/data_folder into the appropriate  directories
-1.  Unzip as necessary.
+You should get a handful of misspecified econometric models for silver hake.
+
+
+
+# Replicability test 2
+1. Restart stata
+1. Run the file ./stata_code/project_logistics/folder_setup_globals.do
+1. Run these do files:
+    * ./stata_code/data_extraction_processing/wrapper1_data_extraction.do
+    * ./stata_code/data_extraction_processing/wrapper2_data_processing_common.do
+    * ./stata_code/data_extraction_processing/wrapper2_data_processing_species_specific.do
 1. Run the file ./stata_code/analysis/regressions/silver_hake01.do
 
 You should get a handful of misspecified econometric models for silver hake.
