@@ -6,7 +6,7 @@ vintage_lookup_and_reset
 
 local  in_data ${data_main}/dealer_prices_full_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
-local working_nespp3 509 ;
+local working_nespp3 509 
 
 
 local  statecodes ${data_raw}/state_codes${vintage_string}.dta 
@@ -17,7 +17,7 @@ local years 1995.year 1996.year 1997.year 1998.year 1999.year 2000.year 2001.yea
 local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow 
 
 
-use `in_data' if inlist(nespp3, `working_nespp3'), clear;
+use `in_data' if inlist(nespp3, `working_nespp3'), clear
 
 
 /* pull in market categories*/
