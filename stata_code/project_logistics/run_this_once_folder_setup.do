@@ -108,6 +108,9 @@ foreach l of local specieslist{;
 	cap mkdir ${my_images}/`l'/exploratory;
 	cap mkdir ${tables}/`l';
 	cap mkdir ${analysis_code}/`l';
+	cap mkdir ${analysis_code}/`l'/figure_code;
+	cap mkdir ${analysis_code}/`l'/regressions;
+
 };
 
 
