@@ -25,6 +25,8 @@ local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta
 global linear_table1 ${silverhake_tables}/silver_hake1.tex
 global linear_table2 ${silverhake_tables}/silver_hake2.tex
 
+local  ster_out ${silverhake_results}/silver_hake01_${vintage_string}.ster 
+
 
 /* don't show year or month coeficients in outreg */
 local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month 0.month 0b.month 12o.month

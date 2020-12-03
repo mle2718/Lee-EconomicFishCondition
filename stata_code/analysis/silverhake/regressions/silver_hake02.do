@@ -31,6 +31,8 @@ global year_table ${silverhake_tables}/silver_hake_years.tex
 global month_week_table ${silverhake_tables}/silver_hake_month_week.tex
 global bse ${silverhake_tables}/bse.dta
 
+local  ster_out ${silverhake_results}/silver_hake02_${vintage_string}.ster 
+
 
 /* don't show year or month coeficients in outreg */
 local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month 0.month 0b.month 12o.month

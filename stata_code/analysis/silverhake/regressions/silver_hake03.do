@@ -39,7 +39,7 @@ global month_week_table ${silverhake_tables}/silver_hake_month_weekA.tex
 global bse ${silverhake_tables}/bseA.dta
 
 
-local  ster_out ${silverhake_results}/silver_hake_${vintage_string}.ster 
+local  ster_out ${silverhake_results}/silver_hake03_${vintage_string}.ster 
 
 
 
