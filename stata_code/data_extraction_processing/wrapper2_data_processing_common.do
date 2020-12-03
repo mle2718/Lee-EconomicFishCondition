@@ -63,4 +63,4 @@ do "${processing_code}/A06_merge_daily_landings.do"
 qui compress
 save `price_done', replace
 
-
+zipfile `price_done', saving(`price_done'.zip) replace
