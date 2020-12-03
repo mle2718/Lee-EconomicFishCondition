@@ -6,20 +6,19 @@ Code to plot prices
 
 #delimit;
 version 15.1;
-pause on;
+pause off;
 
-timer on 1;
 
-local  in_data ${data_main}/dealer_prices_final_spp_509_${vintage_string}.dta ;
+local  in_data ${data_main}/dealer_prices_full_${vintage_string}.dta ;
 local daily ${data_raw}/raw_entire_fishery_${vintage_string}.dta ;
 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta ;
-
+local working_nespp3 509;
 
 local relabelstr `"relabel(1 "J" 2 "F" 3 "M"  4 "A"  5 "M"  6 "J"  7 "J" 8 "A" 9 "S" 10 "O" 11 "N" 12 "D" 13 "J" 14 "F" 15 "M"  16 "A"  17 "M"  18 "J"  19 "J" 20 "A" 21 "S" 22 "O" 23 "N" 24 "D")"' ;
 
 clear;
-use `in_data', clear;
+use `in_data' if inlist(nespp3, `working_nespp3'), clear;
 merge m:1 nespp4 using `marketcats', keep(1 3);
 assert _merge==3;
 labmask nespp4, value(sp_mkt);
@@ -61,7 +60,7 @@ format monthly %tm;
 twoway (tsline landings) (tsline aggregateL, yaxis(2)), tlabel(#12, format(%tmCCYY) angle(45)) tmtick(##2, grid) ylabel(,nogrid)  title("Monthly Landings") legend (order(1 "whiting" 2 "finfish"));
 
 
-graph export ${my_images}/silver_hake_and_allQ_monthly.png, replace as(png);
+graph export ${silverhake_images}/tsline_monthly509_all_${vintage_string}.png, replace as(png);
 
 
 

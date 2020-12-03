@@ -16,11 +16,11 @@ local in_relcond_Year ${data_raw}/annual_condition_index_${vintage_string}.dta
 
 local deflators $data_external/deflatorsQ_${vintage_string}.dta
 local income $data_external/incomeQ_${vintage_string}.dta 
+local working_nespp3 509
 
 
-use  `in_relcond_Year', clear
+use  `in_relcond_Year' if inlist(nespp3, `working_nespp3'), clear
 
-keep if nespp3==509
 tsset year
 
 tempfile cond
@@ -35,14 +35,14 @@ merge m:1 year using `cond', keep(3)
 tsset dateq
 gen qtr=quarter(dofq(dateq))
 twoway( tsline rGDPcapita) (tsline meancond, yaxis(2))
-graph export ${my_images}/condition509_GDPC.png, replace as(png)
+graph export ${silverhake_images}/condition509_GDPC_${vintage_string}.png, replace as(png)
 
 twoway( tsline realDPIcapita) (tsline meancond, yaxis(2))
-graph export ${my_images}/condition509_DPIC.png, replace as(png)
+graph export ${silverhake_images}/condition509_DPIC_${vintage_string}.png, replace as(png)
 
 
 twoway( tsline personal_income_capita) (tsline meancond, yaxis(2))
-graph export ${my_images}/condition509_PIC.png, replace as(png)
+graph export ${silverhake_images}/condition509_PIC_${vintage_string}.png, replace as(png)
 
 
 corr rGDPcapita personal_income_capita realDPIcapita meancond_Annual if qtr==1
@@ -50,10 +50,10 @@ corr rGDPcapita personal_income_capita realDPIcapita meancond_Annual if qtr==1
 
 scatter meancond_Annual realDPIcapita
 
-graph export ${my_images}/scatter_condition509_DPIC.png, replace as(png)
+graph export ${silverhake_images}/scatter_condition509_DPIC_${vintage_string}.png, replace as(png)
 
 
 
 
 tsline rGDPcapita personal_income_capita realDPIcapita
-graph export ${my_images}/macro_income.png, replace as(png)
+graph export ${my_images}/common/macro_incomes_${vintage_string}.png, replace as(png)

@@ -41,7 +41,7 @@ preserve;
 keep if nespp3==509 & period==1;
 tsset nespp4 length;
 xtline pdf if length<=200, overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("1994-2003");
-graph export ${my_images}/silver_hake_length_before2003.png, replace as(png);
+graph export ${silverhake_images}/dealer_lengths_before2003_${vintage_string}.png, replace as(png);
 
 
 xtline pdf if length<=200 & inlist(nespp4,5090, 5091, 5092), overlay  ttitle("") tscale(noline) tlabel(none)  ytitle("fraction") legend(off) name(sub1994,replace);
@@ -58,7 +58,7 @@ preserve;
 keep if nespp3==509 & period==2;
 tsset nespp4 length;
 xtline pdf if length<=200,  overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2004-2011");
-graph export ${my_images}/silver_hake_length2004_2011.png, replace as(png);
+graph export ${silverhake_images}/dealer_lengths2004_2011_${vintage_string}.png, replace as(png);
 
 xtline pdf if length<=200 & inlist(nespp4,5090, 5091, 5092), overlay ttitle("") ytitle("fraction") tscale(noline) tlabel(none)   legend(off) name(sub2004,replace);
 
@@ -71,7 +71,7 @@ preserve;
 keep if nespp3==509 & period==3;
 tsset nespp4 length;
 xtline pdf if length<=200,  overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("silver hake length by market category") subtitle("2012-2019");
-graph export ${my_images}/silver_hake_length2012.png, replace as(png);
+graph export ${silverhake_images}/dealer_length2012_${vintage_string}.png, replace as(png);
 
 
 xtline pdf if length<=200 & inlist(nespp4,5090, 5091, 5092), overlay ttitle("cm") ytitle("fraction") tmtick(##4) legend(rows(1)) name(sub2012,replace);
@@ -80,44 +80,4 @@ xtline pdf if length<=200 & inlist(nespp4,5090, 5091, 5092), overlay ttitle("cm"
 restore;
 
 graph combine sub1994 sub2004 sub2012, cols(1) xcommon ycommon imargin(zero);
-graph export ${my_images}/silver_hake_subset_stack.png, replace as(png);
-
-/*Comment out, I'm just doing silver hake for now.
-
-preserve;
-keep if nespp3==12 & period==1;
-tsset nespp4 length;
-xtline pdf, overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("monkfish length by market category") subtitle("2005-2010");
-graph export ${my_images}/monkfish_length2005_2010.png, replace as(png);
-
-restore;
-
-
-
-preserve;
-keep if nespp3==12 & period==2;
-tsset nespp4 length;
-xtline pdf, overlay legend(rows(2)) ttitle("cm") ytitle("fraction") tmtick(##4) title("monkfish length by market category") subtitle("2005-2010");
-graph export ${my_images}/monkfish_length2011_2019.png, replace as(png);
-
-restore;
-
-
-
-preserve;
-keep if inlist(nespp3,147,148) & period==1;
-tsset nespp4 length;
-xtline pdf, overlay legend(rows(1)) ttitle("cm") ytitle("fraction") tmtick(##4) title("haddock length by market category") subtitle("2005-2010");
-graph export ${my_images}/haddock_length2005_2010.png, replace as(png);
-
-restore;
-
-
-preserve;
-keep if inlist(nespp3,147,148) & period==2;
-tsset nespp4 length;
-xtline pdf, overlay legend(rows(1)) ttitle("cm") ytitle("fraction") tmtick(##4) title("haddock length by market category") subtitle("2011-2019");
-graph export ${my_images}/haddock_length2011_2019.png, replace as(png);
-
-restore;
-*/
+graph export ${silverhake_images}/dealer_lengths_subset_stack_${vintage_string}.png, replace as(png);
