@@ -3,8 +3,12 @@ cap log close
 
 
 local logfile "silver_hake02.smcl"
-log using ${my_results}/`logfile', replace
 
+global silverhake_results ${my_results}/silverhake
+global silverhake_tables ${my_tables}/silverhake
+
+
+log using ${silverhake_results}/`logfile', replace
 
 version 15.1
 pause off
@@ -13,20 +17,19 @@ vintage_lookup_and_reset
 postutil clear
 estimates clear
 
-
 global working_nespp3 509
 local  in_data ${data_main}/dealer_prices_final_spp_${working_nespp3}_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
-global linear_table3 ${my_tables}/silver_hake3.tex
+global linear_table3 ${silverhake_tables}/silver_hake3.tex
 
-global condition_table ${my_tables}/silver_hake_condition.tex
-global ihs_table ${my_tables}/silver_hake_ihs.tex
+global condition_table ${silverhake_tables}/silver_hake_condition.tex
+global ihs_table ${silverhake_tables}/silver_hake_ihs.tex
 
 
-global year_table ${my_tables}/silver_hake_years.tex
-global month_week_table ${my_tables}/silver_hake_month_week.tex
-global bse ${my_tables}/bse.dta
+global year_table ${silverhake_tables}/silver_hake_years.tex
+global month_week_table ${silverhake_tables}/silver_hake_month_week.tex
+global bse ${silverhake_tables}/bse.dta
 
 
 /* don't show year or month coeficients in outreg */
@@ -36,9 +39,9 @@ local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow
 local sizes 5091.nespp4 5092.nespp4  5093.nespp4  5094.nespp4  5095.nespp4  5096.nespp4 
 
 clear
-use `in_data', clear
+use `in_data' , clear
+assert nespp3==${working_nespp3}
 cap drop _merge
-keep if nespp3==509
 gen nominal=value/landings
 
 /* construct silver_hake broad stock areas */

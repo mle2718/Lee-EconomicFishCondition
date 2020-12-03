@@ -7,8 +7,12 @@ cap log close
 
 
 local logfile "silver_hake03.smcl"
-log using ${my_results}/`logfile', replace
 
+global silverhake_results ${my_results}/silverhake
+global silverhake_tables ${my_tables}/silverhake
+
+
+log using ${silverhake_results}/`logfile', replace
 
 version 15.1
 pause off
@@ -24,18 +28,18 @@ local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta
 local  statecodes ${data_raw}/state_codes${vintage_string}.dta 
 
 
-global linear_table3 ${my_tables}/silver_hake3A.tex
+global linear_table3 ${silverhake_tables}/silver_hake3A.tex
 
-global condition_table ${my_tables}/silver_hake_conditionA.tex
-global ihs_table ${my_tables}/silver_hake_ihsA.tex
-
-
-global year_table ${my_tables}/silver_hake_yearsA.tex
-global month_week_table ${my_tables}/silver_hake_month_weekA.tex
-global bse ${my_tables}/bseA.dta
+global condition_table ${silverhake_tables}/silver_hake_conditionA.tex
+global ihs_table ${silverhake_tables}/silver_hake_ihsA.tex
 
 
-local  ster_out ${my_results}/silver_hake_${vintage_string}.ster 
+global year_table ${silverhake_tables}/silver_hake_yearsA.tex
+global month_week_table ${silverhake_tables}/silver_hake_month_weekA.tex
+global bse ${silverhake_tables}/bseA.dta
+
+
+local  ster_out ${silverhake_results}/silver_hake_${vintage_string}.ster 
 
 
 

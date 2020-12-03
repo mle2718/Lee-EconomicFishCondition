@@ -4,19 +4,26 @@ cap log close
 
 
 local logfile "silver_hake01.smcl"
-log using ${my_results}/`logfile', replace
+
+global silverhake_results ${my_results}/silverhake
+global silverhake_tables ${my_tables}/silverhake
+
+
+log using ${silverhake_results}/`logfile', replace
 
 version 15.1
 pause off
 vintage_lookup_and_reset
+/* tidy ups */
+postutil clear
+estimates clear
 
 global working_nespp3 509
 local  in_data ${data_main}/dealer_prices_final_spp_${working_nespp3}_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
 
-global linear_table1 ${my_tables}/silver_hake1.tex
-
-global linear_table2 ${my_tables}/silver_hake2.tex
+global linear_table1 ${silverhake_tables}/silver_hake1.tex
+global linear_table2 ${silverhake_tables}/silver_hake2.tex
 
 
 /* don't show year or month coeficients in outreg */
