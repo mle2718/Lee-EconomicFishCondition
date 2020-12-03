@@ -23,23 +23,35 @@ my_projdir<-"C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition"
 #source(file.path(my_projdir,"project_logistics","R_paths_libraries_setup.R"))
 source(file.path(my_projdir,"R_code","project_logistics","R_paths_libraries.R"))
 setwd(my_projdir)
+common_images<-file.path(my_images,"common")
+
+silverhake_images<-file.path(my_images,"silverhake")
+silverhake_tables<-file.path(my_tables,"silverhake")
+vintage<-"2020_12_03"
+
 ```
-
-# Overview and Decisions
-1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem?
-
-1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
-
-1. Import Pounds or import prices on the RHS.  Both are endogenous.  Both IV coefficents are in the "right direction" compared to the OLS coefficients.
-
-1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about $1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a $0.01 change in silver hake prices.  The effects on a monthly level are much larger in magnitude.
-
-
-1. Weighting observations by pounds in that transaction. Yea or Nay.
 
 # Introduction
 
 This is an introduction.
+
+## Related literature
+
+Here is a plop of related literature on hedonic models:
+
+1. Whitefish - [@Kristofersson2004; @Kristofersson2007 ; @Lee2014; @Hammarlund2015; @Pettersen2016; @Pettersen2018]
+1. Northeast US [@Lee2014; @Ardini2018]
+1. Many - [@Sjoberg2015; @Gobillon2017]
+
+Whiting
+
+1. @Graddy1995;@Graddy2006 
+1. @Helser1996; @Thunberg1998
+
+Bioeconomic
+
+1. Product quality - @Larkin2004
+
 <!--
 
 
@@ -151,13 +163,13 @@ Fish conditions come from Laurel; basically I'm just using the annual data.  The
 
  
 ```{r , fig.show = "hold", out.width = "80%", fig.cap="Fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("delta_conditions_and_prices.png")))
+knitr::include_graphics(file.path(common_images,paste0("delta_conditions_and_prices_",vintage,".png")))
 ```
 
 
  
 ```{r , fig.show = "hold", out.width = "80%", fig.cap="Fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("scatter_conditions_and_prices.png")))
+knitr::include_graphics(file.path(common_images,paste0("scatter_conditions_and_prices_",vintage,".png")))
 ```
 
 ## External Data
@@ -188,54 +200,61 @@ Along with a rating about how worried I am (1-10; 10 will make the paper unpubli
 1.  Outliers (1) -I just have to do this
 1.  Proper disaggregation of $q_s$ -- too fancy will have people ask why we aren't estimating an inverse demand system like in @Sjoberg2015. No good answer, except I don't want to.
 1.  Proper standard errors for year-level rhs variables (7): I just need to be 100\% sure that cluster(year) is fine for some variables and cluster(date) or cluster(blah) is fine for others. Or we could just bootstrap it.
+1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem?
+1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
+1. Import Pounds or import prices on the RHS.  Both are endogenous.  Both IV coefficents are in the "right direction" compared to the OLS coefficients.
+1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about \$1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a \$0.01 change in silver hake prices. 
+1. Weighting observations by pounds in that transaction. Yea or Nay.
 
  Gonna need some summary stats.
- 
+
+
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake landings by market cat",  fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("silver_hake_monthly_nespp4_shares.png")))
+knitr::include_graphics(file.path(silverhake_images,paste0("xtline509_monthly_shares_",vintage,".png")))
 ```
+
+
 On Jan 1, 2004, the market category coding changed.  It's not super well documented in the databases, but it looks like there are 3 new categories Large, Medium, and Dressed. I should interact Round with an indicator for post Jan 1, 2004.  I might need to interact King and Small as well.
 
 Changing the market category variables to something like this: ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift will do it. That will enter the all market categories, plus a market*shift interaction for the three market cats that were around prior to 2004. I'm expecting that King-Post will have higher prices (smallish King fish get diverted to Large).  Round will have lower prices (larger round get culled into Large). Idk on small.
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices, 1994-2019", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("silver_hake_prices.png")))
+knitr::include_graphics(file.path(silverhake_images,paste0("box_prices_",vintage,".png")))
 ```
 
 
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="King Silver Hake prices", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("king_silver.png")))
+knitr::include_graphics(file.path(silverhake_images,paste0("king_5091_",vintage,".png")))
 ```
 
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Small Silver Hake prices", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("small_silver.png")))
+knitr::include_graphics(file.path(silverhake_images,paste0("small_5092_",vintage,".png")))
 ```
 
 
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Juvenile Silver Hake prices", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("juvenile_silver.png")))
+knitr::include_graphics(file.path(silverhake_images,paste0("juvenile_5094_",vintage,".png")))
 ```
 
 ## Condition and Macro
 
 
 ```{r , fig.show = "hold", out.width = "75%", fig.cap="GDP/cap, Personal Income, Disposable Income", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("macro_income.png")))
+knitr::include_graphics(file.path(common_images,paste0("macro_incomes_",vintage,".png")))
 ```
-
 
 There isn't a massive correlation between condition and the macro variables (r=0.25 ish)
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Condition and Personal Income", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("condition509_PIC.png")))
+knitr::include_graphics(file.path(silverhake_images,paste0("condition509_PIC_",vintage,".png")))
 ```
 
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Condition and GDPC ", fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(my_images,c("condition509_GDPC.png")))
+knitr::include_graphics(file.path(silverhake_images,paste0("condition509_GDPC_",vintage,".png")))
 ```
 
 ## Weighting observations
@@ -298,13 +317,13 @@ We also have a negative coefficient on income. I'm not sure if this is really an
 The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The negative R^2 should be disregarded, I'll use RMSE instead. 
 
 \newpage
-
+R
 
 \begin{landscape}
   \begin{table}
     \begin{center}
        {\scriptsize
-          \input{./tables/silver_hake3.tex}
+          \input{./tables/silverhake/silver_hake3.tex}
           \caption{A Table of Regression coefficients.  The omitted category is "medium".   \label{silverhake}}
        }
     \end{center}
@@ -317,7 +336,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silver_hake_years.tex}
+          \input{./tables/silverhake/silver_hake_years.tex}
           \caption{Year coeffs\label{silverhakeY}}
         }
     \end{center}
@@ -328,7 +347,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
       {\scriptsize
-        \input{./tables/silver_hake_month_week.tex}
+        \input{./tables/silverhake/silver_hake_month_week.tex}
         \caption{Month and Week  coeffs\label{silverhakeMW}}
       }
     \end{center}
@@ -339,7 +358,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silver_hake_condition.tex}
+          \input{./tables/silverhake/silver_hake_condition.tex}
           \caption{Coefficents when we include condition factor coeffs\label{condition_coefs}}
         }
     \end{center}
@@ -351,7 +370,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silver_hake3Q.tex}
+          \input{./tables/silverhake/silver_hake3Q.tex}
           \caption{Coefficents when we use import quantities on the RHS.  \label{importQ}}
         }
     \end{center}
@@ -364,7 +383,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silver_hake_conditionQ.tex}
+          \input{./tables/silverhake/silver_hake_conditionQ.tex}
           \caption{Coefficents when we use import quantities on the RHS and include condition factors.  \label{conditionQ}}
         }
     \end{center}
@@ -377,7 +396,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silver_hake_ihs.tex}
+          \input{./tables/silverhake/silver_hake_ihs.tex}
           \caption{Inverse hyperbolic sine transform instead of logs and disaggregated daily quantities.  \label{IHS}}
         }
     \end{center}
@@ -387,27 +406,11 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silver_hake_ihsQ.tex}
+          \input{./tables/silverhake/silver_hake_ihsQ.tex}
           \caption{Inverse hyperbolic sine transform, disaggregated daily quantities. Import Quantities  \label{IHS_Q}}
         }
     \end{center}
   \end{table}
-
-
-# Meta
-This is the section that contains "how to do stuff."  I may eventually move this to another document.  
-
-
-## Setups
-I have set a bunch of stuff using the first chunk above. 
-
-1. You will have a my_projdir directory. 
-1. You set up libraries.
-1. There is a line of code that automagically finds your stata executable. We also shQuote it, to faciltate working with R's system.
-
-Stata's reghdfe, ivreg2, and ivreghdfe are being used.
-
-Table \ref{silverhake} was construted using outreg2 in stata. Outreg2 is nice because it only make the meat of the table (tabular environment), that makes inclusion easier.  Estout has that capacity too.
 
 
 <!-- ## LaTeX way -->
