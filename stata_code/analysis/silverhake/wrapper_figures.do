@@ -27,4 +27,7 @@ check delimits*/
 do "${analysis_code}/silverhake/figure_code/plotsA04_fish_condition_and_macro.do"
 
 
+
+do "${analysis_code}/silverhake/figure_code/plotsA05_quantities_by_time.do"
+
 do "${analysis_code}/silverhake/figure_code/plotsA06_silverhake_and_allqs_by_time.do"
