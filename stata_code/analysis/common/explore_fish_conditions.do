@@ -73,5 +73,16 @@ merge 1:m nespp3 year using `p2'
 xtline del delp, tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))
 graph export ${my_images}/common/delta_conditions_and_prices_${vintage_string}.png, replace as(png) width(2000)
 
-scatter delp del if inlist(nespp3, 250, 366)==0, ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor")
+sepscatter delp del if inlist(nespp3,250,366)==0, separate(nespp3) legend(off) name(sepscatter,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor")
 graph export ${my_images}/common/scatter_conditions_and_prices_${vintage_string}.png, replace as(png) width(2000)
+
+
+
+sepscatter delp del if inlist(nespp3,250,366)==0 & nespp3<=168, separate(nespp3) name(sepscatterA,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor") legend(cols(4))
+graph export ${my_images}/common/scatter_conditions_and_pricesA_${vintage_string}.png, replace as(png) width(2000)
+
+
+sepscatter delp del if inlist(nespp3,250,366)==0 & nespp3>168, separate(nespp3) name(sepscatterB,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor") legend(cols(4))
+graph export ${my_images}/common/scatter_conditions_and_pricesB_${vintage_string}.png, replace as(png) width(2000)
+
+
