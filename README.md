@@ -13,6 +13,7 @@ Go here  https://github.com/minyanglee/EconomicFishCondition/blob/master/documen
 1. egenmore
 1. outreg2
 1. sepscatter
+1. estout
 
 Therefore, your life will be easier if you do this
 ```
@@ -23,6 +24,8 @@ ssc install libjson
 ssc install egenmore
 ssc install outreg2
 ssc install sepscatter
+ssc install estout
+
 ```
 before running any code.
 
