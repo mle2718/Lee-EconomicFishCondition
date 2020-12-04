@@ -33,7 +33,9 @@ vintage<-"2020_12_03"
 
 # Introduction
 
-Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{panel_condition} through  \ref{sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{sepscatter_conditions} would also be good species to look at.  Table \ref{priceconditionreg} reports the results of regression price on condition at the annual level. There are approx 25 data points per species.
+Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{panel_condition} through  \ref{sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{sepscatter_conditions} would also be good species to look at. 
+
+Table \ref{priceconditionreg} reports the results of regression price on condition at the annual level. There are up to 26 data points (years) per species.  That table is intended to give us a quick look at species where we might pick up an effect of condition on price.  Of course, there are major OVs (landed quantities and import prices) here so don't over-interpret.
 
 [^fn_condition]: The fish condition project is here: https://github.com/NOAA-EDAB/FisheryConditionLinks
 
@@ -54,13 +56,12 @@ knitr::include_graphics(file.path(common_images,paste0(c("scatter_conditions_and
 ```
 
 
-\newpage
   \begin{table}
     \begin{center}
-        \begin{tabular}{lrrr}
+        \begin{tabular}{lrrrr}
           \input{./tables/common/price_condition_reg.tex}
         \end{tabular}  
-          \caption{Coefficients for an OLS regression of   \label{priceconditionreg}}
+          \caption{Coefficients for an OLS regression of  price on condition. Sorted High to low based on the condition coefficient. \label{priceconditionreg}}
         
     \end{center}
   \end{table}
@@ -162,7 +163,7 @@ Probably going to need an equation or two here.
 
 
 # Theoretical Model
-Hah.  This is the first stage of a hedonic model; there's no theory.  
+We are estimating the first stage of a hedonic model; these are equilibrium price functions and there's no theory about what should go into these equations or the functional form of them [@Rosen1974; @Brown1982].  
 
 
 # Empirical Model 
@@ -176,14 +177,21 @@ p_{ijtk}=  X_{ijtk}\beta + Z_{t}\gamma + u_{i} + v_{j} +w_{t}+\varepsilon_{itjk}
 
 [^fn_basic]: Might be a bad move to highligh the $t$ in $Z_t$, especially when fish condition is measured yearly.
 
-While equation \ref{basic_equation} could be estimated with OLS, unobserved heterogeneity, whether at the buyer-, seller-, or day- level will lead to inconsistent estimates of $\beta$ and $\gamma$.  Fixed-effects estimators may be useful.  Day-level heterogeneity is most likely related to quantity supplied.  Seller-specific heterogeneity might arise if particular fishing vessels systematically deliver high- or low-quality product, perhaps due to good handling practices after fish are caught. Buyer-specific heterogeneity might arise if particular buyers are selling into different markets in  geographical or product space, or are vertically integrated with downstream components of the supply chain.  Finally, buyer-seller pairs , although not explictly treated here, can have unobserved heterogenity as well [@Gobillon2017].   
+While equation \ref{basic_equation} or various functional forms could be estimated with OLS, unobserved heterogeneity, whether at the buyer-, seller-, or day- level will lead to inconsistent estimates of $\beta$ and $\gamma$.  Fixed-effects estimators may be useful.  
 
-At the time a sales transaction occurs, the characteristics $X_{ijtk}$ have been determined and cannot be changed by either buyer or seller. In the Northeast US market for silver hake, most fish are caught and brought to market before the price is negotiated.  Therefore, the characteristics of a particular lot of cod sold on a particular day are functions of previous fishing effort and can reasonably be thought of as exogenous.  However, total quantity supplied is quite likely to be endogenous; vessels may have insight into prices that economists do not or may adjust the timing of their trip slightly in response to (expected) prices.
+Day-level heterogeneity is most likely related to quantity supplied.  We should either include day-level fixed effects or quantity supplied.  Daily quantity supplied is likely to be endogenous; I find two arguements compelling. The first, there are demand characteristis unobserved to us that are observed by sellers. This makes the error term in our regression correlated with quantity supplied.  Second, analgous to @Graddy2010; , sellers (fishing vessels) have an ability to inventory a bit when there are low prices and deplete that inventory when there are high prices. This happens, even with a highly perishable good because people can adjust the timing of when they land fish at the margin.
+
+Seller-specific heterogeneity might arise if particular fishing vessels systematically deliver high- or low-quality product, perhaps due to good handling practices after fish are caught. Buyer-specific heterogeneity might arise if particular buyers are selling into different markets in  geographical or product space, or are vertically integrated with downstream components of the supply chain.  Finally, buyer-seller pairs , although not explictly treated here, can have unobserved heterogenity as well [@Gobillon2017].   
+
+At the time a sales transaction occurs, the characteristics $X_{ijtk}$ have been determined and cannot be changed by either buyer or seller. In the Northeast US market for silver hake, most fish are caught and brought to market before the price is negotiated.  Therefore, the characteristics of a particular lot of fish sold on a particular day are functions of previous fishing effort and can reasonably be thought of as exogenous.
 
 We experiment with various ways to model the price equation. We estimate models with "all silver hake" quantities and a version that aggregates into own- and other- market category quantities.  We estimate linear-, log-log, and inverse hyperbolic sine (IHS) transformed models.  The other-market category quantity is occasionally zero; this presents some problems for a specification that is estimated in logs, but does not present such a problem for the IHS models. 
 
+Imported whiting is likely to be a substitute and activity in the import market is likely to be important in determining the price of domestic silver hake.  We experiment with including monthly import prices (we expect a positive sign here; an exogenous increase to import prices should result in higher prices of domestic whiting) and monthly import quantities (we expect a negative sign here; an exogenous increase in imported quanttiies should result in lower prices of domestic whiting).  Both import prices and import quantities assumed endogenous to domestic prices.  
 
 # Data overview
+
+This is intended as a companion to the stata code that extracts and processes data.
 
 ## NMFS Data
 The dataset used for estimating the hedonic price model was constructed from NEFSC’s mandatory dealer reports from 1994 to 2019.  We excluded transactions with prices higher than $40 per pound (nominal).  An observation is defined at a unique vessel-dealer-market category-date-vtrrecord combination. 
@@ -213,33 +221,18 @@ In the Atlantic Cod paper, I used PPI Unprocessed Finfish. In the scallop hedoni
 
 ## Some Data summaries
 
-## An incomplete list of specification and data issues that I'm worried about
-
-Along with a rating about how worried I am (1-10; 10 will make the paper unpublishable)
-
-1.  Changes in market category definitions over time (5)
-1.  Changes in market category definitions over space (4?) - don't know why I'm less worried, since we'd need state*category interactions.
-1.  Heterogenity due to  Broad Stock Areas(3) this is probably more of a fishing time issue than an intrinsic quality issue. 
-1.  Misreporting (3)
-1.  Definition of imports (2)
-1.  Outliers (1) -I just have to do this
-1.  Proper disaggregation of $q_s$ -- too fancy will have people ask why we aren't estimating an inverse demand system like in @Sjoberg2015. No good answer, except I don't want to.
-1.  Proper standard errors for year-level rhs variables (7): I just need to be 100\% sure that cluster(year) is fine for some variables and cluster(date) or cluster(blah) is fine for others. Or we could just bootstrap it.
-1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem?
-1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
-1. Import Pounds or import prices on the RHS.  Both are endogenous.  Both IV coefficents are in the "right direction" compared to the OLS coefficients.
-1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about \$1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a \$0.01 change in silver hake prices. 
-1. Weighting observations by pounds in that transaction. Yea or Nay.
-
- Gonna need some summary stats.
 
 
-```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake landings by market cat",  fig.align = "center", echo=FALSE}
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake landings by market category\\label{market_cat_changes}",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(silverhake_images,paste0("xtline509_monthly_shares_",vintage,".png")))
 ```
 
+On Jan 1, 2004, the market category coding changed.  It's not super well documented in the databases, but I deduced this from figure \ref{market_cat_changes}. It looks like there are 3 new categories Large, Medium, and Dressed. I should interact Round, King and Small with an indicator for post Jan 1, 2004.  Eyeballing the length data at the market category from the dealer data shows that there's a "rebinning" \ref{market_cat_lengths}.
 
-On Jan 1, 2004, the market category coding changed.  It's not super well documented in the databases, but it looks like there are 3 new categories Large, Medium, and Dressed. I should interact Round with an indicator for post Jan 1, 2004.  I might need to interact King and Small as well.
+
+```{r , fig.show = "hold", out.width = "95%", fig.cap="Silver hake sizes by market category (top: 1994-2003, middle: 2004-2012, bottom: 2013-2019) \\label{market_cat_lengths}",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(silverhake_images,paste0("dealer_lengths_subset_stack_",vintage,".png")))
+```
 
 Changing the market category variables to something like this: ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift will do it. That will enter the all market categories, plus a market*shift interaction for the three market cats that were around prior to 2004. I'm expecting that King-Post will have higher prices (smallish King fish get diverted to Large).  Round will have lower prices (larger round get culled into Large). Idk on small.
 
@@ -266,7 +259,6 @@ knitr::include_graphics(file.path(silverhake_images,paste0("juvenile_5094_",vint
 
 ## Condition and Macro
 
-
 ```{r , fig.show = "hold", out.width = "75%", fig.cap="GDP/cap, Personal Income, Disposable Income", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("macro_incomes_",vintage,".png")))
 ```
@@ -281,53 +273,6 @@ knitr::include_graphics(file.path(silverhake_images,paste0("condition509_PIC_",v
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Condition and GDPC ", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(silverhake_images,paste0("condition509_GDPC_",vintage,".png")))
 ```
-
-## Weighting observations
-
-@Dumouchel1983 describes a test that looks like a Durbin-Wu-Hausman test for the applicability of Weighted OLS versus OLS.  For observations $i= 1,\ldots, n$ the weight matrix $W$ is a diagonal elements $w_i$. They describe a sampling weight setup where weights are proportional to the $\frac{\pi_j}{n_j}$, where $\pi_j$ is proportion of the population is in group $j$ and $n_j$ are the number of individuals sampled randomly from group $j$.  @Dumouchel1983 advocates for OLS when OLS is approrpriate (duh, it's BLUE). They suggest using weighted OLS if OLS does not pass diagnostics.  
-
-> if the sample sizes of the strata, $n_j$, are not proportional to the population proportions \$pi_j$ (i.e., the $w_i$ do not approach equality), then $\hat{\beta}$ need not approach $\beta^*$
-
-The specification test looks like a  Durbin-Wu-Hausman style test.  Starting with a model of 
-
-```
-regress y x
-regress y  x Wx
-```
-
-and then test all the Wx for significance (don't forget that x contains a constant, so Wx contains W). I suppose you could also do an $nR^2$ style $\chi^2$ test. @Dumouchel1983 illustrates a bunch of ways to do this (that were important when there wasn't much computing power). The writing is a little sloppy, but I think it involves
-
-```
-regress x Wx
-predict res1, residuals
-regress y x res1
-```
-There's a really nice walk though about how to diagnose/interpret your findings when you get significant coefficients on the Wx variables.  For example, the significant $Wx$ variables in their regression are mothers education, county unemployment, race, and sex. They test specifications of the form (i.sex##c.mothers income) but those are not statistically significant. They find that (i.sex##c.county_unemployment) increase model fit.  After doing that, they find that there are still some signfiicant $Wx$ variables, so they continue experimenting with the specifications.
-
-@Winship1994 basically state that OLS is BLUE. Anything that weights the observations by a positive number will increase the variance of the error term. 
-
->Many individuals' intuition would probably suggest that weighted data should also be used for the estimation of regression models. After all, using the weighted data will give covariance and variance estimates that are unbiased and consistent estimates of the quanttiies in the population. Thus the regression estimates should also be unbiased and consistent estimates of the regression model for the entire population.
-
-@Winship1994 this is a mistake for three reasons
-1. If the original equation was homoskedastic, the new equation will be heteroskedastic.
-1. Canned software produces the wrong standard errors
-1. The variance is higher. 
-
-IMHO, 1 and 2 aren't really big deals anymore.  
-
-Diewert (2003) advocates pretty strenuously for weighting by value (compared to quantity or not weighting at all). 
-
->Usually, discussions of how to use quantity or expenditure weights in a hedonic regression are centered around discussions on how to reduce the heteroskedasticity of error terms. In this section, we attempt a somewhat different approach based on the idea that the regression model should be representative. In other words, if model $k$ sold $q_{kt}$ times in period $t$, then perhaps model $k$ should be repeated in the period $t$ hedonic
-regression $q_{kt}$ times so that the period $t$ regression is representative of the sales that actually occurred during the period.
-
->Thus our representative approach follows along the lines of Theil’s (1967; 136-138) stochastic approach to index number theory, which is also pursued by Rao (2002). The use of weights that reflect the economic importance of models was recommended by Griliches (1971b; 8): “But even here, we should use a weighted regression approach, since we are interested in an estimate of a weighted average of the pure price change, rather than just an unweighted average over all possible models, no matter how peculiar or rare.” However, he did not make any explicit weighting suggestions
-
-
->The problem with quantity weighting is this: it will tend to give too little weight tomodels that have high prices and too much weight to cheap models that have low amounts of useful characteristics.  Hence it appears to us that value weighting is clearly preferable. Thus we are taking the point of view that the main purpose of the period $t$ hedonic regression is to enable us to decompose the market value of each model sold, $p_{kt}q_{kt}$, into the product of a period $t$ price for a quality adjusted unit of the hedonic commodity, say $P_{t}$, times a constant utility total quantity for model $k$, $Q_{kt}$.
-
-However, the context of Diewert is pretty narrow: constructing of a price index.  This feels like a direct rebuttal to @Winship1994 and @Dumouchel1983.  
-
-Stata offers probability, importance, analytic, and frequency weights. p-weights are related to sampling design and are not relevant. iweights are a hack. fweights are for duplicate observations (say 1 observation represents 10 sales, or something like that).  aweights are similar, but normalize by total $N$. So each observation can be treated as an average.  
 
 # Results
 
@@ -507,6 +452,75 @@ the elasticity is:
 Note that some of the elasticities are undefined when $y=0$.  @Bellemare2019 illustrates computing at means of the data; since we don't have any $y=0$ in our dataset, we can also sample enumerate.
 
 \newpage
+
+
+# An incomplete list of specification and data issues that I'm worried about
+
+Along with a rating about how worried I am (1-10; 10 will make the paper unpublishable)
+
+1.  Changes in market category definitions over time (5) - handled.
+1.  Changes in market category definitions over space (4?) - don't know why I'm less worried, since we'd need state*category interactions.
+1.  Heterogenity due to  Broad Stock Areas(3) this is probably more of a fishing time issue than an intrinsic quality issue. 
+1.  Misreporting (3)
+1.  Definition of imports (2)
+1.  Outliers (1) -I just have to do this
+1.  Proper disaggregation of $q_s$ -- too fancy will have people ask why we aren't estimating an inverse demand system like in @Sjoberg2015. No good answer, except I don't want to.
+1.  Proper standard errors for year-level rhs variables (7): I just need to be 100\% sure that cluster(year) is fine for some variables and cluster(date) or cluster(blah) is fine for others. Or we could just bootstrap it.
+1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem?
+1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
+1. Import Pounds or import prices on the RHS.  Both are endogenous.  Both IV coefficents are in the "right direction" compared to the OLS coefficients.
+1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about \$1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a \$0.01 change in silver hake prices. 
+1. Weighting observations by pounds in that transaction. Yea or Nay.
+
+\newpage
+
+# Weighting observations
+
+@Dumouchel1983 describes a test that looks like a Durbin-Wu-Hausman test for the applicability of Weighted OLS versus OLS.  For observations $i= 1,\ldots, n$ the weight matrix $W$ is a diagonal elements $w_i$. They describe a sampling weight setup where weights are proportional to the $\frac{\pi_j}{n_j}$, where $\pi_j$ is proportion of the population is in group $j$ and $n_j$ are the number of individuals sampled randomly from group $j$.  @Dumouchel1983 advocates for OLS when OLS is approrpriate (duh, it's BLUE). They suggest using weighted OLS if OLS does not pass diagnostics.  
+
+> if the sample sizes of the strata, $n_j$, are not proportional to the population proportions \$pi_j$ (i.e., the $w_i$ do not approach equality), then $\hat{\beta}$ need not approach $\beta^*$
+
+The specification test looks like a  Durbin-Wu-Hausman style test.  Starting with a model of 
+
+```
+regress y x
+regress y  x Wx
+```
+
+and then test all the Wx for significance (don't forget that x contains a constant, so Wx contains W). I suppose you could also do an $nR^2$ style $\chi^2$ test. @Dumouchel1983 illustrates a bunch of ways to do this (that were important when there wasn't much computing power). The writing is a little sloppy, but I think it involves
+
+```
+regress x Wx
+predict res1, residuals
+regress y x res1
+```
+There's a really nice walk though about how to diagnose/interpret your findings when you get significant coefficients on the Wx variables.  For example, the significant $Wx$ variables in their regression are mothers education, county unemployment, race, and sex. They test specifications of the form (i.sex##c.mothers income) but those are not statistically significant. They find that (i.sex##c.county_unemployment) increase model fit.  After doing that, they find that there are still some signfiicant $Wx$ variables, so they continue experimenting with the specifications.
+
+@Winship1994 basically state that OLS is BLUE. Anything that weights the observations by a positive number will increase the variance of the error term. 
+
+>Many individuals' intuition would probably suggest that weighted data should also be used for the estimation of regression models. After all, using the weighted data will give covariance and variance estimates that are unbiased and consistent estimates of the quanttiies in the population. Thus the regression estimates should also be unbiased and consistent estimates of the regression model for the entire population.
+
+@Winship1994 this is a mistake for three reasons
+1. If the original equation was homoskedastic, the new equation will be heteroskedastic.
+1. Canned software produces the wrong standard errors
+1. The variance is higher. 
+
+IMHO, 1 and 2 aren't really big deals anymore.  
+
+Diewert (2003) advocates pretty strenuously for weighting by value (compared to quantity or not weighting at all). 
+
+>Usually, discussions of how to use quantity or expenditure weights in a hedonic regression are centered around discussions on how to reduce the heteroskedasticity of error terms. In this section, we attempt a somewhat different approach based on the idea that the regression model should be representative. In other words, if model $k$ sold $q_{kt}$ times in period $t$, then perhaps model $k$ should be repeated in the period $t$ hedonic
+regression $q_{kt}$ times so that the period $t$ regression is representative of the sales that actually occurred during the period.
+
+>Thus our representative approach follows along the lines of Theil’s (1967; 136-138) stochastic approach to index number theory, which is also pursued by Rao (2002). The use of weights that reflect the economic importance of models was recommended by Griliches (1971b; 8): “But even here, we should use a weighted regression approach, since we are interested in an estimate of a weighted average of the pure price change, rather than just an unweighted average over all possible models, no matter how peculiar or rare.” However, he did not make any explicit weighting suggestions
+
+
+>The problem with quantity weighting is this: it will tend to give too little weight tomodels that have high prices and too much weight to cheap models that have low amounts of useful characteristics.  Hence it appears to us that value weighting is clearly preferable. Thus we are taking the point of view that the main purpose of the period $t$ hedonic regression is to enable us to decompose the market value of each model sold, $p_{kt}q_{kt}$, into the product of a period $t$ price for a quality adjusted unit of the hedonic commodity, say $P_{t}$, times a constant utility total quantity for model $k$, $Q_{kt}$.
+
+However, the context of Diewert is pretty narrow: constructing of a price index.  This feels like a direct rebuttal to @Winship1994 and @Dumouchel1983.  
+
+Stata offers probability, importance, analytic, and frequency weights. p-weights are related to sampling design and are not relevant. iweights are a hack. fweights are for duplicate observations (say 1 observation represents 10 sales, or something like that).  aweights are similar, but normalize by total $N$. So each observation can be treated as an average.  
+
 
 # References
 <div id="refs"></div>
