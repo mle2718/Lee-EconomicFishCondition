@@ -99,8 +99,8 @@ graph export ${common_images}/scatter_conditions_and_pricesB_${vintage_string}.p
 
 
 /* do a regression of price on condition at the annual level.*/
-
-statsby _b _se N, by(nespp3) saving(${common_results}/`outfile', replace): regress delp del
+preserve
+statsby _b _se e(N), by(nespp3) saving(${common_results}/`outfile', replace): regress delp del
 
 use ${common_results}/`outfile', clear
 rename _eq2_stat_1 N
@@ -112,10 +112,10 @@ decode nespp3, gen(species)
 order specie beta_condition se_condition signif
 
 
-mkmat beta_condition se_condition signif, matrix(output) rownames(species)
-estout matrix(output, fmt(a3 a3 a1)) using  ${common_tables}/`regress_out', style(tex) title("") replace substitute("_" " ")
+mkmat beta_condition se_condition signif N, matrix(output) rownames(species)
+estout matrix(output, fmt(a3 a3 a1 a1)) using  ${common_tables}/`regress_out', style(tex) title("") replace substitute("_" " ")
 save ${common_results}/`outfile', replace
 
-
+restore
 graph close _all
 log close
