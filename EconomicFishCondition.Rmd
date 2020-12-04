@@ -33,25 +33,60 @@ vintage<-"2020_12_03"
 
 # Introduction
 
-This is an introduction.
+Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{panel_condition} through  \ref{sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{sepscatter_conditions} would also be good species to look at.  Table \ref{priceconditionreg} reports the results of regression price on condition at the annual level. There are approx 25 data points per species.
+
+[^fn_condition]: The fish condition project is here: https://github.com/NOAA-EDAB/FisheryConditionLinks
+
+
+ 
+```{r panel_condition, fig.show = "hold", out.width = "80%", fig.cap="\\label{panel_condition}Panel plots of fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(common_images,paste0("delta_conditions_and_prices_",vintage,".png")))
+```
+
+
+```{r scatter_condition, fig.show = "hold", out.width = "80%", fig.cap="\\label{scatter_conditions}Scatter of Fish condition and real prices, normalized by group mean. Excluding Ocean Pout and Little Skate",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(common_images,paste0("scatter_conditions_and_prices_",vintage,".png")))
+```
+
+
+```{r sepscatter_conditions, fig.show = "hold", out.width = "45%", fig.cap="\\label{sepscatter_conditions}Scatter of Fish condition and real prices, normalized by group mean. Species are separately colorized. Excluding Ocean Pout and Little Skate",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(common_images,paste0(c("scatter_conditions_and_pricesA_","scatter_conditions_and_pricesB_"),vintage,".png")))
+```
+
+
+\newpage
+  \begin{table}
+    \begin{center}
+        \begin{tabular}{lrrr}
+          \input{./tables/common/price_condition_reg.tex}
+        \end{tabular}  
+          \caption{Coefficients for an OLS regression of   \label{priceconditionreg}}
+        
+    \end{center}
+  \end{table}
+
 
 ## Related literature
 
 Here is a plop of related literature on hedonic models:
 
-1. Whitefish - [@Kristofersson2004; @Kristofersson2007 ; @Lee2014; @Hammarlund2015; @Pettersen2016; @Pettersen2018]
+1. Whitefish - [@Kristofersson2004; @Kristofersson2007 ; @Lee2014; @Hammarlund2015;  @Asche2015c; @Pettersen2016; @Pettersen2018]
 1. Northeast US [@Lee2014; @Ardini2018]
 1. Many - [@Sjoberg2015; @Gobillon2017]
+1. Others - 
+    1. retail [@Roheim2007; @Roheim2011; @Bronnmann2016; @Asche2015pricing;@Blomquist2015]
+    1. older/classic - 
+    1. [@Wakamatsu2014; @Wakamatsu2016]
+    
+On Whiting and Economics
 
-Whiting
-
-1. @Graddy1995;@Graddy2006 
+1. @Graddy1995;@Graddy2006 ; @Graddy2010
 1. @Helser1996; @Thunberg1998
 
-Bioeconomic
+Bioeconomic models
 
 1. Product quality - @Larkin2004
-
+1. @Diekert2010; 
 <!--
 
 
@@ -127,7 +162,8 @@ Probably going to need an equation or two here.
 
 
 # Theoretical Model
-Hah.  This is the first stage of a hedonic model; there's no theory.
+Hah.  This is the first stage of a hedonic model; there's no theory.  
+
 
 # Empirical Model 
 We will want to try linear, log-linear, and log-log functional forms. Also IHS to deal with some zero quantities when quantity enters in a disaggregated form.  
@@ -160,17 +196,6 @@ Here is some super boring "inside baseball" detail  on the NEFSC data.
 
 Fish conditions come from Laurel; basically I'm just using the annual data.  There's a bit of finessing the data links for a couple species (spotted hake and chub mackerel). 
 
-
- 
-```{r , fig.show = "hold", out.width = "80%", fig.cap="Fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(common_images,paste0("delta_conditions_and_prices_",vintage,".png")))
-```
-
-
- 
-```{r , fig.show = "hold", out.width = "80%", fig.cap="Fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
-knitr::include_graphics(file.path(common_images,paste0("scatter_conditions_and_prices_",vintage,".png")))
-```
 
 ## External Data
 
@@ -317,7 +342,6 @@ We also have a negative coefficient on income. I'm not sure if this is really an
 The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The negative R^2 should be disregarded, I'll use RMSE instead. 
 
 \newpage
-R
 
 \begin{landscape}
   \begin{table}
