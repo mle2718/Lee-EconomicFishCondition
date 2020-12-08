@@ -27,6 +27,8 @@ ssc install outreg2
 ssc install sepscatter
 ssc install estout
 ```
+before running any code.
+
 Installing ivreghdfe is a bit more involved
 ```
 * Install ftools (remove program if it existed previously)
@@ -55,7 +57,6 @@ net install ivreghdfe, from(https://raw.githubusercontent.com/sergiocorreia/ivre
 
 See https://github.com/sergiocorreia/ivreghdfe
 
-before running any code.
 
 # External data
 
