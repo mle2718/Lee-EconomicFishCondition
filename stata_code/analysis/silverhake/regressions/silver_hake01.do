@@ -1,5 +1,6 @@
-/* code to run some preliminary regressions on Silver Hake */
-
+/* code to run some preliminary regressions on Silver Hake.*/
+/* Most of these regressions are probably fatally misspecified */
+/* but still, it's good to keep a record of them */
 cap log close
 
 
@@ -104,103 +105,152 @@ We don't really want to estimate a full blown demand system (for whiting).  One 
 	*/
 
 /* market categories changed a bit over time */
-
+/* this is a bad regression, I experiminted with it a bit to figure out how to set up the shift in market categories (mkt_shift) */
 gen mkt_shift=date>=mdy(1,1,2004)
 reg priceR_GDPDEF lnq rGDPcapita ib1.mkt_shift#ib5090.nespp4 i.year `ifconditional', robust
 
 
 
-/* ols, absorbing various things */
+/* Model OLS00: Basic ols, where real prices are a function of log aggregate quantities, GDP, market category and year dummies.  This is a bad regression.*/
 reg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 i.year `ifconditional', robust
 pause
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Day of week effects, No, Vessel Effects, No,  Model, OLS) drop(`years') replace ctitle("Real Price")
 
+/* Model OLS01:  Same as immediately previous, but with month dummies.  This is a bad regression.*/
+
 reg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 i.month  i.year  `ifconditional',robust
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,  Day of week effects, No, Vessel Effects, No, Model, OLS) drop(`months' `years')  ctitle("Real Price")
+
+/* Model OLS02: Same as immediately previous, but with day-of-week dummies.  This is a bad regression.*/
 
 reg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 i.month  i.year  i.dow `ifconditional', robust
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,  Day of week effects, Yes, Vessel Effects, No, Model, OLS) drop(`months' `years' `dow')  ctitle("Real Price")
 
+/* Model OLS03: Same as immediately previous, but with vessel dummies.  This is a bad regression.*/
 
 areg priceR_GDPDEF lnq rGDPcapita ib5090.nespp4 ib7.month  i.year i.dow  `ifconditional', absorb(permit) robust
 outreg2 using ${linear_table1}, tex(frag) label adds(ll, e(ll), rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Model,OLS) drop(`months' `years' `dow')  ctitle("Real Price")
 
-
-/*IV, using lag of quantities as an instrument */
+/***************************************************************************************/
+/******************These IV models are similar to OLS but use lags as instruments for endogenous quantities***************************/
+/* MODEL IV01: This is model OLS01, but using lag of quantities as an instrument */
 ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4  i.year (lnq=lnq_lag1)  `ifconditional' , robust
 outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No,  Day of week effects, No, Model, IV) drop(`years')  ctitle("Real Price")
 
+/* MODEL IV02: This is model OLS02, but using lag of quantities as an instrument */
 ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4 i.month  i.year (lnq=lnq_lag1)  `ifconditional',robust
 outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes,  Day of week effects, No, Model, IV) drop(`months' `years')  ctitle("Real Price")
  
  
+ /***************************************************************************************/
+
  
-/* try the IV model using the inverse hyperbolic sin transform */
+ /***************************************************************************************/
+/******************These IV models are similar to the previous but use the IHS transforms ***************************/
+/******************These vary based on the fixed effects ***************************/
+
+ /* MODEL IV11: try the IV model using the inverse hyperbolic sin transform with Year Dummies. This is similar to IV01, but also disaggregates the silver hake landings into "own" and "other */
  ivregress 2sls priceR_GDPDEF ihsrGDPcapita ib5090.nespp4  i.year (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 
  *outreg2 using ${linear_table1}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Model, IV) drop(`years')  ctitle("Real Price")
 
-/* try the IV model using the inverse hyperbolic sin transform */
+ 
+ 
+ /* MODEL IV12:try the IV model using the inverse hyperbolic sin transform  with Year and Month Dummies. This is similar to IV02, but also disaggregates the silver hake landings into "own" and "other */
+
+ ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.year i.month (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
+est store YearDums
+ 
+ outreg2 using ${linear_table2}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Day of week effects, No, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') replace ctitle("IHS Price")
+
+ 
+ 
+/* MODEL IV13:try the IV model using the inverse hyperbolic sin transform  with Year and Day-of-week Dummies. This is similar to IV02, but also disaggregates the silver hake landings into "own" and "other */
  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.year i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 est store YearDums
  
- outreg2 using ${linear_table2}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Day of week effects, YES, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') replace ctitle("IHS Price")
+ outreg2 using ${linear_table2}, tex(frag) label adds(rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, No, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') replace ctitle("IHS Price")
 
  
  
- /* try the IV model using the inverse hyperbolic sin transform */
+ /* MODEL IV14:try the IV model using the inverse hyperbolic sin transform  with Month and day-of-week Dummies.  */
+
  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.month  i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
- outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, Yes, Month Effects, Yes, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
+ outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, No, Month Effects, Yes, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
 
  est store YearMonthDums
  
-  /* try the IV model using the inverse hyperbolic sin transform */
+ /* MODEL IV14:try the IV model using the inverse hyperbolic sin transform  only day of week dummies.  */
  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 
  est store Pooled
 
  
- gen qtr=quarter(date)
-  gen quarterly=qofd(date)
+ /***************************************************************************************/
+ 
+ 
+ 
+ 
+/******************These IV models are similar to the previous but use the IHS transforms ***************************/
+/******************These vary based on the fixed effects ***************************/
+
+ 
+gen qtr=quarter(date)
+gen quarterly=qofd(date)
+
+  
+  
+  
+  
+   /* MODEL IV21:try the IV model using the inverse hyperbolic sin transform  year, quarter, day of week dummies.  */
 
   ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.year i.qtr i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 
   est store YearQtrDums
   
-  
+  /* MODEL IV22:try the IV model using the inverse hyperbolic sin transform  quarterly and day-of-week dummies.  */
+	 
   /* can't put in GDPcapita AND quarterly dummies */
     ivregress 2sls ihspriceR ib5090.nespp4  i.quarterly i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
   est store QuarterlyDums
 
-  
+    /* MODEL IV23:try the IV model using the inverse hyperbolic sin transform  quarter and day-of-week dummies. (same as IV21, but without year dummies)  */
+
     ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4  i.qtr i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
   est store QtrDums
 
   
   est table YearDums YearMonthDums Pooled YearQtrDums QtrDums QuarterlyDums, keep( ihsrGDPcapita ihs_ownq ihs_other_landings 5091.nespp4 5092.nespp4 5093.nespp4 5094.nespp4 5095.nespp4 5096.nespp4) b p
-
-  
-  
-    est table YearDums YearMonthDums Pooled YearQtrDums QtrDums QuarterlyDums, drop( ihsrGDPcapita ihs_ownq ihs_other_landings  5091.nespp4 5092.nespp4 5093.nespp4 5094.nespp4 5095.nespp4 5096.nespp4) b p
+  est table YearDums YearMonthDums Pooled YearQtrDums QtrDums QuarterlyDums, drop( ihsrGDPcapita ihs_ownq ihs_other_landings  5091.nespp4 5092.nespp4 5093.nespp4 5094.nespp4 5095.nespp4 5096.nespp4) b p
 
 	
 	
 /*models with condition factor */
  
+ /* MODEL IV31:try the IV model with Condition Factor.  This is a linear-ish model and probably not well specified.  */
+
+ 
+ 
  ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4  i.month meancond_Annual stddevcond_Annual (lnq=lnq_lag1)  `ifconditional' , robust
 est store IVcondition
  
  
+  /* MODEL IV32:try the IV model with Condition Factor.  This is IHS transformed. so it might be a bit better. However, it treats import prices as exogenous, which is probably not good. */
+
   ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual price_allIMP_R_GDPDEF i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
 est store IHScondition
  outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, No, Month Effects, no, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
 
 
+  /* MODEL IV33: try the IV model with Condition Factor.  This is linear. However, it treats import prices as endogenous (instruments with lags) which is a bit better. */
+
   ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual)  i.dow (price_allIMP_R_GDPDEF own4landings other_landings=ownq_lag1 other_landings_lag1 price_allIMP_lag1_R_GDPDEF price_allIMP_lag12_R_GDPDEF )   `ifconditional', cluster(date)
   est store LEVELcondition
 
-  
-    ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual i.month i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional', cluster(date)
+ /* MODEL IV34: try the IV model with Condition Factor.  This is IHS transformed.  Out of all the models in this do file, this is the most likely to be reasonably specified.  
+ Shortcoming: are 1. Permit fixed effects
+ No Year Fixed Effects*/
+ ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual i.month i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional', cluster(date)
  outreg2 using ${linear_table2}, tex(frag) label adds( rmse, e(rmse)) addtext(Year effects, No, Month Effects, Yes, Day of week effects, Yes, Vessel Effects, No,  Model, IV) drop(`years' `months' `dow') ctitle("IHS Price")
 
  
