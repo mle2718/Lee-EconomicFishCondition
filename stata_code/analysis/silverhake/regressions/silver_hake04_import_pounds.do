@@ -1,8 +1,13 @@
-/* code to run some preliminary regressions on Silver Hake */
+/* code to run some  regressions on Silver Hake. Regressions here have a better chance of being well specified compared to silver_hake01.do and silver_hake02.do 
+These are really similar to the silver_hake03.do file.
+Most of the models here use IVREGHDFE to condition out "many" fixed effects. 
+
+The bigger difference is that I'm using import pounds instead of import prices as a RHS variable.
+*/
 cap log close
 
 
-local logfile "silver_hake01_${vintage_string}.smcl"
+local logfile "silver_hake04import_${vintage_string}.smcl"
 
 global silverhake_results ${my_results}/silverhake
 global silverhake_tables ${my_tables}/silverhake
@@ -17,22 +22,22 @@ vintage_lookup_and_reset
 postutil clear
 estimates clear
 
-
-
-
-
+/*setup input and output files */
+global working_nespp3 509
 local  in_data ${data_main}/dealer_prices_final_spp_${working_nespp3}_${vintage_string}.dta 
 local  marketcats ${data_raw}/dealer_nespp4_codes${vintage_string}.dta 
-
-global linear_table3 ${silverhake_tables}/silver_hake3Q.tex
-
-global condition_table ${silverhake_tables}/silver_hake_conditionQ.tex
-global ihs_table ${silverhake_tables}/silver_hake_ihsQ.tex
+local  statecodes ${data_raw}/state_codes${vintage_string}.dta 
 
 
-global year_table ${silverhake_tables}/silver_hake_yearsQ.tex
-global month_week_table ${silverhake_tables}/silver_hake_month_weekQ.tex
-global bse ${silverhake_tables}/bse_silver_hakeQ.dta
+global linear_table3 ${silverhake_tables}/silver_hake4Q.tex
+
+global condition_table ${silverhake_tables}/silver_hake_condition4Q.tex
+global ihs_table ${silverhake_tables}/silver_hake_ihs4Q.tex
+
+
+global year_table ${silverhake_tables}/silver_hake_years4Q.tex
+global month_week_table ${silverhake_tables}/silver_hake_month_week4Q.tex
+global bse ${silverhake_tables}/bse_silver_hake4Q.dta
 
 
 /* don't show year or month coeficients in outreg */
@@ -85,6 +90,11 @@ labmask nespp4, value(sp_mkt)
 drop _merge
 
 
+/* construct states */
+gen statecd=floor(port/10000)
+merge m:1 statecd using `statecodes', keep(1 3)
+assert _merge==3
+labmask statecd, value(stateabb)
 
 /* Normalize 
 Need to deflate */
@@ -127,11 +137,11 @@ gen date=mdy(month,day,year)
 
 gen markin=1
 replace markin=0 if date==.
-replace markin=0 if nominal>8 
 replace markin=0 if inlist(nespp4,5097)==1
-replace markin=0 if nominal==0
+replace markin=0 if nominal>8 
+replace markin=0 if nominal<=0.05
 replace markin=0 if fzone==4
-
+replace markin=0 if inlist(stateabb,"DE", "PA","NK")
 local ifconditional "if markin==1"
 cap drop _merge
 
@@ -166,7 +176,7 @@ label var ihspounds_allIMP_lag1 "IHS Import Quantity, 1 month lag"
 
 /* IVs log-log  with permit and dealer effects; */
 local modelname iv_log_fe
-local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA
+local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -230,7 +240,7 @@ local replacer
 /* IVs log-log  WITHOUT permit and dealer effects; */
 local modelname iv_log_nofe
 
-local depvars lnrGDPcapita ib5090.nespp4   i.dow  i.fzone i.BSA ib7.month i.year
+local depvars lnrGDPcapita ib5090.nespp4   i.dow  i.fzone i.BSA ib7.month i.year i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -259,7 +269,7 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 /* OLS in logs log-log  is okay-ish; */
 local modelname ols_log_fe
 
-local depvars  lnrGDPcapita lnq  lnpounds_allIMP ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
+local depvars  lnrGDPcapita lnq  lnpounds_allIMP ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA i.statecd
 reghdfe lnpriceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
 
 
@@ -305,7 +315,7 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 /* ols in levels */
 local modelname ols_linear_fe
 
-local depvars daily_landings rGDPcapita pounds_allIMP ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
+local depvars daily_landings rGDPcapita pounds_allIMP ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA  i.statecd
 
 
 reghdfe priceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
@@ -343,7 +353,7 @@ Small
 /* linear IV*/
 local modelname iv_linear_fe
 
-local depvars rGDPcapita   ib5090.nespp4 ib7.month  i.year ib7.month i.dow  i.fzone i.BSA
+local depvars rGDPcapita   ib5090.nespp4 ib7.month  i.year ib7.month i.dow  i.fzone i.BSA i.statecd
 local endog daily_landings pounds_allIMP
 local excluded q_lag1 lnpounds_allIMP_lag1
 
@@ -379,7 +389,7 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 
 Cannot include FY specific effects */
 local modelname iv_log_condition
-local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA meancond_Annual stddevcond_Annual
+local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA meancond_Annual stddevcond_Annual i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -403,7 +413,7 @@ foreach r of local regression_vars {
 
 Cannot include FY specific effects */
 local modelname iv_log_condition2
-local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA lnmeancond_Annual lnstddevcond_Annual
+local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA lnmeancond_Annual lnstddevcond_Annual i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -428,7 +438,7 @@ foreach r of local regression_vars {
 
 /* IVs ihs and disaggregate the quantities */
 local modelname iv_ihs
-local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.year i.fzone i.BSA 
+local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.year i.fzone i.BSA  i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -454,7 +464,7 @@ foreach r of local regression_vars {
 
 /* IVs ihs with condition */
 local modelname iv_ihs_cond
-local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
+local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -482,7 +492,7 @@ postclose handle
 
 /* IVs ihs with condition and dpi */
 local modelname iv_ihs_dpi
-local depvars ihsrealDPIcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
+local depvars ihsrealDPIcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -499,7 +509,7 @@ est store iv_ihs_dpi
 
 /* IVs ihs with condition and personal_income */
 local modelname iv_ihs_pi
-local depvars ihspersonal_income_capita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
+local depvars ihspersonal_income_capita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
