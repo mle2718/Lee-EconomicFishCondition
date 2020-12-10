@@ -1,4 +1,12 @@
-/* code to run some preliminary regressions on Silver Hake */
+/* code to run some preliminary regressions on Silver Hake. Regressions here have a better chance of being well specified compared to silver_hake01.do, but still a little dodgy 
+Most of the models here use IVREGHDFE to condition out "many" fixed effects. 
+
+Differences from silver_hake01
+	account for shifts in the market categories in 2004
+
+
+
+*/
 cap log close
 
 
@@ -34,7 +42,7 @@ global bse ${silverhake_tables}/bse.dta
 local  ster_out ${silverhake_results}/silver_hake02_${vintage_string}.ster 
 
 
-/* don't show year or month coeficients in outreg */
+/* This is some junk to help avoid showing some types of coefficients in outreg */
 local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month 0.month 0b.month 12o.month
 local years 1995.year 1996.year 1997.year 1998.year 1999.year 2000.year 2001.year 2002.year 2003.year 2004.year 2005.year 2006.year 2007.year 2008.year 2009.year 2010.year 2011.year 2012.year 2013.year 2014.year 2015.year 2016.year 2017.year 2018.year 2019.year 2020.year
 local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow 
@@ -154,8 +162,7 @@ label var price_allIMP_R_GDPDEF "Real Import Price"
 
 gen mkt_shift=date>=mdy(1,1,2004)
 
-
-/* IVs log-log  with permit and dealer effects; */
+/* MODEL IV31: log-log  with permit and dealer effects; */
 local modelname iv_log_fe
 
 local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA i1.mkt_shift#ib5090.nespp4 i0.mkt_shift#io(5093 5095 5096 5097).nespp4
@@ -186,7 +193,7 @@ foreach r of local regression_vars {
 
 
 
-/* IVs log-log  is better fitting; 
+/* IVs log-log  is better fitting than previous models; 
 
 1.  Coefficient on import prices is positive, as expected. The elasticity is 0.58.
 2. The Elasticity of price wrt income (atmeans) is still a little too  negative (-.90).  
@@ -218,9 +225,7 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 local replacer 
 
 
-
-
-/* IVs log-log  WITHOUT permit and dealer effects; */
+/* MODEL IV32: IVs log-log  same as previous, but WITHOUT permit and dealer effects.  Differences with previous could be interpreted as due to those individual specific effects. */
 local modelname iv_log_nofe
 
 local depvars lnrGDPcapita ib5090.nespp4   i.dow  i.fzone i.BSA ib7.month i.year
@@ -248,8 +253,7 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 
 
 
-
-/* OLS in logs log-log  is okay-ish; */
+/* OLS32: This is the same as immediately previous, but treating all RHS as exogenous. */
 local modelname ols_log_fe
 
 local depvars  lnrGDPcapita lnq  lnprice_allIMP_R_GDPDEF ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
@@ -294,8 +298,7 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 
 
 
-
-/* ols in levels */
+/* OLS33: This is the same as previous, but in levels instead of logs. */
 local modelname ols_linear_fe
 
 local depvars daily_landings rGDPcapita price_allIMP_R_GDPDEF ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
@@ -332,8 +335,7 @@ Medium
 Small
 */
 
-
-/* linear IV*/
+/* IV 33: similar to the OLS33, however we treat aggregate landings and import prices as endogenous.*/
 local modelname iv_linear_fe
 
 local depvars rGDPcapita   ib5090.nespp4 ib7.month  i.year ib7.month i.dow  i.fzone i.BSA
@@ -362,6 +364,7 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 
 
 
+/* IV 34: similar to the IV33, but estimated in logs AND we cannot include FY effects because they are  correlated with the condition factors*/
 
 /* IVs log-log condition factor with permit and dealer effects
 
@@ -386,6 +389,7 @@ foreach r of local regression_vars {
     post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
 }
 
+/* IV 35: similar to the IV34, but condition factors enters in logs instead of levels*/
 
 /* IVs log-log condition factor with permit and dealer effects
 
@@ -412,6 +416,7 @@ foreach r of local regression_vars {
 
 
 
+/* IV 36: similar to the IV33 and OLS33 but using the IHS transform and disaggregated quantities*/
 
 
 /* IVs ihs and disaggregate the quantities */
@@ -437,11 +442,12 @@ foreach r of local regression_vars {
 
 
 
+/* IV 37: similar to the IV36 but adding condition factor. Also similar to IV34 and IV35*/
 
 /* IVs ihs with condition */
 local modelname iv_ihs_cond
 local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
-local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
+local endog ihs_ownq ihs_other_landings  ihsprice_allIMP_R_GDPDEF
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
 
 
@@ -464,6 +470,7 @@ foreach r of local regression_vars {
 
 
 
+/* IV 38: similar to the IV37, but using Disposable Personal Income instead of GDP/capita as our income variable*/
 
 /* IVs ihs with condition and dpi */
 local modelname iv_ihs_dpi
@@ -487,6 +494,7 @@ foreach r of local regression_vars {
 
 
 
+/* IV 39: similar to the IV37 and IV38, but using Personal Income as our income variable*/
 
 /* IVs ihs with condition and personal_income */
 local modelname iv_ihs_pi
@@ -511,23 +519,3 @@ postclose handle
 
 
 log close
-
-
-/*
-
-/*models with condition factor */
- 
- ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4  i.month meancond_Annual stddevcond_Annual (lnq=lnq_lag1)  `ifconditional' , robust
-est store IVcondition
- 
- 
-  ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual price_allIMP_R_GDPDEF i.dow (ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1)  `ifconditional', cluster(date)
-est store IHScondition
-
-
-  ivregress 2sls priceR_GDPDEF rGDPcapita ib5090.nespp4##(c.meancond_Annual c.stddevcond_Annual)  i.dow (price_allIMP_R_GDPDEF own4landings other_landings=ownq_lag1 other_landings_lag1 price_allIMP_lag1_R_GDPDEF price_allIMP_lag12_R_GDPDEF )   `ifconditional', cluster(date)
-  est store LEVELcondition
-
-  
-    ivregress 2sls ihspriceR ihsrGDPcapita ib5090.nespp4   meancond_Annual stddevcond_Annual i.month i.dow (ihsimportR ihs_ownq ihs_other_landings=ihsownq_lag1 ihs_other_landings_lag1 ihsimport_lag1 ihsimport_lag12)  `ifconditional', cluster(date)
-*/

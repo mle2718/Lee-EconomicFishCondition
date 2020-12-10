@@ -1,7 +1,19 @@
-/* code to run some preliminary regressions on Silver Hake 
-Differences from silver_hake03
+/* code to run some preliminary regressions on Silver Hake. Regressions here have a better chance of being well specified compared to silver_hake01.do and silver_hake02.do 
+Most of the models here use IVREGHDFE to condition out "many" fixed effects. 
+
+
+Differences from silver_hake02
 	Exclude permit=0 and dealnum=0 from the dataset
+	
+	Exclude fzone==4
+	Exclude landings in ("DE", "PA","NK")
+	
+	Include our recession dummy variable. USRECM
+
 	account for shifts in the market categories in 2004
+	
+	
+	I set up some functionality to handle a weighted regression. 
 */
 cap log close
 
@@ -121,11 +133,6 @@ gen ln`var'=ln(`var')
 gen ihsimport_lag1=asinh(price_allIMP_lag1_R_GDPDEF)
 gen ihsimport_lag12=asinh(price_allIMP_lag12_R_GDPDEF)
 
-/********************************************************/
-/********************************************************/
-/* you really need to do more data cleaning and look at some descriptive statistics */
-/********************************************************/
-/********************************************************/
 
 /*tsset -- generate an xid variable that doesn't mean anything
 And date is the time variable 
@@ -193,8 +200,7 @@ label var price_allIMP_R_GDPDEF "Real Import Price"
 
 gen mkt_shift=date>=mdy(1,1,2004)
 
-
-/* IVs log-log  with permit and dealer effects; */
+/*  MODEL IV41: Same as IV31, but added indicators for state.  Should have been there all along.*/
 local modelname iv_log_fe`wtype'
 local replacer1 replace
 local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
@@ -210,6 +216,7 @@ local replacer1 append
 
 
 
+/*  MODEL IV42: Same as IV41, but I added in quarterly landings as an extra explanatory variable I wanted to see if this was explaining prices.*/
 
 
 /* IVs log-log  with permit and dealer effects; */
@@ -227,6 +234,7 @@ est save `ster_out', `replacer1'
 
 
 
+/*  MODEL IV43: Same as IV42, but I took out the income effect.*/
 
 /* IVs log-log  with permit and dealer effects; */
 local modelname iv_log_fe`wtype'3
@@ -243,6 +251,7 @@ est save `ster_out', `replacer1'
 
 
 
+/*  MODEL IV44: Same as IV43 but I added in log of aggregate value of landed fish.  I'm assuming this is exogenous to the price of whiting.*/
 
 /* IVs log-log  with permit and dealer effects; */
 local modelname iv_log_fe`wtype'4
@@ -258,7 +267,7 @@ est save `ster_out', `replacer1'
 
 
 
-/* IVs log-log  with permit and dealer effects; */
+/*  MODEL IV45: Same as IV44 but I added in log of aggregate daily landings (quantities).  I'm assuming this is exogenous to the price of whiting.*/
 local modelname iv_log_fe`wtype'5
 local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd ln_aggregateL 
 local endog lnq  lnprice_allIMP_R_GDPDEF
@@ -271,7 +280,7 @@ est store iv_log`wtype'5
 est save `ster_out', `replacer1'
 
 
-/* IVs log-log  with permit and dealer effects; */
+/*  MODEL IV46: Same as IV45 but I'm assuming landings are endogenous to prices and instrumenting with 1 day lag .*/
 local modelname iv_log_fe`wtype'6
 local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd  
 local endog lnq  lnprice_allIMP_R_GDPDEF ln_aggregateL
@@ -285,34 +294,12 @@ est save `ster_out', `replacer1'
 
 
 
-/* IVs log-log  is better fitting; 
-
-1.  Coefficient on import prices is positive, as expected. The elasticity is 0.58.
-2. The Elasticity of price wrt income (atmeans) is still a little too  negative (-.90).  
-The order of prices is:"
-King & Large
-
-Round
-Dressed
-Juvenile
+/*  MODEL IV47: Similar to IV41 but no ermit - dealer- fixed effects */
 
 
-Medium
-Small
-
-Highest prices in the winter/spring.  Say December to April.
-large DOW effects that arent' seen in the ols models. 
-fzone 4= higher prices than others (by alot)
-Norther has slighly higher prices than southern.
-*/
-
-
-
-
-/* IVs log-log  WITHOUT permit and dealer effects; */
 local modelname iv_log_nofe`wtype'
 
-local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
+local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
@@ -325,12 +312,30 @@ est store iv_log_nofe`wtype'
 est save `ster_out', `replacer1'
 
 
+/*  MODEL IV48: Similar to IV47 but no income effects */
+
+local modelname iv_log_nofe`wtype'
+
+local depvars ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
+
+local endog lnq  lnprice_allIMP_R_GDPDEF
+local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
+
+ivreg2 lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional' `weighted', robust
+est title: IV, Log-log, No FE. No condition.
+
+est store iv_log_nofe_noinc`wtype'
+
+est save `ster_out', `replacer1'
 
 
 
-/* IVs log-log  with permit and dealer effects; */
+
+
+
+/*  MODEL IV49: Similar to IV41 but no income effects */
+
 local modelname iv_log_fe`wtype'
-local depvars  ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA
 local depvars  ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
@@ -346,9 +351,8 @@ local replacer1 append
 
 
 
-
-
-/* OLS in logs log-log  is okay-ish; */
+/* i should probably stop estimating OLS models */
+/*  MODEL OLS40 log-log  is okay-ish; */
 local modelname ols_log_fe`wtype'
 local depvars  lnq  lnprice_allIMP_R_GDPDEF ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 reghdfe lnpriceR_GDPDEF `depvars' `ifconditional' `weighted', absorb(permit dealnum) vce(robust)
@@ -358,7 +362,7 @@ est store ols_log`wtype'
 est save `ster_out', `replacer1'
 
 
-/* ols in levels */
+/*  MODEL OLS41 linear */
 local modelname ols_linear_fe`wtype'
 local depvars daily_landings  price_allIMP_R_GDPDEF ib7.month  i.year  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift i.USRECM  i.statecd
 reghdfe priceR_GDPDEF `depvars' `ifconditional' `weighted', absorb(permit dealnum) vce(robust)
@@ -385,10 +389,8 @@ est save `ster_out', `replacer1'
 
 
 
+/*  MODEL IV51 log -log with condition factors, permit and dealer effects. no year dummies */
 
-/* IVs log-log condition factor with permit and dealer effects
-
-Cannot include FY specific effects */
 local modelname iv_log_condition`wtype'
 local depvars   ib7.month  i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift meancond_Annual stddevcond_Annual  i.statecd
 local endog lnq  lnprice_allIMP_R_GDPDEF
@@ -403,9 +405,10 @@ est store iv_log_condition`wtype'
 est save `ster_out', `replacer1'
 
 
-/* IVs log-log condition factor with permit and dealer effects
 
-Cannot include FY specific effects */
+/*  MODEL IV52 log -log with log-condition factors, permit and dealer effects. no year dummies */
+
+
 local modelname iv_log_condition2`wtype'
 local depvars   ib7.month  i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift lnmeancond_Annual lnstddevcond_Annual  i.statecd
 
@@ -421,8 +424,7 @@ est save `ster_out', `replacer1'
 
 
 
-
-/* IVs ihs aggregate quantities */
+/*  MODEL IV52 ihs where silver hake quantities are aggregated together. This facititates comparison with the model in logs. No quarterly income variable*/
 local modelname iv_ihs`wtype'
 local depvars   ib7.month  i.year i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  i.statecd
 
@@ -437,7 +439,7 @@ est store iv_ihs1`wtype'
 est save `ster_out', `replacer1'
 
 
-/* IVs ihs disaggregate quantities */
+/*  MODEL IV53 ihs where silver hake quantities are disaggregated. No quarterly income variable*/
 
 local modelname iv_ihs`wtype'
 local depvars   ib7.month  i.year i.USRECM  i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift   i.statecd
@@ -456,6 +458,7 @@ est save `ster_out', `replacer1'
 
 
 
+/*  MODEL IV54:  Model 53 with condition*/
 
 /* IVs ihs with condition */
 local modelname iv_ihs_cond`wtype'
@@ -475,7 +478,7 @@ est save `ster_out', `replacer1'
 
 
 
-/* IVs ihs with condition */
+/*  MODEL IV54:  Model 52, but with condition   This facititates comparison with the model in logs. No quarterly income variable*/
 local modelname iv_ihs_cond`wtype'
 local depvars  ib7.month   i.USRECM i.dow  i.fzone i.BSA ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual  i.statecd
 
