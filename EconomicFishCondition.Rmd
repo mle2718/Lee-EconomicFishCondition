@@ -69,7 +69,9 @@ knitr::include_graphics(file.path(common_images,paste0(c("scatter_conditions_and
 
 ## Related literature
 
-Here is a plop of related literature on hedonic models:
+Here is a handful of related literature on:
+
+### hedonic models
 
 1. Whitefish - [@Kristofersson2004; @Kristofersson2007 ; @Lee2014; @Hammarlund2015;  @Asche2015c; @Pettersen2016; @Pettersen2018]
 1. Northeast US [@Lee2014; @Ardini2018]
@@ -79,12 +81,12 @@ Here is a plop of related literature on hedonic models:
     1. older/classic - 
     1. [@Wakamatsu2014; @Wakamatsu2016]
     
-On Whiting and Economics
+### On Whiting and Economics
 
 1. @Graddy1995;@Graddy2006 ; @Graddy2010
 1. @Helser1996; @Thunberg1998
 
-Bioeconomic models
+### Bioeconomic models
 
 1. Product quality - @Larkin2004
 1. @Diekert2010; 
@@ -167,7 +169,7 @@ We are estimating the first stage of a hedonic model; these are equilibrium pric
 
 
 # Empirical Model 
-We will want to try linear, log-linear, and log-log functional forms. Also IHS to deal with some zero quantities when quantity enters in a disaggregated form.  
+We will want to try linear, log-linear, and log-log functional forms. Also Inverse Hyperbolic Sine (IHS) to deal with some zero quantities when quantity enters in a disaggregated form.  Although many of the RHS variables are categorical, linear should still be viewed with suspicion when aggregate quantity is on the RHS. 
 
 Generally, the price per pound ($p_{ijtk}$) of fish that is sold by seller (vessel) $i$ to buyer $j$ on day $t$ is a function of the characteristics of that fish ($X_{ijtk}$) and other characteristics that account for daily market conditions ($Z_{t}$).[^fn_basic]  Multiple sales between a vessel-buyer pair may occur on any day; these sales are indexed by $k$. The equilibrium price function for fish is:
 \begin{equation}
@@ -274,6 +276,23 @@ knitr::include_graphics(file.path(silverhake_images,paste0("condition509_PIC_",v
 knitr::include_graphics(file.path(silverhake_images,paste0("condition509_GDPC_",vintage,".png")))
 ```
 
+# Code and methods
+Code to extract and process data is in the "/stata_code/data_extraction_processing" folder.  Code to make figures is in "stata_code/analysis/silverhake."  Code to do regressions is in "stata_code/analysis/silverhake/regressions"
+
+silver_hake_01.do - this is my first set of exploratory regressions. The code runs quickly (OLS and IVs).  These models not good models, but we can still learn something from them.  
+silver_hake_02.do - this is my second set of exploratory regressions. The code runs slower because I used lots of Fixed Effects for permits and sometimes for dealers and fitted the models with REGHDFE and IVREGHDFE.   Some of these *might* be candidates for an acceptable specification.
+silver_hake_03.do - this is my third set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with 
+silver_hake04_import_pounds.do - this is my fourth set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with 
+
+## To do
+You need to go back and manually code the market shift *nespp4 interactions. letting ivreghdfe do it by itself makes things hard to interpret.  flip it back to i0.mkt_shift
+
+depvars ib5090.nespp4 ib5090.nespp4#i0.mkt_shift 
+or
+depvars ib5090.nespp4 ib5090.nespp4#i1.mkt_shift 
+
+This is the same. I find the 2nd more intuitive to interpret, but they do the same thing.  Also need to have the interactions sent to a table (they are not currently).
+
 # Results
 
 ## OLS 
@@ -352,7 +371,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silverhake/silver_hake_conditionQ.tex}
+          \input{./tables/silverhake/silver_hake_condition4Q.tex}
           \caption{Coefficents when we use import quantities on the RHS and include condition factors.  \label{conditionQ}}
         }
     \end{center}
@@ -375,7 +394,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silverhake/silver_hake_ihsQ.tex}
+          \input{./tables/silverhake/silver_hake_ihs4Q.tex}
           \caption{Inverse hyperbolic sine transform, disaggregated daily quantities. Import Quantities  \label{IHS_Q}}
         }
     \end{center}
