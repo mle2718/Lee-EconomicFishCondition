@@ -42,13 +42,16 @@ global bse ${silverhake_tables}/bse.dta
 local  ster_out ${silverhake_results}/silver_hake02_${vintage_string}.ster 
 
 
+
 /* don't show year or month coeficients in outreg */
 local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month 0.month 0b.month 12o.month
 local years 1995.year 1996.year 1997.year 1998.year 1999.year 2000.year 2001.year 2002.year 2003.year 2004.year 2005.year 2006.year 2007.year 2008.year 2009.year 2010.year 2011.year 2012.year 2013.year 2014.year 2015.year 2016.year 2017.year 2018.year 2019.year 2020.year
 local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow 
 local sizes 5091.nespp4 5092.nespp4  5093.nespp4  5094.nespp4  5095.nespp4  5096.nespp4 
-
+local states 7.statecd 22.statecd 23.statecd 24.statecd 32.statecd 33.statecd 35.statecd 36.statecd 42.statecd 49.statecd 
 clear
+
+
 use `in_data' , clear
 assert nespp3==${working_nespp3}
 cap drop _merge
@@ -197,9 +200,8 @@ gen mkt_shift=date>=mdy(1,1,2004)
 
 /* MODEL IV31: log-log  with permit and dealer effects; */
 local modelname iv_log_fe
-
-local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA i1.mkt_shift#ib5090.nespp4 i0.mkt_shift#io(5093 5095 5096 5097).nespp4
-local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+local depvars `marketcats' lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA 
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
@@ -260,8 +262,9 @@ local replacer
 
 /* MODEL IV32: IVs log-log  same as previous, but WITHOUT permit and dealer effects.  Differences with previous could be interpreted as due to those individual specific effects. */
 local modelname iv_log_nofe
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
 
-local depvars lnrGDPcapita ib5090.nespp4   i.dow  i.fzone i.BSA ib7.month i.year
+local depvars `marketcats' lnrGDPcapita  i.dow  i.fzone i.BSA ib7.month i.year
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
@@ -289,7 +292,9 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 /* OLS32: This is the same as immediately previous, but treating all RHS as exogenous. */
 local modelname ols_log_fe
 
-local depvars  lnrGDPcapita lnq  lnprice_allIMP_R_GDPDEF ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' lnrGDPcapita lnq  lnprice_allIMP_R_GDPDEF  ib7.month  i.year  i.dow  i.fzone i.BSA 
 reghdfe lnpriceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
 
 
@@ -334,7 +339,9 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 /* OLS33: This is the same as previous, but in levels instead of logs. */
 local modelname ols_linear_fe
 
-local depvars daily_landings rGDPcapita price_allIMP_R_GDPDEF ib5090.nespp4 ib7.month  i.year  i.dow  i.fzone i.BSA 
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' daily_landings rGDPcapita price_allIMP_R_GDPDEF ib7.month  i.year  i.dow  i.fzone i.BSA 
 
 
 reghdfe priceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
@@ -371,7 +378,9 @@ Small
 /* IV 33: similar to the OLS33, however we treat aggregate landings and import prices as endogenous.*/
 local modelname iv_linear_fe
 
-local depvars rGDPcapita   ib5090.nespp4 ib7.month  i.year ib7.month i.dow  i.fzone i.BSA
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' rGDPcapita  ib7.month  i.year ib7.month i.dow  i.fzone i.BSA
 local endog daily_landings price_allIMP_R_GDPDEF
 local excluded q_lag1 price_allIMP_lag1_R_GDPDEF
 
@@ -403,7 +412,11 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 
 Cannot include FY specific effects */
 local modelname iv_log_condition
-local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA meancond_Annual stddevcond_Annual
+
+
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' lnrGDPcapita ib7.month  i.dow  i.fzone i.BSA meancond_Annual stddevcond_Annual
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
@@ -428,7 +441,11 @@ foreach r of local regression_vars {
 
 Cannot include FY specific effects */
 local modelname iv_log_condition2
-local depvars lnrGDPcapita ib5090.nespp4 ib7.month  i.dow  i.fzone i.BSA lnmeancond_Annual lnstddevcond_Annual
+
+
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' lnrGDPcapita ib7.month  i.dow  i.fzone i.BSA lnmeancond_Annual lnstddevcond_Annual
 local endog lnq  lnprice_allIMP_R_GDPDEF
 local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 
@@ -454,7 +471,11 @@ foreach r of local regression_vars {
 
 /* IVs ihs and disaggregate the quantities */
 local modelname iv_ihs
-local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.year i.fzone i.BSA 
+
+
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' ihsrGDPcapita ib7.month  i.dow i.year i.fzone i.BSA 
 local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
 
@@ -479,7 +500,11 @@ foreach r of local regression_vars {
 
 /* IVs ihs with condition */
 local modelname iv_ihs_cond
-local depvars ihsrGDPcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
+
+
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars `marketcats' ihsrGDPcapita  ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
 local endog ihs_ownq ihs_other_landings  ihsprice_allIMP_R_GDPDEF
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
 
@@ -507,7 +532,12 @@ foreach r of local regression_vars {
 
 /* IVs ihs with condition and dpi */
 local modelname iv_ihs_dpi
-local depvars ihsrealDPIcapita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
+
+
+
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' ihsrealDPIcapita ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
 local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -531,7 +561,12 @@ foreach r of local regression_vars {
 
 /* IVs ihs with condition and personal_income */
 local modelname iv_ihs_pi
-local depvars ihspersonal_income_capita ib5090.nespp4 ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
+
+
+
+local marketcats i.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift
+
+local depvars  `marketcats' ihspersonal_income_capita ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual
 local endog ihs_ownq ihs_other_landings          ihsprice_allIMP_R_GDPDEF
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
