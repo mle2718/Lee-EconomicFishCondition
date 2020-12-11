@@ -28,10 +28,13 @@ local prices ${data_raw}/annual_nespp4_${vintage_string}.dta
 local deflators $data_external/deflatorsY_${vintage_string}.dta
 /* bring in deflators and construct real compensation */
 
-
+/* unconditional */
 local outfile explore_price_condition_${vintage_string}.dta
-
 local regress_out price_condition_reg.tex
+
+/* control for quantities */
+local outfile2 explore_price_condition2_${vintage_string}.dta
+local regress_out2 price_condition_reg2.tex
 
 
 use `prices', clear
@@ -100,14 +103,14 @@ graph export ${common_images}/scatter_conditions_and_pricesB_${vintage_string}.p
 
 /* do a regression of price on condition at the annual level.*/
 preserve
-statsby _b _se e(N), by(nespp3) saving(${common_results}/`outfile', replace): regress delp del
+statsby _b _se e(N), by(nespp3) saving(${common_results}/`outfile', replace): regress priceR_GDPDEF meancond_Annual
 
 use ${common_results}/`outfile', clear
 rename _eq2_stat_1 N
-gen significant =abs(_b_del/_se_del)>1.31
-gsort - _b_del
-rename _b_del beta_condition
-rename _se_del se_condition
+gen significant =abs(_b_meancond_Annual/_se_meancond_Annual)>1.31
+gsort - _b_meancond_Annual
+rename _b_meancond_Annual beta_condition
+rename _se_meancond_Annual se_condition
 decode nespp3, gen(species)
 order specie beta_condition se_condition signif
 
@@ -117,5 +120,28 @@ estout matrix(output, fmt(a3 a3 a1 a1)) using  ${common_tables}/`regress_out', s
 save ${common_results}/`outfile', replace
 
 restore
-graph close _all
-log close
+
+
+replace landings=landings/1000000
+
+statsby _b _se e(N), by(nespp3) saving(${common_results}/`outfile2', replace): regress priceR_GDPDEF meancond_Annual landings
+
+use ${common_results}/`outfile2', clear
+rename _eq2_stat_1 N
+gen significantC =abs(_b_meancond_Annual/_se_meancond_Annual)>1.31
+gen significantL =abs(_b_landings/_se_landings)>1.31
+gsort - _b_meancond_Annual
+rename _b_meancond_Annual beta_condition
+rename _se_meancond_Annual se_condition
+
+rename _b_landings beta_landings
+rename _se_landings se_landings
+
+decode nespp3, gen(species)
+order specie beta_condition se_condition significantC
+
+mkmat beta_condition se_condition significantC N, matrix(output) rownames(species)
+estout matrix(output, fmt(a3 a3 a1 a1)) using  ${common_tables}/`regress_out2', style(tex) title("") replace substitute("_" " ")
+save ${common_results}/`outfile', replace
+
+
