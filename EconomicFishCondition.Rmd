@@ -35,7 +35,7 @@ vintage<-"2020_12_03"
 
 Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{panel_condition} through  \ref{sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{sepscatter_conditions} would also be good species to look at. 
 
-Table \ref{priceconditionreg} reports the results of regression price on condition at the annual level. There are up to 26 data points (years) per species.  That table is intended to give us a quick look at species where we might pick up an effect of condition on price.  Of course, there are major OVs (landed quantities and import prices) here so don't over-interpret.
+Table \ref{priceconditionreg} reports the results of OLS regression of price on condition and landings at the annual level. There are up to 26 data points (years) per species.  That table is intended to give us a quick look at species where we might pick up an effect of condition on price.  Of course, there are major OVs (import prices) here and other misspecifications, plus there's very few DoF, so don't over-interpret.  Large positive and significant coefficients are consistent with the hypothesis that condition is a good.
 
 [^fn_condition]: The fish condition project is here: https://github.com/NOAA-EDAB/FisheryConditionLinks
 
@@ -59,9 +59,9 @@ knitr::include_graphics(file.path(common_images,paste0(c("scatter_conditions_and
   \begin{table}
     \begin{center}
         \begin{tabular}{lrrrr}
-          \input{./tables/common/price_condition_reg.tex}
+          \input{./tables/common/price_condition_reg2.tex}
         \end{tabular}  
-          \caption{Coefficients for an OLS regression of  price on condition. Sorted High to low based on the condition coefficient. \label{priceconditionreg}}
+          \caption{Condition Coefficients for an OLS regression of price on condition and landings. Sorted High to low based on the condition coefficient. Landings coefficient not shown. \label{priceconditionreg}}
         
     \end{center}
   \end{table}
@@ -284,15 +284,6 @@ silver_hake_02.do - this is my second set of exploratory regressions. The code r
 silver_hake_03.do - this is my third set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with 
 silver_hake04_import_pounds.do - this is my fourth set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with 
 
-## To do
-You need to go back and manually code the market shift *nespp4 interactions. letting ivreghdfe do it by itself makes things hard to interpret.  flip it back to i0.mkt_shift
-
-depvars ib5090.nespp4 ib5090.nespp4#i0.mkt_shift 
-or
-depvars ib5090.nespp4 ib5090.nespp4#i1.mkt_shift 
-
-This is the same. I find the 2nd more intuitive to interpret, but they do the same thing.  Also need to have the interactions sent to a table (they are not currently).
-
 # Results
 
 ## OLS 
@@ -305,6 +296,7 @@ We also have a negative coefficient on income. I'm not sure if this is really an
 
 The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The negative R^2 should be disregarded, I'll use RMSE instead. 
 
+\iffalse
 \newpage
 
 \begin{landscape}
@@ -400,7 +392,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
     \end{center}
   \end{table}
 
-
+\fi
 <!-- ## LaTeX way -->
 
 <!-- The straight to LaTeX way for figure \ref{scatterplot_fig} will cause fails if we're going to make an html or word. -->
