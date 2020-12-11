@@ -121,6 +121,7 @@ save ${common_results}/`outfile', replace
 
 restore
 
+/* do a regression of price on condition and landings at the annual level.*/
 
 replace landings=landings/1000000
 
