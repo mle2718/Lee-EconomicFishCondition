@@ -195,6 +195,8 @@ label var lnrGDPcapita "Log Real GDP cap"
 label var rGDPcapita "Real GDP cap"
 
 label var price_allIMP_R_GDPDEF "Real Import Price"
+label var USRECM "Recession Indicator"
+
 /**************************************************/
 gen mkt_shift=date>=mdy(1,1,2004)
 
