@@ -219,7 +219,7 @@ est store iv_log`wtype'
 est save `ster_out', `replacer1'
 
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV41 Log ") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -245,7 +245,7 @@ est title: IV, Log-log, FE. No condition.
 est store iv_log`wtype'2
 est save `ster_out', `replacer1'
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV42 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -268,7 +268,7 @@ est title: IV, Log-log, FE. No condition.
 est store iv_log`wtype'3
 est save `ster_out', `replacer1'
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV43 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -290,7 +290,7 @@ est title: IV, Log-log, FE. No condition.
 est store iv_log`wtype'4
 est save `ster_out', `replacer1'
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV44 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -310,7 +310,7 @@ est title: IV, Log-log, FE. No condition.
 est store iv_log`wtype'5
 est save `ster_out', `replacer1'
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV45 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -330,7 +330,7 @@ est title: IV, Log-log, FE. No condition.
 est store iv_log`wtype'5
 est save `ster_out', `replacer1'
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV46 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -354,7 +354,7 @@ est store iv_log_nofe`wtype'
 
 est save `ster_out', `replacer1'
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, No , Dealer Effects, No) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, No , Dealer Effects, No) ctitle("IV47 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -376,7 +376,7 @@ est store iv_log_nofe_noinc`wtype'
 
 est save `ster_out', `replacer1'
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No) ctitle("IV48 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -402,7 +402,7 @@ est save `ster_out', `replacer1'
 local replacer1 append
 
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV49 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
@@ -464,6 +464,13 @@ est title: IV, Log-log, no year effects. Condition in levels.
 est store iv_log_condition`wtype'
 est save `ster_out', `replacer1'
 
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV51 Log") 
+
+outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' replace
+
+
+
+
 
 
 /*  MODEL IV52 log -log with log-condition factors, permit and dealer effects. no year dummies */
@@ -482,9 +489,12 @@ est title: IV, Log-log, no year effects. Condition in logs.
 est store iv_log2_condition`wtype'
 est save `ster_out', `replacer1'
 
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV52 Log") 
+
+outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 
 
-/*  MODEL IV52 ihs where silver hake quantities are aggregated together. This facititates comparison with the model in logs. No quarterly income variable*/
+/*  MODEL IV53 ihs where silver hake quantities are aggregated together. This facititates comparison with the model in logs. No quarterly income variable*/
 local modelname iv_ihs`wtype'
 local depvars   ib7.month  i.year i.USRECM  i.dow  i.fzone i.BSA   ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift   i.statecd
 
@@ -499,7 +509,10 @@ est store iv_ihs1`wtype'
 est save `ster_out', `replacer1'
 
 
-/*  MODEL IV53 ihs where silver hake quantities are disaggregated. No quarterly income variable*/
+
+
+
+/*  MODEL IV54 ihs where silver hake quantities are disaggregated. No quarterly income variable*/
 
 local modelname iv_ihs`wtype'
 local depvars   ib7.month  i.year i.USRECM  i.dow  i.fzone i.BSA   ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift    i.statecd
@@ -518,7 +531,7 @@ est save `ster_out', `replacer1'
 
 
 
-/*  MODEL IV54:  Model 53 with condition*/
+/*  MODEL IV55:  Model 54 with condition*/
 
 /* IVs ihs with condition */
 local modelname iv_ihs_cond`wtype'
@@ -535,10 +548,13 @@ est store iv_ihs_cond`wtype'
 est save `ster_out', `replacer1'
 
 
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV55 ihs") 
+
+outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 
 
 
-/*  MODEL IV54:  Model 52, but with condition   This facititates comparison with the model in logs. No quarterly income variable*/
+/*  MODEL IV56:  Model 53, but with condition   This facititates comparison with the model in logs. No quarterly income variable*/
 local modelname iv_ihs_cond`wtype'
 local depvars  ib7.month   i.USRECM i.dow  i.fzone i.BSA   ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ihsmeancond_Annual ihsstddevcond_Annual  i.statecd
 
@@ -553,6 +569,9 @@ est store iv_ihs_cond`wtype'
 est save `ster_out', `replacer1'
 
 
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV55 ihs") 
+
+outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 
 
 

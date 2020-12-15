@@ -255,7 +255,7 @@ fzone 4= higher prices than others (by alot)
 Norther has slighly higher prices than southern.
 */
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV31 Log") 
 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
@@ -287,7 +287,7 @@ foreach r of local regression_vars {
 
 
 
-local table_opts addtext(Model,IV, Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No)  ctitle("Log Price")
+local table_opts addtext(Model,IV, Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No)  ctitle("IV32 Log")
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts'  `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
@@ -330,7 +330,7 @@ Small
 
 est store ols_log
 
-local table_opts addtext(Model,OLS, Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price")
+local table_opts addtext(Model,OLS, Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("OLS32 Log")
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts'  `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
@@ -359,7 +359,7 @@ foreach r of local regression_vars {
 }
 
 
-local table_opts  addtext(Model,OLS,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Real Price")
+local table_opts  addtext(Model,OLS,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("OLS33 Lin")
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts'  `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
@@ -401,7 +401,7 @@ foreach r of local regression_vars {
 }
 
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("Price")
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV33 Lin")
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow')  `table_opts' `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
@@ -431,7 +431,7 @@ ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', abs
 est store iv_log_condition
 
 local replacer replace
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("log Price")
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV34 Log")
 outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow')  `table_opts' `replacer'
 local replacer
 
@@ -459,7 +459,7 @@ local excluded lnq_lag1 lnprice_allIMP_lag1_R_GDPDEF
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_log2_condition
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("log Price")
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV35 Log")
 outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow')  `table_opts' `replacer'
 
 
@@ -490,7 +490,7 @@ ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', ab
 est store iv_ihs
 
 local replacer replace
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV36 IHS")
 outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years' `dow')  `table_opts' `replacer'
 
 
@@ -518,7 +518,7 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihsimport_lag1
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV37 IHS")
 outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
 
 
@@ -552,7 +552,7 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs_dpi
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV38 IHS")
 outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
 
 
@@ -581,7 +581,7 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs_pi
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV39 IHS")
 outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
 
 
