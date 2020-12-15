@@ -31,20 +31,22 @@ local  statecodes ${data_raw}/state_codes${vintage_string}.dta
 global linear_table3 ${silverhake_tables}/silver_hake4Q.tex
 
 global condition_table ${silverhake_tables}/silver_hake_condition4Q.tex
-global ihs_table ${silverhake_tables}/silver_hake_ihs4Q.tex
 
 
 global year_table ${silverhake_tables}/silver_hake_years4Q.tex
 global month_week_table ${silverhake_tables}/silver_hake_month_week4Q.tex
 global bse ${silverhake_tables}/bse_silver_hake4Q.dta
 
+global ihs_table ${silverhake_tables}/silver_hake_ihs4Q.tex
+global ihsyear_table ${silverhake_tables}/silver_hake_yearsihs4Q.tex
+global  ihsmonth_week_table ${silverhake_tables}/silver_hake_month_weekihs4Q.tex
 
 /* don't show year or month coeficients in outreg */
 local months 1.month 2.month 3.month 4.month 5.month 6.month 7.month 8.month 9.month 10.month 11.month 12.month 0.month 0b.month 12o.month
 local years 1995.year 1996.year 1997.year 1998.year 1999.year 2000.year 2001.year 2002.year 2003.year 2004.year 2005.year 2006.year 2007.year 2008.year 2009.year 2010.year 2011.year 2012.year 2013.year 2014.year 2015.year 2016.year 2017.year 2018.year 2019.year 2020.year
 local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow 
 local sizes 5091.nespp4 5092.nespp4  5093.nespp4  5094.nespp4  5095.nespp4  5096.nespp4 
-
+local states 7.statecd 22.statecd 23.statecd 24.statecd 32.statecd 33.statecd 35.statecd 36.statecd 42.statecd 49.statecd 
 clear
 use `in_data' , clear
 assert nespp3==${working_nespp3}
@@ -188,16 +190,21 @@ label var lnpounds_allIMP_lag1 "Log Import Quantity, 1 month lag"
 
 label var ihspounds_allIMP "IHS Import Quantity"
 label var ihspounds_allIMP_lag1 "IHS Import Quantity, 1 month lag"
+label var USRECM "Recession Indicator"
+
+cap label var lnql "Log Quarterly Landings"
+cap label var lnaggregateV_R_GDPDEF "Log Aggregate NER Value"
+cap label var ln_aggregateL "Log Aggregate NER Landings"
+cap label var lnpounds_allIMP "Log Imports"
 
 /**************************************************/
 
 
 gen mkt_shift=date>=mdy(1,1,2004)
 
-
-/* IVs log-log  with permit and dealer effects; */
+/* MODEL IV51: Same as IV41, but with import POUNDS on the RHS instead of prices  */
 local modelname iv_log_fe
-local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA  ib5090.nespp4##i.mkt_shift i.USRECM  i.statecd
+local depvars lnrGDPcapita ib7.month  i.year  i.dow  i.fzone i.BSA  ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  i.USRECM  i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -210,7 +217,7 @@ local years2 1995.year 1996.year 1997.year 1998.year 1999.year 2000.year 2001.ye
 local dow 1.dow 2.dow 3.dow  4.dow  5.dow  6.dow 
 local sizes 5091.nespp4 5092.nespp4  5093.nespp4  5094.nespp4  5095.nespp4  5096.nespp4 
 local areas  1.BSA 2.BSA 3.fzone 9.fzone
-
+local states 7.statecd 22.statecd 23.statecd 24.statecd 32.statecd 33.statecd 35.statecd 36.statecd 42.statecd 49.statecd 
 
 local replacer replace
 
@@ -245,11 +252,11 @@ fzone 4= higher prices than others (by alot)
 Norther has slighly higher prices than southern.
 */
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("IV51 Log") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
-outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
+outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow' `states')  `table_opts' `replacer'
 
 
 
@@ -258,10 +265,10 @@ local replacer
 
 
 
-/* IVs log-log  WITHOUT permit and dealer effects; */
+/* IV52: IVs log-log  WITHOUT permit and dealer effects; */
 local modelname iv_log_nofe
 
-local depvars lnrGDPcapita  ib5090.nespp4##i.mkt_shift   i.dow  i.fzone i.BSA ib7.month i.year i.statecd
+local depvars lnrGDPcapita ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift   i.dow  i.fzone i.BSA ib7.month i.year i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -278,19 +285,19 @@ foreach r of local regression_vars {
 
 
 
-local table_opts addtext(Model,IV, Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No)  ctitle("Log Price")
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts'  `replacer'
+local table_opts addtext(Model,IV, Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No)   ctitle("IV51 Log") 
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts'  `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
-outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
+outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow' `states')  `table_opts' `replacer'
 
 
 
 
 
-/* OLS in logs log-log  is okay-ish; */
+/* OLS51 in logs log-log  is okay-ish; */
 local modelname ols_log_fe
 
-local depvars  lnrGDPcapita lnq  lnpounds_allIMP  ib5090.nespp4##i.mkt_shift ib7.month  i.year  i.dow  i.fzone i.BSA i.statecd
+local depvars  lnrGDPcapita lnq  lnpounds_allIMP  ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.year  i.dow  i.fzone i.BSA i.statecd
 reghdfe lnpriceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
 
 
@@ -320,8 +327,8 @@ Small
 
 est store ols_log
 
-local table_opts addtext(Model,OLS, Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price")
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts'  `replacer'
+local table_opts addtext(Model,OLS, Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("OLS51 Log")
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts'  `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
 
@@ -333,10 +340,10 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 
 
 
-/* ols in levels */
+/* OLS52 ols in levels */
 local modelname ols_linear_fe
 
-local depvars daily_landings rGDPcapita pounds_allIMP  ib5090.nespp4##i.mkt_shift ib7.month  i.year  i.dow  i.fzone i.BSA  i.statecd
+local depvars daily_landings rGDPcapita pounds_allIMP ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.year  i.dow  i.fzone i.BSA  i.statecd
 
 
 reghdfe priceR_GDPDEF `depvars' `ifconditional', absorb(permit dealnum) vce(robust)
@@ -348,8 +355,8 @@ foreach r of local regression_vars {
 }
 
 
-local table_opts  addtext(Model,OLS,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Real Price")
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts'  `replacer'
+local table_opts  addtext(Model,OLS,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("OLS52 Lin")
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts'  `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
 
@@ -371,10 +378,10 @@ Small
 */
 
 
-/* linear IV*/
+/* IV53 linear IV*/
 local modelname iv_linear_fe
 
-local depvars rGDPcapita    ib5090.nespp4##i.mkt_shift ib7.month  i.year ib7.month i.dow  i.fzone i.BSA i.statecd
+local depvars rGDPcapita    ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.year ib7.month i.dow  i.fzone i.BSA i.statecd
 local endog daily_landings pounds_allIMP
 local excluded q_lag1 lnpounds_allIMP_lag1
 
@@ -394,8 +401,8 @@ foreach r of local regression_vars {
 }
 
 
-local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("Price")
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow')  `table_opts' `replacer'
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV52 Lin")
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states')  `table_opts' `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
 
@@ -406,11 +413,11 @@ outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `tabl
 
 
 
-/* IVs log-log condition factor with permit and dealer effects
+/* IV54: IVs log-log condition factor with permit and dealer effects
 
 Cannot include FY specific effects */
 local modelname iv_log_condition
-local depvars lnrGDPcapita  ib5090.nespp4##i.mkt_shift ib7.month  i.dow  i.fzone i.BSA meancond_Annual stddevcond_Annual i.statecd
+local depvars lnrGDPcapita  ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.dow  i.fzone i.BSA meancond_Annual stddevcond_Annual i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -419,8 +426,9 @@ ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', abs
 est store iv_log_condition
 
 local replacer replace
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("log Price")
-outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow')  `table_opts' `replacer'
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV54 Log")
+outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states')  `table_opts' `replacer'
+
 local replacer
 
 
@@ -429,12 +437,19 @@ foreach r of local regression_vars {
     post handle ("`modelname'")  ("`r'")  (_b[`r']) (_se[`r'])
 }
 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV54 Log")
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states')  `table_opts' `replacer'
+outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
+outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
 
-/* IVs log-log condition factor with permit and dealer effects
+
+
+
+/*IV55:  IVs log-log condition factor with permit and dealer effects
 
 Cannot include FY specific effects */
 local modelname iv_log_condition2
-local depvars lnrGDPcapita  ib5090.nespp4##i.mkt_shift ib7.month  i.dow  i.fzone i.BSA lnmeancond_Annual lnstddevcond_Annual i.statecd
+local depvars lnrGDPcapita  ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.dow  i.fzone i.BSA lnmeancond_Annual lnstddevcond_Annual i.statecd
 local endog lnq  lnpounds_allIMP
 local excluded lnq_lag1 lnpounds_allIMP_lag1
 
@@ -442,8 +457,8 @@ local excluded lnq_lag1 lnpounds_allIMP_lag1
 ivreghdfe lnpriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_log2_condition
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("log Price")
-outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow')  `table_opts' `replacer'
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV55 Log")
+outreg2 using ${condition_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states')   `table_opts' `replacer'
 
 
 
@@ -453,13 +468,18 @@ foreach r of local regression_vars {
 }
 
 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV55 Log")
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states')  `table_opts' `replacer'
+outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
+outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
 
 
 
 
-/* IVs ihs and disaggregate the quantities */
+
+/* IV56 IVs ihs and disaggregate the quantities */
 local modelname iv_ihs
-local depvars ihsrGDPcapita  ib5090.nespp4##i.mkt_shift ib7.month  i.dow i.year i.fzone i.BSA  i.statecd
+local depvars ihsrGDPcapita ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.dow i.year i.fzone i.BSA  i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -469,8 +489,8 @@ ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', ab
 est store iv_ihs
 
 local replacer replace
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
-outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years' `dow')  `table_opts' `replacer'
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV56 IHS")
+outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years' `dow' `states')   `table_opts' `replacer'
 local replacer
 
 
@@ -480,12 +500,17 @@ foreach r of local regression_vars {
 }
 
 
+local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV56 IHS")
+outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states')  `table_opts' `replacer'
+outreg2 using ${ihsyear_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
+outreg2 using ${ihsmonth_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
+
+ 
 
 
-
-/* IVs ihs with condition */
+/* IV57 IVs ihs with condition */
 local modelname iv_ihs_cond
-local depvars ihsrGDPcapita  ib5090.nespp4##i.mkt_shift ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
+local depvars ihsrGDPcapita  ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -494,8 +519,11 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs
 
-local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
-outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV57 IHS")
+outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow' `states')   `table_opts' `replacer'
+outreg2 using ${ihsyear_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
+outreg2 using ${ihsmonth_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
+
 local replacer
 
 
@@ -511,9 +539,9 @@ foreach r of local regression_vars {
 postclose handle
 
 
-/* IVs ihs with condition and dpi */
+/*IV58  IVs ihs with condition and dpi */
 local modelname iv_ihs_dpi
-local depvars ihsrealDPIcapita  ib5090.nespp4##i.mkt_shift ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
+local depvars ihsrealDPIcapita  ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -522,15 +550,15 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs_dpi
 
-*local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
-*outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV58 IHS Price")
+outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow' `states')  `table_opts' `replacer'
 
 
 
 
-/* IVs ihs with condition and personal_income */
+/* IV59 IVs ihs with condition and personal_income */
 local modelname iv_ihs_pi
-local depvars ihspersonal_income_capita  ib5090.nespp4##i.mkt_shift ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
+local depvars ihspersonal_income_capita  ib5090.nespp4  i(5091 5092 5093 5094).nespp4#i0.mkt_shift  ib7.month  i.dow i.fzone i.BSA ihsmeancond_Annual ihsstddevcond_Annual i.statecd
 local endog ihs_ownq ihs_other_landings          ihspounds_allIMP
 local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag1
 
@@ -539,8 +567,11 @@ local excluded ihs_other_landings_lag1 ihsownq_lag1         ihspounds_allIMP_lag
 ivreghdfe ihspriceR_GDPDEF  `depvars' (`endog' = `excluded') `ifconditional', absorb(permit dealnum) robust
 est store iv_ihs_pi
 
-*local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IHS Price")
-*outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow')  `table_opts' `replacer'
+local table_opts addtext(Model,IV,Year effects, No, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes)  ctitle("IV59 IHS Price")
+outreg2 using ${ihs_table}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months2' `years2' `dow' `states')  `table_opts' `replacer'
+outreg2 using ${ihsyear_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
+outreg2 using ${ihsmonth_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer'
+
 
 
 
