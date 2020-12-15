@@ -236,7 +236,22 @@ On Jan 1, 2004, the market category coding changed.  It's not super well documen
 knitr::include_graphics(file.path(silverhake_images,paste0("dealer_lengths_subset_stack_",vintage,".png")))
 ```
 
-Changing the market category variables to something like this: ib5090.nespp4 i(5090 5091 5092).nespp4#i0.mkt_shift will do it. That will enter the all market categories, plus a market*shift interaction for the three market cats that were around prior to 2004. I'm expecting that King-Post will have higher prices (smallish King fish get diverted to Large).  Round will have lower prices (larger round get culled into Large). Idk on small.
+These are the market categories:
+Round 5090
+King 5091
+Small 5092
+Dressed 5093
+Juvenile 5094
+Large 5095
+Medium 5096 
+Ungraded 5097.
+
+Define $D$ as an indicator if the trade date is before Jan 1, 2004.  Doing a crosstab of nespp4 and D shows that there are just a few observations of 5093 and 5094 when D=1.   There are 21 and 369 respectively. So, we won't construct interactions of these.  There are also only 132 obs of ungraded,  so we'll exclude these.  The following dummies enter the specification (round is the base)
+Round$*$D, King, King$*$D, Small, Small$*$D,  Dressed, Juvenile, Large, Medium.
+
+I think this is coded properly in 02 and needs to be propagated to 3 4importpounds
+
+
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices, 1994-2019", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(silverhake_images,paste0("box_prices_",vintage,".png")))
@@ -279,10 +294,13 @@ knitr::include_graphics(file.path(silverhake_images,paste0("condition509_GDPC_",
 # Code and methods
 Code to extract and process data is in the "/stata_code/data_extraction_processing" folder.  Code to make figures is in "stata_code/analysis/silverhake."  Code to do regressions is in "stata_code/analysis/silverhake/regressions"
 
-silver_hake_01.do - this is my first set of exploratory regressions. The code runs quickly (OLS and IVs).  These models not good models, but we can still learn something from them.  
-silver_hake_02.do - this is my second set of exploratory regressions. The code runs slower because I used lots of Fixed Effects for permits and sometimes for dealers and fitted the models with REGHDFE and IVREGHDFE.   Some of these *might* be candidates for an acceptable specification.
-silver_hake_03.do - this is my third set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with 
-silver_hake04_import_pounds.do - this is my fourth set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with 
+silver_hake_01.do - this is my first set of exploratory regressions. The code runs quickly (OLS and IVs).  These models not good models, but we can still learn something from them.  I did not put these tables into the current doc. You can look at the sters or smcls.
+
+silver_hake_02.do - this is my second set of exploratory regressions. The code runs slower because I used lots of Fixed Effects for permits and sometimes for dealers and fitted the models with REGHDFE and IVREGHDFE.   Some of these *might* be candidates for an acceptable specification.You can look at the sters or smcls.
+
+silver_hake_03.do - this is my third set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification.
+
+silver_hake04_import_pounds.do - this is my fourth set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with a few things.
 
 # Results
 
@@ -296,14 +314,13 @@ We also have a negative coefficient on income. I'm not sure if this is really an
 
 The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The negative R^2 should be disregarded, I'll use RMSE instead. 
 
-\iffalse
 \newpage
 
 \begin{landscape}
   \begin{table}
     \begin{center}
        {\scriptsize
-          \input{./tables/silverhake/silver_hake3.tex}
+          \input{./tables/silverhake/silver_hake3A.tex}
           \caption{A Table of Regression coefficients.  The omitted category is "medium".   \label{silverhake}}
        }
     \end{center}
@@ -316,7 +333,7 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silverhake/silver_hake_years.tex}
+          \input{./tables/silverhake/silver_hake_yearsA.tex}
           \caption{Year coeffs\label{silverhakeY}}
         }
     \end{center}
@@ -327,44 +344,32 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
       {\scriptsize
-        \input{./tables/silverhake/silver_hake_month_week.tex}
+        \input{./tables/silverhake/silver_hake_month_weekA.tex}
         \caption{Month and Week  coeffs\label{silverhakeMW}}
       }
     \end{center}
   \end{table}
+  
+  
 
 
 \newpage
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silverhake/silver_hake_condition.tex}
+          \input{./tables/silverhake/silver_hake_conditionA.tex}
           \caption{Coefficents when we include condition factor coeffs\label{condition_coefs}}
         }
     \end{center}
   \end{table}
 
-\newpage
-
-\begin{landscape}
-  \begin{table}
-    \begin{center}
-        {\scriptsize
-          \input{./tables/silverhake/silver_hake3Q.tex}
-          \caption{Coefficents when we use import quantities on the RHS.  \label{importQ}}
-        }
-    \end{center}
-  \end{table}
-\end{landscape}
-
-
 
 \newpage
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silverhake/silver_hake_condition4Q.tex}
-          \caption{Coefficents when we use import quantities on the RHS and include condition factors.  \label{conditionQ}}
+          \input{./tables/silverhake/silver_hake4Q}
+          \caption{Coefficents when we use import quantities as a RHS variable\label{silverhake4Q}}
         }
     \end{center}
   \end{table}
@@ -376,23 +381,15 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \begin{table}
     \begin{center}
         {\scriptsize
-          \input{./tables/silverhake/silver_hake_ihs.tex}
-          \caption{Inverse hyperbolic sine transform instead of logs and disaggregated daily quantities.  \label{IHS}}
+          \input{./tables/silverhake/silver_hake_ihs4Q}
+          \caption{Coefficents when we use import quantities as a RHS variable and the IHS transform\label{silverhakeihs4Q}}
         }
     \end{center}
   \end{table}
 
-\newpage
-  \begin{table}
-    \begin{center}
-        {\scriptsize
-          \input{./tables/silverhake/silver_hake_ihs4Q.tex}
-          \caption{Inverse hyperbolic sine transform, disaggregated daily quantities. Import Quantities  \label{IHS_Q}}
-        }
-    \end{center}
-  \end{table}
 
-\fi
+
+
 <!-- ## LaTeX way -->
 
 <!-- The straight to LaTeX way for figure \ref{scatterplot_fig} will cause fails if we're going to make an html or word. -->
@@ -535,4 +532,58 @@ Stata offers probability, importance, analytic, and frequency weights. p-weights
 
 # References
 <div id="refs"></div>
+
+# Appendix 
+
+Some misspecified models
+
+\newpage
+
+\begin{landscape}
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silverhake/silver_hake1.tex}
+          \caption{First set of econometrics from silver\_hake01.do  \label{SH1}}
+        }
+    \end{center}
+  \end{table}
+\end{landscape}
+
+
+\newpage
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silverhake/silver_hake2.tex}
+          \caption{Second set of econometrics also from silver\_hake01.do  \label{SH2}}
+        }
+    \end{center}
+  \end{table}
+
+
+
+\newpage
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silverhake/silver_hake3.tex}
+          \caption{Third set of econometrics  from silver\_hake02.do  \label{SH3}}
+        }
+    \end{center}
+  \end{table}
+
+\newpage
+  \begin{table}
+    \begin{center}
+        {\scriptsize
+          \input{./tables/silverhake/silver_hake_condition.tex}
+          \caption{set of econometrics  from silver\_hake02.do  \label{SH4}}
+        }
+    \end{center}
+  \end{table}
+\iffalse
+
+
+\fi
 
