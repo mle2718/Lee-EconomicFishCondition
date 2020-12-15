@@ -187,16 +187,20 @@ gen lnprice_allIMP_lag1_R_GDPDEF=ln(price_allIMP_lag1_R_GDPDEF)
 
 /**************************************************/
 /* label variables so the tables are pretty */
-label var lnq "Log Daily Landings"
-label var daily_landings "Daily Landings"
+cap label var lnq "Log Daily Landings"
+cap label var daily_landings "Daily Landings"
 
-label var lnprice_allIMP_R_GDPDEF "Log Real Import Price"
-label var lnrGDPcapita "Log Real GDP cap"
-label var rGDPcapita "Real GDP cap"
+cap label var lnprice_allIMP_R_GDPDEF "Log Real Import Price"
+cap label var lnrGDPcapita "Log Real GDP cap"
+cap label var rGDPcapita "Real GDP cap"
 
-label var price_allIMP_R_GDPDEF "Real Import Price"
-label var USRECM "Recession Indicator"
+cap label var price_allIMP_R_GDPDEF "Real Import Price"
+cap label var USRECM "Recession Indicator"
 
+cap label var lnql "Log Quarterly Landings"
+cap label var lnaggregateV_R_GDPDEF "Log Aggregate NER Value"
+cap label var ln_aggregateL "Log Aggregate NER Landings"
+cap label var lnpounds_allIMP "Log Imports"
 /**************************************************/
 
 gen mkt_shift=date>=mdy(1,1,2004)
@@ -217,7 +221,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -243,7 +247,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -266,7 +270,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -288,7 +292,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -308,7 +312,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -328,7 +332,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -352,7 +356,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, No , Dealer Effects, No) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -374,7 +378,7 @@ est save `ster_out', `replacer1'
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
@@ -400,7 +404,7 @@ local replacer1 append
 
 local table_opts addtext(Model,IV,Year effects, Yes, Month Effects, Yes, Vessel Effects, Yes, Dealer Effects, Yes) ctitle("Log Price") 
 
-outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow') `table_opts' `replacer1'
+outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts' `replacer1'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer1' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow')  `table_opts' `replacer1'
 
