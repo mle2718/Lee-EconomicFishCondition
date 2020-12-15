@@ -159,14 +159,20 @@ gen lnprice_allIMP_lag1_R_GDPDEF=ln(price_allIMP_lag1_R_GDPDEF)
 
 /**************************************************/
 /* label variables so the tables are pretty */
-label var lnq "Log Daily Landings"
-label var daily_landings "Daily Landings"
+cap label var lnq "Log Daily Landings"
+cap label var daily_landings "Daily Landings"
 
-label var lnprice_allIMP_R_GDPDEF "Log Real Import Price"
-label var lnrGDPcapita "Log Real GDP cap"
-label var rGDPcapita "Real GDP cap"
+cap label var lnprice_allIMP_R_GDPDEF "Log Real Import Price"
+cap label var lnrGDPcapita "Log Real GDP cap"
+cap label var rGDPcapita "Real GDP cap"
 
-label var price_allIMP_R_GDPDEF "Real Import Price"
+cap label var price_allIMP_R_GDPDEF "Real Import Price"
+cap label var USRECM "Recession Indicator"
+
+cap label var lnql "Log Quarterly Landings"
+cap label var lnaggregateV_R_GDPDEF "Log Aggregate NER Value"
+cap label var ln_aggregateL "Log Aggregate NER Landings"
+cap label var lnpounds_allIMP "Log Imports"
 /**************************************************/
 gen mkt_shift=date>=mdy(1,1,2004)
 
