@@ -191,6 +191,7 @@ We experiment with various ways to model the price equation. We estimate models 
 
 Imported whiting is likely to be a substitute and activity in the import market is likely to be important in determining the price of domestic silver hake.  We experiment with including monthly import prices (we expect a positive sign here; an exogenous increase to import prices should result in higher prices of domestic whiting) and monthly import quantities (we expect a negative sign here; an exogenous increase in imported quanttiies should result in lower prices of domestic whiting).  Both import prices and import quantities assumed endogenous to domestic prices.  
 
+We can put "lot size" in as an explanatory variable. I'm expecting this coefficient to be non-negative.  A negative coefficient would mean that buyers could split large lots and get a higher price per pound. This would be "wierd" and inconsistent with increasing returns to scale in the processing sector. Processing and wholesaling fish entails some quasi-fixed costs.  A small lot is going to be worth less than a large lot. There may be some confounding due to the "aggregate supply effect"
 # Data overview
 
 This is intended as a companion to the stata code that extracts and processes data.
@@ -199,9 +200,10 @@ This is intended as a companion to the stata code that extracts and processes da
 The dataset used for estimating the hedonic price model was constructed from NEFSC’s mandatory dealer reports from 1994 to 2019.  We excluded transactions with prices higher than $40 per pound (nominal).  An observation is defined at a unique vessel-dealer-market category-date-vtrrecord combination. 
 
 Here is some super boring "inside baseball" detail  on the NEFSC data.
+
 1.  I'm using the AA tables. 
 1.  The raw query groups on link, nespp3, nespp4, year, month, day, dealnum, vserial, vtripid, vgearid, alevel, elevel, permit, area, effind, fzone.
-1.  Some species have multiple nespp3 codes, I accounted for this by reclassifying the nespp3, but not the nespp4.  There are 3 numeric keys we need to deal with -- NESPP3/4; itis; and obspp.
+1.  Some species have multiple nespp3 codes, I accounted for this by reclassifying the nespp3, but not the nespp4.  There are 3 numeric keys we may need to deal with -- NESPP3/4; itis; and obspp.
 1.  I've extracted length data from port samplers (CFLEN), but I'm not doing anything with it.
 
 Fish conditions come from Laurel; basically I'm just using the annual data.  There's a bit of finessing the data links for a couple species (spotted hake and chub mackerel). 
@@ -306,13 +308,29 @@ silver_hake04_import_pounds.do - this is my fourth set of exploratory regression
 
 ## OLS 
 
+I mostly put the OLS coefficients in the Appendix, but some are in body tables. I've written too much about them already.
+
 We get expected signs on the quantity coefficient. The OLS coefficient on lnq is attenuated, as expected if we have some endogeneity in quantity supplied (positive shocks to expected prices will also lead to higher landings).  King and Large whiting seem to get the same prices.  Juvenile whiting also gets a higher price than medium; which is a bit unexpected.  Small whiting gets a discount.  So does dressed whiting, which is a little strange.
 
 We also have a negative coefficient on income. I'm not sure if this is really an indication of an "inferior" good or increasing US income is simply correlated with decreasing world prices or increasing supply of substitutes.   When we estimate models with import prices, the large negative in income stays.  Same when we add quarterly landings (to see if this is driven by the downward long-run trend in whiting landings).  I don't really think it's a real effect; I think we're correlated with something else.
 
 ## IV
 
-The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The negative R^2 should be disregarded, I'll use RMSE instead. 
+The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The negative R^2 should be disregarded, I'll use RMSE instead.   
+
+
+Takeaways from Table \ref{silverhake} through \ref{silverhakeMW}:  
+
+1. Daily landings effect is fairly stable -0.5 to -0.7.  This is reasonable.
+1. Import price effect is 0.5 to 0.77.  This is reasonable and consistent with imports as substitutes. IV49, which uses import quantities has a negative sign here, consistent with imports being substitutes.
+1. The income effect is -1.1. This means that if incomes go up by 1\%, prices go down by just over 1\%. This doesn't make much sense.  I suspect this is correlated with something else.  Not sure what.
+1.The Fzone=offshore and Fzone=missing effects are consistent across specifications.  They're not too large or too small.  Ballparking it at a 4\% premium and a 2\% discount relative to "inshore".
+1. Same with BSA (northern and southern effects are small, relative to unknown.)
+1. The recession indicator means that prices are lower when we have a recession by about 2 to 5\%.  This is *inconsistent* with the income effect.
+1. Prices are higher when the daily volume of all fish is higher.  Not sure what this means. IV44 and IV45 treat daily "fishery-wide" quantities as exogenous.  IV46 treats it as endogenous. 
+1. The 'size' effects are very consistent.  These are approximately the premia/discounts in percentage terms (not quite, you have to do exp($\beta$). But close enough for now.  The differences are IV47 and IV48's coefficients for "Dressed", "Medium", and "Smallx mkt_Shift"
+1. The years vary a bit, I'm guessing it's because there are some specifications that leave out the macro factors (Table \ref{silverhakeY}) 
+1. The month and dow coeffs in Table \ref{silverhakeMW} also match really well (not as well as the main interesting coeffs though).
 
 \newpage
 
@@ -351,6 +369,16 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
   \end{table}
   
   
+\newpage
+
+
+Takeaways from Table \ref{condition_coefs} through \ref{silverhakeihs4Q}:  
+
+1. Coeffs held over from previous models don't change much.
+1. Condition increases prices slightly.   IV52 says the elasticity is .77.  Std. dev of condition does not seem to affect prices.  
+1. IHS effects similar to ln effects, but we can also allow for variability in the effect of whiting landings on prices.
+1. IHS models have a some small negative effects for std dev of condition.
+1. Looks like I labeled some of the models incorrectly. 
 
 
 \newpage
@@ -411,53 +439,6 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
 <!--   \end{center} -->
 <!-- \end{table} -->
 
-## Elasticities
-From @Bellemare2019:
-
-\begin{equation}
-\tilde{x}=arcinh(x)=ln(x+\sqrt{x^2+1})
-\end{equation}
- and the derivative of this wrt x is:
- $\frac{1}{\sqrt{x^2+1}}$
- 
- For 
-\begin{equation}
-y=\alpha + \beta \tilde{x} +\varepsilon, 
-\end{equation}
-the elasticity is:
-\begin{equation}
-\eta=\frac{\hat{\beta}}{y}\frac{x}{\sqrt{x^2+1}}
-\end{equation}
-For 
-\begin{equation}
-\tilde{y} =\alpha + \beta x+\varepsilon, 
-\end{equation}
-the elasticity is:
-\begin{equation}
-\eta=\hat{\beta}x*\frac{\sqrt{y^2+1}}{y}
-\end{equation}
-
-
- For 
-\begin{equation}
-\tilde{y} =\alpha + \beta D+\varepsilon, 
-\end{equation}
-the "elasticity" is:
-\begin{equation}
-\eta=\frac{sinh(\alpha + \beta + \varepsilon)}{sinh(\alpha +  \varepsilon)} -1
-\end{equation}
-Note, you need to have all of the RHS variables and estimated coefficients in the elasticity formula.
-
-For 
-\begin{equation}
-\tilde{y} =\alpha + \beta \tilde{x}+\varepsilon, 
-\end{equation}
-the elasticity is:
-\begin{equation}
-\eta= \hat{\beta}\frac{\sqrt{y^2+1}}{y}\frac{x}{\sqrt{x^2+1}}
-\end{equation}
-
-Note that some of the elasticities are undefined when $y=0$.  @Bellemare2019 illustrates computing at means of the data; since we don't have any $y=0$ in our dataset, we can also sample enumerate.
 
 \newpage
 
@@ -582,6 +563,56 @@ Some misspecified models
         }
     \end{center}
   \end{table}
+
+
+## Elasticities
+From @Bellemare2019:
+
+\begin{equation}
+\tilde{x}=arcinh(x)=ln(x+\sqrt{x^2+1})
+\end{equation}
+ and the derivative of this wrt x is:
+ $\frac{1}{\sqrt{x^2+1}}$
+ 
+ For 
+\begin{equation}
+y=\alpha + \beta \tilde{x} +\varepsilon, 
+\end{equation}
+the elasticity is:
+\begin{equation}
+\eta=\frac{\hat{\beta}}{y}\frac{x}{\sqrt{x^2+1}}
+\end{equation}
+For 
+\begin{equation}
+\tilde{y} =\alpha + \beta x+\varepsilon, 
+\end{equation}
+the elasticity is:
+\begin{equation}
+\eta=\hat{\beta}x*\frac{\sqrt{y^2+1}}{y}
+\end{equation}
+
+
+ For 
+\begin{equation}
+\tilde{y} =\alpha + \beta D+\varepsilon, 
+\end{equation}
+the "elasticity" is:
+\begin{equation}
+\eta=\frac{sinh(\alpha + \beta + \varepsilon)}{sinh(\alpha +  \varepsilon)} -1
+\end{equation}
+Note, you need to have all of the RHS variables and estimated coefficients in the elasticity formula.
+
+For 
+\begin{equation}
+\tilde{y} =\alpha + \beta \tilde{x}+\varepsilon, 
+\end{equation}
+the elasticity is:
+\begin{equation}
+\eta= \hat{\beta}\frac{\sqrt{y^2+1}}{y}\frac{x}{\sqrt{x^2+1}}
+\end{equation}
+
+Note that some of the elasticities are undefined when $y=0$.  @Bellemare2019 illustrates computing at means of the data; since we don't have any $y=0$ in our dataset, we can also sample enumerate.
+
 \iffalse
 
 
