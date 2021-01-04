@@ -7,7 +7,7 @@ vintage_lookup_and_reset
 
 global silverhake_images ${my_images}/silverhake
 
-
+/*
 do "${analysis_code}/silverhake/figure_code/plotsA01_dealer_lengths.do"
 
 do "${analysis_code}/silverhake/figure_code/plotsA02_prices.do"
@@ -31,3 +31,6 @@ do "${analysis_code}/silverhake/figure_code/plotsA04_fish_condition_and_macro.do
 do "${analysis_code}/silverhake/figure_code/plotsA05_quantities_by_time.do"
 
 do "${analysis_code}/silverhake/figure_code/plotsA06_silverhake_and_allqs_by_time.do"
+
+*/
+do "${analysis_code}/silverhake/figure_code/plotsA07_prices_and_macro.do"

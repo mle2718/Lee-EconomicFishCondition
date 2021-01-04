@@ -181,17 +181,19 @@ p_{ijtk}=  X_{ijtk}\beta + Z_{t}\gamma + u_{i} + v_{j} +w_{t}+\varepsilon_{itjk}
 
 While equation \ref{basic_equation} or various functional forms could be estimated with OLS, unobserved heterogeneity, whether at the buyer-, seller-, or day- level will lead to inconsistent estimates of $\beta$ and $\gamma$.  Fixed-effects estimators may be useful.  
 
-Day-level heterogeneity is most likely related to quantity supplied.  We should either include day-level fixed effects or quantity supplied.  Daily quantity supplied is likely to be endogenous; I find two arguements compelling. The first, there are demand characteristis unobserved to us that are observed by sellers. This makes the error term in our regression correlated with quantity supplied.  Second, analgous to @Graddy2010; , sellers (fishing vessels) have an ability to inventory a bit when there are low prices and deplete that inventory when there are high prices. This happens, even with a highly perishable good because people can adjust the timing of when they land fish at the margin.
+Day-level heterogeneity is most likely related to quantity supplied.  We should either include day-level fixed effects or quantity supplied.  Daily quantity supplied is likely to be endogenous; I find two arguements compelling. The first, there are demand characteristics unobserved to us that are observed by sellers. This makes the error term in our regression correlated with quantity supplied.  Second, analgous to @Graddy2010; , sellers (fishing vessels) have an ability to inventory a bit when there are low prices and deplete that inventory when there are high prices. This happens at the margin, even with a highly perishable good, because people can adjust the timing of when they land fish. 
 
 Seller-specific heterogeneity might arise if particular fishing vessels systematically deliver high- or low-quality product, perhaps due to good handling practices after fish are caught. Buyer-specific heterogeneity might arise if particular buyers are selling into different markets in  geographical or product space, or are vertically integrated with downstream components of the supply chain.  Finally, buyer-seller pairs , although not explictly treated here, can have unobserved heterogenity as well [@Gobillon2017].   
 
 At the time a sales transaction occurs, the characteristics $X_{ijtk}$ have been determined and cannot be changed by either buyer or seller. In the Northeast US market for silver hake, most fish are caught and brought to market before the price is negotiated.  Therefore, the characteristics of a particular lot of fish sold on a particular day are functions of previous fishing effort and can reasonably be thought of as exogenous.
 
-We experiment with various ways to model the price equation. We estimate models with "all silver hake" quantities and a version that aggregates into own- and other- market category quantities.  We estimate linear-, log-log, and inverse hyperbolic sine (IHS) transformed models.  The other-market category quantity is occasionally zero; this presents some problems for a specification that is estimated in logs, but does not present such a problem for the IHS models. 
+We experiment with various ways to model the price equation. We estimate models that uses "all silver hake" quantities and a version that aggregates into own- and other- market category quantities as explanatory variables.  We estimate linear-, log-log, and inverse hyperbolic sine (IHS) transformed models.  The other-market category quantity is occasionally zero; this presents some problems for a specification that is estimated in logs, but does not present such a problem for the IHS models. 
 
-Imported whiting is likely to be a substitute and activity in the import market is likely to be important in determining the price of domestic silver hake.  We experiment with including monthly import prices (we expect a positive sign here; an exogenous increase to import prices should result in higher prices of domestic whiting) and monthly import quantities (we expect a negative sign here; an exogenous increase in imported quanttiies should result in lower prices of domestic whiting).  Both import prices and import quantities assumed endogenous to domestic prices.  
+Imported whiting is likely to be a substitute and activity in the import market is likely to be important in determining the price of domestic silver hake.  We experiment with including monthly import prices (we expect a positive sign here; an exogenous increase to import prices should result in higher prices of domestic whiting) and monthly import quantities (we expect a negative sign here; an exogenous increase in imported quanttiies should result in lower prices of domestic whiting).  Both import prices and import quantities assumed endogenous to domestic prices.
 
-We can put "lot size" in as an explanatory variable. I'm expecting this coefficient to be non-negative.  A negative coefficient would mean that buyers could split large lots and get a higher price per pound. This would be "wierd" and inconsistent with increasing returns to scale in the processing sector. Processing and wholesaling fish entails some quasi-fixed costs.  A small lot is going to be worth less than a large lot. There may be some confounding due to the "aggregate supply effect"
+We can put "lot size" in as an explanatory variable. I'm not sure of the sign of this coefficient.  A negative coefficient would mean that sellers could split large lots and get a higher price per pound. This would be inconsistent with increasing returns to scale in the processing sector. Processing and wholesaling fish entails some quasi-fixed costs.  A small lot is going to be worth less than a large lot. However, there may be some confounding due to the "aggregate supply effect."  It's also possible that there are transactions (hold-up) costs: after a seller brings in fish, it is perishable. If the seller doesn't take the buyers price, then the net price will be lower if they have to move to another seller. I'd suspect that repeated interactions would take care of this though.
+
+
 # Data overview
 
 This is intended as a companion to the stata code that extracts and processes data.
@@ -251,8 +253,6 @@ Ungraded 5097.
 Define $D$ as an indicator if the trade date is before Jan 1, 2004.  Doing a crosstab of nespp4 and D shows that there are just a few observations of 5093 and 5094 when D=1.   There are 21 and 369 respectively. So, we won't construct interactions of these.  There are also only 132 obs of ungraded,  so we'll exclude these.  The following dummies enter the specification (round is the base)
 Round$*$D, King, King$*$D, Small, Small$*$D,  Dressed, Juvenile, Large, Medium.
 
-I think this is coded properly in 02 and needs to be propagated to 3 4importpounds
-
 
 
 ```{r , fig.show = "hold", out.width = "48%", fig.cap="Silver Hake prices, 1994-2019", fig.align = "center", echo=FALSE}
@@ -278,6 +278,8 @@ knitr::include_graphics(file.path(silverhake_images,paste0("juvenile_5094_",vint
 
 ## Condition and Macro
 
+Some simple plots to look at the income variable. Secular trend up over time in income. Secular trend down in landings of silver hake over time.  If the prices have a time trend, it's pretty small.
+
 ```{r , fig.show = "hold", out.width = "75%", fig.cap="GDP/cap, Personal Income, Disposable Income", fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("macro_incomes_",vintage,".png")))
 ```
@@ -293,16 +295,45 @@ knitr::include_graphics(file.path(silverhake_images,paste0("condition509_PIC_",v
 knitr::include_graphics(file.path(silverhake_images,paste0("condition509_GDPC_",vintage,".png")))
 ```
 
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Quarterly Income and 5090 landings", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(silverhake_images,paste0("quarterly_Qtrends_5090_",vintage,".png")))
+```
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Quarterly Income and 5090 prices", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(silverhake_images,paste0("quarterly_Ptrends_5090_",vintage,".png")))
+```
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Quarterly Income and 5091 landings", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(silverhake_images,paste0("quarterly_Qtrends_5091_",vintage,".png")))
+```
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Quarterly Income and 5091 prices", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(silverhake_images,paste0("quarterly_Ptrends_5091_",vintage,".png")))
+```
+
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Quarterly Income and 5092 landings", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(silverhake_images,paste0("quarterly_Qtrends_5092_",vintage,".png")))
+```
+
+```{r , fig.show = "hold", out.width = "48%", fig.cap="Quarterly Income and 5092 prices ", fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(silverhake_images,paste0("quarterly_Ptrends_5092_",vintage,".png")))
+```
+
+
+
+
 # Code and methods
 Code to extract and process data is in the "/stata_code/data_extraction_processing" folder.  Code to make figures is in "stata_code/analysis/silverhake."  Code to do regressions is in "stata_code/analysis/silverhake/regressions"
 
 silver_hake_01.do - this is my first set of exploratory regressions. The code runs quickly (OLS and IVs).  These models not good models, but we can still learn something from them.  I did not put these tables into the current doc. You can look at the sters or smcls.
 
-silver_hake_02.do - this is my second set of exploratory regressions. The code runs slower because I used lots of Fixed Effects for permits and sometimes for dealers and fitted the models with REGHDFE and IVREGHDFE.   Some of these *might* be candidates for an acceptable specification.You can look at the sters or smcls.
+silver_hake_02.do - this is my second set of exploratory regressions. The code runs slower because I used lots of Fixed Effects for permits and sometimes for dealers and fitted the models with REGHDFE and IVREGHDFE.   Some of these might be candidates for an acceptable specification.You can look at the sters or smcls.
 
-silver_hake_03.do - this is my third set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification.
+silver_hake_03.do - this is my third set of exploratory regressions.  Some of these might be candidates for an acceptable specification.
 
-silver_hake04_import_pounds.do - this is my fourth set of exploratory regressions.  Some of these *might* be candidates for an acceptable specification. I experimented with a few things.
+silver_hake04_import_pounds.do - this is my fourth set of exploratory regressions.  Some of these might be candidates for an acceptable specification. I experimented with a few things.
 
 # Results
 
@@ -321,9 +352,9 @@ The IV models seem to fit much better. R^2 isn't meaningful for an IV.  The nega
 
 Takeaways from Table \ref{silverhake} through \ref{silverhakeMW}:  
 
-1. Daily landings effect is fairly stable -0.5 to -0.7.  This is reasonable.
-1. Import price effect is 0.5 to 0.77.  This is reasonable and consistent with imports as substitutes. IV49, which uses import quantities has a negative sign here, consistent with imports being substitutes.
-1. The income effect is -1.1. This means that if incomes go up by 1\%, prices go down by just over 1\%. This doesn't make much sense.  I suspect this is correlated with something else.  Not sure what.
+1. Daily landings elasticity is fairly stable -0.5 to -0.7.  This is reasonable.
+1. Import price effect is 0.5 to 0.77.  This is reasonable and consistent with imports as substitutes. IV49, which uses import quantities has a negative sign here, also consistent with imports being substitutes.
+1. The income effect is -1.1. This means that if real incomes go up by 1\%, prices go down by just over 1\%. This doesn't make much sense.  I suspect this is correlated with something else.  Not sure what.  Could be a normalization issue?
 1.The Fzone=offshore and Fzone=missing effects are consistent across specifications.  They're not too large or too small.  Ballparking it at a 4\% premium and a 2\% discount relative to "inshore".
 1. Same with BSA (northern and southern effects are small, relative to unknown.)
 1. The recession indicator means that prices are lower when we have a recession by about 2 to 5\%.  This is *inconsistent* with the income effect.
