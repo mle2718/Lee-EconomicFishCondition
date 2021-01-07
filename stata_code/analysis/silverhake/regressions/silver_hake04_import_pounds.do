@@ -173,30 +173,36 @@ gen lnprice_allIMP_lag1_R_GDPDEF=ln(price_allIMP_lag1_R_GDPDEF)
 
 /**************************************************/
 /* label variables so the tables are pretty */
-label var lnq "Log Daily Landings"
-label var daily_landings "Daily Landings"
+cap label var lnq "Log Daily Landings"
+cap label var daily_landings "Daily Landings"
 
-label var lnprice_allIMP_R_GDPDEF "Log Real Import Price"
-label var lnrGDPcapita "Log Real GDP cap"
-label var rGDPcapita "Real GDP cap"
+cap label var lnprice_allIMP_R_GDPDEF "Log Real Import Price"
+cap label var lnrGDPcapita "Log Real GDP cap"
+cap label var rGDPcapita "Real GDP cap"
 
-label var price_allIMP_R_GDPDEF "Real Import Price"
+cap label var price_allIMP_R_GDPDEF "Real Import Price"
+cap label var USRECM "Recession Indicator"
+cap label var pounds_allIMP "Import Quantity"
+cap label var pounds_allIMP_lag1 "Import Quantity, 1 month lag"
 
-label var pounds_allIMP "Import Quantity"
-label var pounds_allIMP_lag1 "Import Quantity, 1 month lag"
+cap label var lnpounds_allIMP "Log Import Quantity"
+cap label var lnpounds_allIMP_lag1 "Log Import Quantity, 1 month lag"
 
- label var lnpounds_allIMP "Log Import Quantity"
-label var lnpounds_allIMP_lag1 "Log Import Quantity, 1 month lag"
-
-label var ihspounds_allIMP "IHS Import Quantity"
-label var ihspounds_allIMP_lag1 "IHS Import Quantity, 1 month lag"
-label var USRECM "Recession Indicator"
+cap label var ihspounds_allIMP "IHS Import Quantity"
+cap label var ihspounds_allIMP_lag1 "IHS Import Quantity, 1 month lag"
+cap label var USRECM "Recession Indicator"
 
 cap label var lnql "Log Quarterly Landings"
 cap label var lnaggregateV_R_GDPDEF "Log Aggregate NER Value"
 cap label var ln_aggregateL "Log Aggregate NER Landings"
 cap label var lnpounds_allIMP "Log Imports"
 
+gen ln_lot=ln(landings)
+gen ihs_lot=asinh(landings)
+
+cap label var landings "Lot size"
+cap label var ln_lot "ln of lot size"
+cap label var ihs_lot "ihs of Lot size"
 /**************************************************/
 
 
@@ -285,7 +291,7 @@ foreach r of local regression_vars {
 
 
 
-local table_opts addtext(Model,IV, Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No)   ctitle("IV51 Log") 
+local table_opts addtext(Model,IV, Year effects, Yes, Month Effects, Yes, Vessel Effects, No, Dealer Effects, No)   ctitle("IV52 Log") 
 outreg2 using ${linear_table3}, tex(frag) label adds(ll, e(ll), rmse, e(rmse))  drop(`months' `years' `dow' `states') `table_opts'  `replacer'
 outreg2 using ${year_table}, tex(frag) label  keep(`years')   `table_opts' `replacer' 
 outreg2 using ${month_week_table}, tex(frag) label   keep(`months' `dow' `states')  `table_opts' `replacer'

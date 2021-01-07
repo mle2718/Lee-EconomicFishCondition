@@ -196,11 +196,27 @@ cap label var rGDPcapita "Real GDP cap"
 
 cap label var price_allIMP_R_GDPDEF "Real Import Price"
 cap label var USRECM "Recession Indicator"
+cap label var pounds_allIMP "Import Quantity"
+cap label var pounds_allIMP_lag1 "Import Quantity, 1 month lag"
+
+cap label var lnpounds_allIMP "Log Import Quantity"
+cap label var lnpounds_allIMP_lag1 "Log Import Quantity, 1 month lag"
+
+cap label var ihspounds_allIMP "IHS Import Quantity"
+cap label var ihspounds_allIMP_lag1 "IHS Import Quantity, 1 month lag"
+cap label var USRECM "Recession Indicator"
 
 cap label var lnql "Log Quarterly Landings"
 cap label var lnaggregateV_R_GDPDEF "Log Aggregate NER Value"
 cap label var ln_aggregateL "Log Aggregate NER Landings"
 cap label var lnpounds_allIMP "Log Imports"
+
+gen ln_lot=ln(landings)
+gen ihs_lot=asinh(landings)
+
+cap label var landings "Lot size"
+cap label var ln_lot "ln of lot size"
+cap label var ihs_lot "ihs of Lot size"
 /**************************************************/
 
 gen mkt_shift=date>=mdy(1,1,2004)
