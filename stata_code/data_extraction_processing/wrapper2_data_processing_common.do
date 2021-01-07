@@ -34,10 +34,8 @@ global in_relcond_leng ${data_raw}/annual_condition_indexEPU_length_${vintage_st
 global daily ${data_raw}/raw_entire_fishery_${vintage_string}.dta 
 
 use `in_prices', replace
-replace value=value/1000
-replace landings=landings/1000
-label var landings "000s of lbs"
-label var value "000s of dollars"
+label var landings "lbs"
+label var value "dollars"
 
 
 
