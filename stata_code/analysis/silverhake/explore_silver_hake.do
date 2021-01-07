@@ -94,7 +94,7 @@ graph export ${silverhake_images}/silver_hake_late_box.png, replace as(png)
 
 gen statecd=floor(port/10000)
 collapse (sum) landings value valueR_GDPDEF, by(state year)
-label var landings "landings 000s "
+label var landings "landings"
 merge m:1 statecd using `statecodes', keep(1 3)
 assert _merge==3
 drop _merge
