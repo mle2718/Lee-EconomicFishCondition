@@ -185,10 +185,9 @@ gen lnprice_allIMP_lag1_R_GDPDEF=ln(price_allIMP_lag1_R_GDPDEF)
 
 
 
+
 /**************************************************/
 /* label variables so the tables are pretty */
-cap label var lnq "Log Daily Landings"
-cap label var daily_landings "Daily Landings"
 
 cap label var lnprice_allIMP_R_GDPDEF "Log Real Import Price"
 cap label var lnrGDPcapita "Log Real GDP cap"
@@ -217,8 +216,18 @@ gen ihs_lot=asinh(landings)
 cap label var landings "Lot size"
 cap label var ln_lot "ln of lot size"
 cap label var ihs_lot "ihs of Lot size"
-/**************************************************/
 
+cap label var lnq "Log Daily Landings"
+
+/*rescale landings and daily landings to 000s */
+replace landings=landings/1000
+replace daily_landings=daily_landings/1000
+
+cap label var daily_landings "Daily Landings 000s"
+cap label var landings "Lot size 000s"
+
+
+/**************************************************/
 gen mkt_shift=date>=mdy(1,1,2004)
 
 /*  MODEL IV41: Same as IV31, but added indicators for state.  Should have been there all along.*/
