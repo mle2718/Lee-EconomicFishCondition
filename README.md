@@ -2,7 +2,7 @@
 Code to extract and wrestle data; perform some analysis of prices in support of the Fish Condition project.
 
 # Project Logistics and getting started
-Go here  https://github.com/minyanglee/EconomicFishCondition/blob/master/documentation/project_logistics.md
+Go here  https://github.com/NEFSC/READ-SSB-Lee-EconomicFishCondition/blob/master/documentation/project_logistics.md
 
 # Required stata commands
 
@@ -67,12 +67,15 @@ set fredkey <yourkey>, permanently
 
 # Pre-processed data
 
-You can get the outputs of wrapper1_data_extraction.do and wrapper2_data_processing_common.do from /home2/mlee/EconomicFishCondition/data_folder/external and /home2/mlee/EconomicFishCondition/data_folder/main.  These will be updated sporadically.  
+You can get the outputs of wrapper1_data_extraction.do and wrapper2_data_processing_common.do from
+
+/home2/mlee/EconomicFishCondition/data_folder/external and
+/home2/mlee/EconomicFishCondition/data_folder/main.  These will be updated sporadically.  
 
 
 # Running code
 
-Go here  https://github.com/minyanglee/EconomicFishCondition/blob/master/documentation/running_code.md
+Go here  https://github.com/NEFSC/READ-SSB-Lee-EconomicFishCondition/blob/master/documentation/running_code.md 
 
 
 # NOAA Requirements
@@ -88,7 +91,7 @@ Go here  https://github.com/minyanglee/EconomicFishCondition/blob/master/documen
 1. who maintains and contributes to the project. Min-Yang
 
 # License file
-See here for the [license file](https://github.com/mle2718/READ-SSB-Lee-EconomicFishCondition/blob/master/License.txt)
+See here for the [license file](https://github.com/NEFSC/READ-SSB-Lee-EconomicFishCondition/blob/master/License.txt)
 
 
 
