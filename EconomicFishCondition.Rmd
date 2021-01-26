@@ -355,10 +355,14 @@ Takeaways from Table \ref{silverhake} through \ref{silverhakeMW}:
 1. Daily landings elasticity is fairly stable -0.5 to -0.7.  This is reasonable.
 1. Import price effect is 0.5 to 0.77.  This is reasonable and consistent with imports as substitutes. IV49, which uses import quantities has a negative sign here, also consistent with imports being substitutes.
 1. The income effect is -1.1. This means that if real incomes go up by 1\%, prices go down by just over 1\%. This doesn't make much sense.  I suspect this is correlated with something else.  Not sure what.  Could be a normalization issue?
+    1.  Income is measured quarterly and has a strong upward trend over time.  
+    1.  All of my specifications have dummies for Years and Months.
+    1.  Since we have Y and M dummies, the income variable is really going in as a deviation from the Yearly and 3 month average. So we are probably getting higher values at the begininning of the year and lower at the end? This could be a spurious correlation.
+    
 1.The Fzone=offshore and Fzone=missing effects are consistent across specifications.  They're not too large or too small.  Ballparking it at a 4\% premium and a 2\% discount relative to "inshore".
 1. Same with BSA (northern and southern effects are small, relative to unknown.)
 1. The recession indicator means that prices are lower when we have a recession by about 2 to 5\%.  This is *inconsistent* with the income effect.
-1. Prices are higher when the daily volume of all fish is higher.  Not sure what this means. IV44 and IV45 treat daily "fishery-wide" quantities as exogenous.  IV46 treats it as endogenous. 
+1. Prices are higher when the daily volume of all fish is higher.  Not sure what this means. IV44 and IV45 treat daily "fishery-wide" quantities as exogenous.  IV46 treats it as endogenous. Treating "fishery-wide" quantities as exogenous results in coefficients 2x larger than ones that treat it as endogenous.   
 1. The 'size' effects are very consistent.  These are approximately the premia/discounts in percentage terms (not quite, you have to do exp($\beta$). But close enough for now.  The differences are IV47 and IV48's coefficients for "Dressed", "Medium", and "Smallx mkt_Shift"
 1. The years vary a bit, I'm guessing it's because there are some specifications that leave out the macro factors (Table \ref{silverhakeY}) 
 1. The month and dow coeffs in Table \ref{silverhakeMW} also match really well (not as well as the main interesting coeffs though).
@@ -473,8 +477,13 @@ Takeaways from Table \ref{condition_coefs} through \ref{silverhakeihs4Q}:
 
 \newpage
 
+# References
+<div id="refs"></div>
+\newpage
 
-# An incomplete list of specification and data issues that I'm worried about
+# Appendix 
+
+## An incomplete list of specification and data issues that I'm worried about
 
 Along with a rating about how worried I am (1-10; 10 will make the paper unpublishable)
 
@@ -492,9 +501,7 @@ Along with a rating about how worried I am (1-10; 10 will make the paper unpubli
 1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about \$1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a \$0.01 change in silver hake prices. 
 1. Weighting observations by pounds in that transaction. Yea or Nay.
 
-\newpage
-
-# Weighting observations
+## Weighting observations
 
 @Dumouchel1983 describes a test that looks like a Durbin-Wu-Hausman test for the applicability of Weighted OLS versus OLS.  For observations $i= 1,\ldots, n$ the weight matrix $W$ is a diagonal elements $w_i$. They describe a sampling weight setup where weights are proportional to the $\frac{\pi_j}{n_j}$, where $\pi_j$ is proportion of the population is in group $j$ and $n_j$ are the number of individuals sampled randomly from group $j$.  @Dumouchel1983 advocates for OLS when OLS is approrpriate (duh, it's BLUE). They suggest using weighted OLS if OLS does not pass diagnostics.  
 
@@ -542,12 +549,8 @@ However, the context of Diewert is pretty narrow: constructing of a price index.
 Stata offers probability, importance, analytic, and frequency weights. p-weights are related to sampling design and are not relevant. iweights are a hack. fweights are for duplicate observations (say 1 observation represents 10 sales, or something like that).  aweights are similar, but normalize by total $N$. So each observation can be treated as an average.  
 
 
-# References
-<div id="refs"></div>
 
-# Appendix 
-
-Some misspecified models
+## Some misspecified models
 
 \newpage
 
