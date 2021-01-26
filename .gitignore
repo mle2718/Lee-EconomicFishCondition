@@ -13,3 +13,5 @@
 /images
 *.Rproj
 *.zip
+*.aux
+!EconomicFishCondition.pdf
