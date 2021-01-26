@@ -88,7 +88,7 @@ Go here  https://github.com/minyanglee/EconomicFishCondition/blob/master/documen
 1. who maintains and contributes to the project. Min-Yang
 
 # License file
-See here for the [license file](https://github.com/mle2718/READ-SSB-Lee-EconomicFishCondition/blob/main/License.txt)
+See here for the [license file](https://github.com/mle2718/READ-SSB-Lee-EconomicFishCondition/blob/master/License.txt)
 
 
 
