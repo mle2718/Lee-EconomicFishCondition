@@ -44,40 +44,58 @@ replace nespp3=662 if svspp==78 & nespp3==.
 assert nespp3==662 if _merge==1
 drop _merge
 
-drop if strmatch(year,"NA")
+capture	drop if strmatch(year,"NA")
 drop n
-replace stddevcond="" if stddevcond=="NaN"
+
+capture replace stddevcond="" if stddevcond=="NaN"
+
 destring, replace
 foreach var of varlist meancond stddevcond ncond{
 rename `var' `var'_Annual
 }
+replace species=proper(species)
+replace species="Windowpane Flounder" if species=="Windowpane"
+replace species="Fourspot Flounder" if species=="Fourspot"
+replace species="Atlantic Cod" if species=="Atl Cod"
+replace species="Atlantic Herring" if species=="Atl Herring"
+replace species="Atlantic Mackerel" if species=="Mackerel"
+replace species="Fourspot Flounder" if species=="Fourspot"
+replace species="Yellowtail Flounder" if species=="Yellowtail"
 
 save ${out_dataYear}, replace
 
-
+/* keyfile of species, svspp, nespp3 */
+keep species svspp nespp3
+duplicates drop
+tempfile keyfile1
+save `keyfile1', replace
 
 /* This won't work until the input data has svspp in it */
-/*
+
 /* YEARLY EPU data */ 
 /* read in data with a global/local  */
 import delimited ${in_relcond}, clear
+replace species=proper(species)
+replace species="Windowpane Flounder" if species=="Windowpane"
+replace species="Fourspot Flounder" if species=="Fourspot"
+replace species="Atlantic Cod" if species=="Atl Cod"
+replace species="Atlantic Herring" if species=="Atl Herring"
+replace species="Atlantic Mackerel" if species=="Mackerel"
+replace species="Fourspot Flounder" if species=="Fourspot"
+replace species="Yellowtail Flounder" if species=="Yellowtail"
 
-merge m:1 svspp using `sp'
 
-/*patch spotted hake */
-replace nespp3=662 if svspp==78 & nespp3==.
-assert nespp3==662 if _merge==1
-drop _merge
-
+merge m:1 species using `keyfile1', keep(1 3)
+assert _merge==3
 drop if strmatch(year,"NA")
 drop n
 capture replace stddevcond="" if stddevcond=="NaN"
 destring, replace
-foreach var of varlist meancond stddevcond ncond{
+foreach var of varlist meancond ncond{
 rename `var' `var'_EPU
 }
 save ${out_dataEPUYear}, replace
-*/
+
 
 
 
@@ -94,9 +112,21 @@ merge m:1 svspp using `sp'
 replace nespp3=662 if svspp==78 & nespp3==.
 assert nespp3==662 if _merge==1
 drop _merge
+replace species=proper(species)
+replace species="Windowpane Flounder" if species=="Windowpane"
+replace species="Fourspot Flounder" if species=="Fourspot"
+replace species="Atlantic Cod" if species=="Atl Cod"
+replace species="Atlantic Herring" if species=="Atl Herring"
+replace species="Atlantic Mackerel" if species=="Mackerel"
+replace species="Fourspot Flounder" if species=="Fourspot"
+replace species="Yellowtail Flounder" if species=="Yellowtail"
 
-drop if strmatch(year,"NA")
+
+capture	drop if strmatch(year,"NA")
+
 drop n
+
+
 capture replace stddevcond="" if stddevcond=="NaN"
 destring, replace
 foreach var of varlist meancond stddevcond ncond{
