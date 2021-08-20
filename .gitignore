@@ -16,3 +16,5 @@ R_credentials.R
 *.zip
 *.aux
 !EconomicFishCondition.pdf
+*.smcl
+*.ster
