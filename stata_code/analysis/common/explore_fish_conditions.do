@@ -13,9 +13,8 @@ log using ${common_results}/`logfile', replace
 
 
 version 15.1
-pause off
+pause on
 timer on 1
-vintage_lookup_and_reset
 
 
 /* files for Relative condition data, which one are you using?*/
@@ -75,7 +74,11 @@ gen lower=meancond-stddev
 bysort nespp3: egen mm=mean(meancond) 
 replace mm=. if meancond==.
 label var mm "mean condition over time series"
+/* exclude Ocean Pout, Spotted Hake, Sea Raven, */
+
 xtline meancond  mm if nespp3~=344, tmtick(##5) cmissing(n)
+
+
 graph export ${common_images}/fish_conditions_${vintage_string}.png, replace as(png)  width(2000)
 
 
@@ -84,20 +87,22 @@ xtline del, tmtick(##5) cmissing(n)
 graph export ${common_images}/delta_conditions_${vintage_string}.png, replace as(png)  width(2000)
 
 merge 1:m nespp3 year using `p2'
+pause
+/* exclude little skate, ocean pout, thorny skate, spotted hake */
 
-xtline del delp, tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))
+xtline del delp if inlist(nespp3, 250, 366, 370,662)==0 , tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))
 graph export ${my_images}/common/delta_conditions_and_prices_${vintage_string}.png, replace as(png) width(2000)
 
-sepscatter delp del if inlist(nespp3,250,366)==0, separate(nespp3) legend(off) name(sepscatter,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor")
+sepscatter delp del  if inlist(nespp3, 250, 366, 370,662)==0, separate(nespp3) legend(off) name(sepscatter,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor")
 graph export ${common_images}/scatter_conditions_and_prices_${vintage_string}.png, replace as(png) width(2000)
 
 
 
-sepscatter delp del if inlist(nespp3,250,366)==0 & nespp3<=168, separate(nespp3) name(sepscatterA,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor") legend(cols(4))
+sepscatter delp del i if inlist(nespp3, 250, 366, 370,662)==0 & nespp3<=168, separate(nespp3) name(sepscatterA,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor") legend(cols(4))
 graph export ${common_images}/scatter_conditions_and_pricesA_${vintage_string}.png, replace as(png) width(2000)
 
 
-sepscatter delp del if inlist(nespp3,250,366)==0 & nespp3>168, separate(nespp3) name(sepscatterB,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor") legend(cols(4))
+sepscatter delp del  if inlist(nespp3, 250, 366, 370,662)==0& nespp3>168, separate(nespp3) name(sepscatterB,replace) ytitle("Deviation in real prices" ) xtitle("Deviations in condition factor") legend(cols(4))
 graph export ${common_images}/scatter_conditions_and_pricesB_${vintage_string}.png, replace as(png) width(2000)
 
 
