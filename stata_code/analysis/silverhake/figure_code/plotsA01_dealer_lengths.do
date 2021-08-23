@@ -29,7 +29,7 @@ labmask nespp4, value(mktnm);
 drop if year>=2020;
 
 gen period=1;
-replace period=2 if year>=2003;
+replace period=2 if year>=2004;
 replace period=3 if year>=2012;
 
 collapse (sum) numlen, by(nespp4 length period);
