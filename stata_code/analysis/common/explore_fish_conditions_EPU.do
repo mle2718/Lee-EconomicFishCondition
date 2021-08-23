@@ -13,7 +13,7 @@ log using ${common_results}/`logfile', replace
 
 
 version 15.1
-pause on
+pause off
 timer on 1
 
 
@@ -127,7 +127,7 @@ foreach l of local mysp{
 	preserve
 	keep if nespp3==`l'
 
-	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))
+	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))  lpattern(solid dash) lwidth(medium medthick)
 	capture xtline del delp, `graphopts'
 
 	capture graph export ${common_images}/xtline_EPU_sex_`l'_${vintage_string}.png, replace as(png) width(2000)
