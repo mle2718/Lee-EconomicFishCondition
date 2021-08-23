@@ -25,15 +25,23 @@ source(file.path(my_projdir,"R_code","project_logistics","R_paths_libraries.R"))
 setwd(my_projdir)
 common_images<-file.path(my_images,"common")
 
+nespp_list<-c("12","23","51","81","120","121","122","123","124","125","127","147","152","153","168","212","240","250","269","335","344","351","352","366","367","370","509","662")
+
+
+nespp_sublistA<-c("12","23","51","81","120","121","122","123")
+nespp_sublistB<-c("124","125","127","147","152","153","168","212")
+nespp_sublistC<-c("240","269","335","351","352","367","509")
+
+
 silverhake_images<-file.path(my_images,"silverhake")
 silverhake_tables<-file.path(my_tables,"silverhake")
-vintage<-"2020_12_03"
+vintage<-"2021_01_07"
 
 ```
 
 # Introduction
 
-Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{panel_condition} through  \ref{sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{sepscatter_conditions} would also be good species to look at. 
+Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{panel_condition} through  \ref{fig:sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{fig:panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{fig:sepscatter_conditions} would also be good species to look at. 
 
 Table \ref{priceconditionreg} reports the results of OLS regression of price on condition and landings at the annual level. There are up to 26 data points (years) per species.  That table is intended to give us a quick look at species where we might pick up an effect of condition on price.  Of course, there are major OVs (import prices) here and other misspecifications, plus there's very few DoF, so don't over-interpret.  Large positive and significant coefficients are consistent with the hypothesis that condition is a good.
 
@@ -41,17 +49,17 @@ Table \ref{priceconditionreg} reports the results of OLS regression of price on 
 
 
  
-```{r panel_condition, fig.show = "hold", out.width = "80%", fig.cap="\\label{panel_condition}Panel plots of fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
+```{r panel_condition, fig.show = "hold", out.width = "80%", fig.cap="Panel plots of fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("delta_conditions_and_prices_",vintage,".png")))
 ```
 
 
-```{r scatter_condition, fig.show = "hold", out.width = "80%", fig.cap="\\label{scatter_conditions}Scatter of Fish condition and real prices, normalized by group mean. Excluding Ocean Pout and Little Skate",  fig.align = "center", echo=FALSE}
+```{r scatter_condition, fig.show = "hold", out.width = "80%", fig.cap="Scatter of Fish condition and real prices, normalized by group mean. Excluding Ocean Pout and Little Skate",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("scatter_conditions_and_prices_",vintage,".png")))
 ```
 
 
-```{r sepscatter_conditions, fig.show = "hold", out.width = "45%", fig.cap="\\label{sepscatter_conditions}Scatter of Fish condition and real prices, normalized by group mean. Species are separately colorized. Excluding Ocean Pout and Little Skate",  fig.align = "center", echo=FALSE}
+```{r sepscatter_conditions, fig.show = "hold", out.width = "45%", fig.cap="Scatter of Fish condition and real prices, normalized by group mean. Species are separately colorized. Excluding Ocean Pout and Little Skate",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0(c("scatter_conditions_and_pricesA_","scatter_conditions_and_pricesB_"),vintage,".png")))
 ```
 
@@ -65,6 +73,24 @@ knitr::include_graphics(file.path(common_images,paste0(c("scatter_conditions_and
         
     \end{center}
   \end{table}
+
+
+
+```{r nespp3_conditionsA, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices, normalized by group mean.",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(common_images,paste0("xtline_EPU_sex_",nespp_sublistA,"_",vintage,".png")))
+```
+
+
+
+```{r nespp3_conditionsB, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices, normalized by group mean.",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(common_images,paste0("xtline_EPU_sex_",nespp_sublistB,"_",vintage,".png")))
+```
+
+
+
+```{r nespp3_conditionsC, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices, normalized by group mean.",  fig.align = "center", echo=FALSE}
+knitr::include_graphics(file.path(common_images,paste0("xtline_EPU_sex_",nespp_sublistC,"_",vintage,".png")))
+```
 
 
 ## Related literature
@@ -493,13 +519,14 @@ Along with a rating about how worried I am (1-10; 10 will make the paper unpubli
 1.  Misreporting (3)
 1.  Definition of imports (2)
 1.  Outliers (1) -I just have to do this
-1.  Proper disaggregation of $q_s$ -- too fancy will have people ask why we aren't estimating an inverse demand system like in @Sjoberg2015. No good answer, except I don't want to.
+1.  Proper disaggregation of $q_s$ -- too fancy will have people ask why we aren't estimating an inverse demand system like in @Sjoberg2015. No good answer, except I don't want to.  Same nespp4 and other nespp4 is probably fine.
 1.  Proper standard errors for year-level rhs variables (7): I just need to be 100\% sure that cluster(year) is fine for some variables and cluster(date) or cluster(blah) is fine for others. Or we could just bootstrap it.
 1. There's not much variation in fish condition from year to year. Less than the Std dev.  Problem?
-1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3
+1. I'm getting unrealistic "income effects" -- an elasticity of -1.  This number goes way up (to -2) when I drop out the yearly dummies in order to add in condition.  There's something funny going on here, but I'm not sure what.  The realDPI/capita coeff is smaller in magnitude than the GDP/cap coefficient. The personal income (nominal) is even smaller.  How do we justify one or the other?  Correlation between fish condition and GDP, income, disposable income is ~0.2 to 0.3.  Inclined to take this out of the model.
+1. Models where I include a "total quantity" of fish landed indicate that increases in the value or amount of all fish landed will increase the price of silver hake. This is a little odd. I don't know what is causing this. Unique to Silver hake?
 1. Import Pounds or import prices on the RHS.  Both are endogenous.  Both IV coefficents are in the "right direction" compared to the OLS coefficients.
 1. The elasticity of price wrt condition is modest in magnitude...Somewhere around the 0.5 to 1.0 range, depending on the specification.  However, this translates into a very small effect.  Mean prices are about \$1.  And the condition factor is around 100 +/- 5.  So a 1 unit increase in the condition factor is approxiamtely a 1% change. This produces a \$0.01 change in silver hake prices. 
-1. Weighting observations by pounds in that transaction. Yea or Nay.
+1. Weighting observations by pounds in that transaction. Yea or Nay.  Probably Nay.
 
 ## Weighting observations
 
@@ -527,17 +554,16 @@ There's a really nice walk though about how to diagnose/interpret your findings 
 
 >Many individuals' intuition would probably suggest that weighted data should also be used for the estimation of regression models. After all, using the weighted data will give covariance and variance estimates that are unbiased and consistent estimates of the quanttiies in the population. Thus the regression estimates should also be unbiased and consistent estimates of the regression model for the entire population.
 
-@Winship1994 this is a mistake for three reasons
+@Winship1994 calim this is a mistake for three reasons
 1. If the original equation was homoskedastic, the new equation will be heteroskedastic.
 1. Canned software produces the wrong standard errors
 1. The variance is higher. 
 
-IMHO, 1 and 2 aren't really big deals anymore.  
+IMHO, 1 and 2 aren't really big deals anymore, so the arguement boils down to "OLS is BLUE." 
 
 Diewert (2003) advocates pretty strenuously for weighting by value (compared to quantity or not weighting at all). 
 
->Usually, discussions of how to use quantity or expenditure weights in a hedonic regression are centered around discussions on how to reduce the heteroskedasticity of error terms. In this section, we attempt a somewhat different approach based on the idea that the regression model should be representative. In other words, if model $k$ sold $q_{kt}$ times in period $t$, then perhaps model $k$ should be repeated in the period $t$ hedonic
-regression $q_{kt}$ times so that the period $t$ regression is representative of the sales that actually occurred during the period.
+>Usually, discussions of how to use quantity or expenditure weights in a hedonic regression are centered around discussions on how to reduce the heteroskedasticity of error terms. In this section, we attempt a somewhat different approach based on the idea that the regression model should be representative. In other words, if model $k$ sold $q_{kt}$ times in period $t$, then perhaps model $k$ should be repeated in the period $t$ hedonic regression $q_{kt}$ times so that the period $t$ regression is representative of the sales that actually occurred during the period.
 
 >Thus our representative approach follows along the lines of Theil’s (1967; 136-138) stochastic approach to index number theory, which is also pursued by Rao (2002). The use of weights that reflect the economic importance of models was recommended by Griliches (1971b; 8): “But even here, we should use a weighted regression approach, since we are interested in an estimate of a weighted average of the pure price change, rather than just an unweighted average over all possible models, no matter how peculiar or rare.” However, he did not make any explicit weighting suggestions
 
@@ -548,7 +574,11 @@ However, the context of Diewert is pretty narrow: constructing of a price index.
 
 Stata offers probability, importance, analytic, and frequency weights. p-weights are related to sampling design and are not relevant. iweights are a hack. fweights are for duplicate observations (say 1 observation represents 10 sales, or something like that).  aweights are similar, but normalize by total $N$. So each observation can be treated as an average.  
 
+What does my simulation look like?
 
+* Simulate the effect of a change in condition on the average price of a transaction?  Estimate OLS and then just look at the coefficient. The coefficient on condition is the effect of a change in condition on the sales price of a transaction.  
+  
+* Simulate the effect of a change in condition on the average yearly price?  If you estimate OLS and predict with and without a change in condition, you just get the coefficient unless the model is non-linear. If you estimate the [pounds] weighted model, the coefficient on condition is the effect of a change in condition on the sales price of a pound of fish.   
 
 ## Some misspecified models
 
