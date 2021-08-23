@@ -13,7 +13,7 @@ log using ${common_results}/`logfile', replace
 
 
 version 15.1
-pause off
+*pause off
 timer on 1
 
 
@@ -117,7 +117,6 @@ graph export ${common_images}/delta_conditions_epu_sex${vintage_string}.png, rep
 
 merge m:1 nespp3 year using `p2', keep(1 3)
 
-pause
 
 local ex2: subinstr local excludelist "," "", all
 
@@ -127,13 +126,29 @@ foreach l of local mysp{
 	preserve
 	keep if nespp3==`l'
 
-	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))  lpattern(solid dash) lwidth(medium medthick)
+	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "Deviations in Condition Factor" 2 "Deviations in Real Prices"))  lpattern(solid dash) lwidth(medium medthick)
 	capture xtline del delp, `graphopts'
+
+	capture graph export ${common_images}/xtline_EPU_normed_sex_`l'_${vintage_string}.png, replace as(png) width(2000)
+	
+	restore
+}
+
+
+
+foreach l of local mysp{
+	preserve
+	keep if nespp3==`l'
+
+	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "Condition Factor" 2 "Real Prices"))  lpattern(solid dash) lwidth(medium medthick)  ytitle("Condition", axis(1))
+	capture xtline meancond, addplot(line priceR_GDPDEF year, yaxis(2)) `graphopts'
 
 	capture graph export ${common_images}/xtline_EPU_sex_`l'_${vintage_string}.png, replace as(png) width(2000)
 	
 	restore
 }
+
+
 
 
 
