@@ -130,7 +130,7 @@ foreach l of local mysp{
 	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "deviations in condition factor" 2 "deviations in real prices"))
 	capture xtline del delp, `graphopts'
 
-	capture graph export xtline_EPU_sex_`l'_${vintage_string}.png, replace as(png) width(2000)
+	capture graph export ${common_images}/xtline_EPU_sex_`l'_${vintage_string}.png, replace as(png) width(2000)
 	
 	restore
 }
