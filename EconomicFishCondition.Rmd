@@ -41,13 +41,13 @@ vintage<-"2021_01_07"
 
 # Introduction
 
-Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{panel_condition} through  \ref{fig:sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{fig:panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{fig:sepscatter_conditions} would also be good species to look at. 
+Many factors may affect the price of fish.  We are estimating a hedonic model of Silver Hake prices to find out if silver hake prices are affected by Fish Body Condition[^fn_condition].  Figures \ref{fig:panel_condition} through  \ref{fig:sepscatter_conditions} are some exploratory plots of condition factor and real prices at the annual level.  Similar trends figure \ref{fig:panel_condition} would be good species to look at.  Scatter plots with a postive slope (by species) in figure \ref{fig:sepscatter_conditions} would also be good species to look at. 
 
 Table \ref{priceconditionreg} reports the results of OLS regression of price on condition and landings at the annual level. There are up to 26 data points (years) per species.  That table is intended to give us a quick look at species where we might pick up an effect of condition on price.  Of course, there are major OVs (import prices) here and other misspecifications, plus there's very few DoF, so don't over-interpret.  Large positive and significant coefficients are consistent with the hypothesis that condition is a good.
 
 [^fn_condition]: The fish condition project is here: https://github.com/NOAA-EDAB/FisheryConditionLinks
 
-
+@Anderson1989 motivates: optimal intra- and interseasonal harvesting strategies when Prices Varies with Individual size.  @Larkin
  
 ```{r panel_condition, fig.show = "hold", out.width = "80%", fig.cap="Panel plots of fish condition and real prices, normalized by group mean",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("delta_conditions_and_prices_",vintage,".png")))
@@ -76,22 +76,25 @@ knitr::include_graphics(file.path(common_images,paste0(c("scatter_conditions_and
 
 
 
-```{r nespp3_conditionsA, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices, normalized by group mean.",  fig.align = "center", echo=FALSE}
+```{r nespp3_conditionsA, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices.",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("xtline_EPU_sex_",nespp_sublistA,"_",vintage,".png")))
 ```
 
 
 
-```{r nespp3_conditionsB, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices, normalized by group mean.",  fig.align = "center", echo=FALSE}
+```{r nespp3_conditionsB, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices.",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("xtline_EPU_sex_",nespp_sublistB,"_",vintage,".png")))
 ```
 
 
 
-```{r nespp3_conditionsC, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices, normalized by group mean.",  fig.align = "center", echo=FALSE}
+```{r nespp3_conditionsC, fig.show = "hold", out.width = "45%", fig.cap="Panel plots of stock level condition and species level prices.",  fig.align = "center", echo=FALSE}
 knitr::include_graphics(file.path(common_images,paste0("xtline_EPU_sex_",nespp_sublistC,"_",vintage,".png")))
 ```
 
+Eyeballing Figures \ref{fig:nespp3_conditionsA} to \ref{fig:nespp3_conditionsC} and it looks like the flatfish, plus haddock, redfish, and pollock might be candidates for species where prices are affected by fish condition. Probably want to exclude Mackerel and herring as unlikely (similar to silver hake). Probably want to exclude all skates, smooth dogfish, fourspot, and windowpane as not economically important enough. 
+
+Eyeballing Figures \ref{fig:nespp3_conditionsA} to \ref{fig:nespp3_conditionsC}, it looks like I M and F move together for most species.  
 
 ## Related literature
 
@@ -259,7 +262,7 @@ In the Atlantic Cod paper, I used PPI Unprocessed Finfish. In the scallop hedoni
 knitr::include_graphics(file.path(silverhake_images,paste0("xtline509_monthly_shares_",vintage,".png")))
 ```
 
-On Jan 1, 2004, the market category coding changed.  It's not super well documented in the databases, but I deduced this from figure \ref{market_cat_changes}. It looks like there are 3 new categories Large, Medium, and Dressed. I should interact Round, King and Small with an indicator for post Jan 1, 2004.  Eyeballing the length data at the market category from the dealer data shows that there's a "rebinning" \ref{market_cat_lengths}.
+On Jan 1, 2004, the market category coding changed.  It's not super well documented in the databases, but I deduced this from figure \ref{market_cat_changes}. It looks like there are 3 new categories Large, Medium, and Dressed. I interact Round, King and Small with an indicator for post Jan 1, 2004.  This controls for the change in definitions.  Eyeballing the length data at the market category from the dealer data shows that there's a "rebinning" \ref{market_cat_lengths}.
 
 
 ```{r , fig.show = "hold", out.width = "95%", fig.cap="Silver hake sizes by market category (top: 1994-2003, middle: 2004-2012, bottom: 2013-2019) \\label{market_cat_lengths}",  fig.align = "center", echo=FALSE}
@@ -384,7 +387,6 @@ Takeaways from Table \ref{silverhake} through \ref{silverhakeMW}:
     1.  Income is measured quarterly and has a strong upward trend over time.  
     1.  All of my specifications have dummies for Years and Months.
     1.  Since we have Y and M dummies, the income variable is really going in as a deviation from the Yearly and 3 month average. So we are probably getting higher values at the begininning of the year and lower at the end? This could be a spurious correlation.
-    
 1.The Fzone=offshore and Fzone=missing effects are consistent across specifications.  They're not too large or too small.  Ballparking it at a 4\% premium and a 2\% discount relative to "inshore".
 1. Same with BSA (northern and southern effects are small, relative to unknown.)
 1. The recession indicator means that prices are lower when we have a recession by about 2 to 5\%.  This is *inconsistent* with the income effect.
