@@ -122,6 +122,7 @@ local ex2: subinstr local excludelist "," "", all
 
 levelsof nespp3, local(mysp)
 local mysp : list mysp - ex2
+/*
 foreach l of local mysp{
 	preserve
 	keep if nespp3==`l'
@@ -133,15 +134,15 @@ foreach l of local mysp{
 	
 	restore
 }
-
+*/
 
 
 foreach l of local mysp{
 	preserve
 	keep if nespp3==`l'
 
-	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "Condition Factor" 2 "Real Prices"))  lpattern(solid dash) lwidth(medium medthick)  ytitle("Condition", axis(1))
-	capture xtline meancond, addplot(line priceR_GDPDEF year, yaxis(2)) `graphopts'
+	local graphopts tmtick(##5) cmissing(n) legend(order( 1 "Condition Factor" 2 "Real Prices"))  lpattern(solid) lwidth(medium)  ytitle("Condition", axis(1))
+	capture xtline meancond, addplot(line priceR_GDPDEF year, yaxis(2) lpattern(dash) lwidth(medthick)) `graphopts'
 
 	capture graph export ${common_images}/xtline_EPU_sex_`l'_${vintage_string}.png, replace as(png) width(2000)
 	
