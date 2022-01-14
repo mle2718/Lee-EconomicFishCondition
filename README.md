@@ -75,7 +75,7 @@ You can get the outputs of wrapper1_data_extraction.do and wrapper2_data_process
 
 # Running code
 
-Go here  https://github.com/NEFSC/READ-SSB-Lee-EconomicFishCondition/blob/master/documentation/running_code.md 
+Go [here](/documentation/running_code.md)
 
 
 # NOAA Requirements
