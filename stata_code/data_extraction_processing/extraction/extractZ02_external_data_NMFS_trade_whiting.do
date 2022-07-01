@@ -45,8 +45,7 @@ This is the business of the query. Get all rows with
 
 Notably, this will include blue whiting and does not screen on product forms
 */
-
-local url_root https://www.st.nmfs.noaa.gov/ords/foss/trade_data;
+local url_root https://apps-st.fisheries.noaa.gov/ods/foss/trade_data;
 local url_subset ?q={%22year%22:{%22%24gte%22:1992},%22name%22:{%22%24like%22:%22%25WHITING%25%22}};
 local url_offset &offset=0;
 local url_limit &limit=`chunksize';
