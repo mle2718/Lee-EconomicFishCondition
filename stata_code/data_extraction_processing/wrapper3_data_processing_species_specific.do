@@ -7,7 +7,7 @@ vintage_lookup_and_reset
 
 
 cap log close
-log using "${data_processing_results}\wrapper3_data_processing_species_specific.do", replace
+log using "${data_processing_results}\wrapper3_data_processing_species_specific.smcl", replace
 
 /*args for this wrapper, load and save data*/
 local  price_done ${data_main}/dealer_prices_full_${vintage_string}.dta 
