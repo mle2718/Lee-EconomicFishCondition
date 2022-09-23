@@ -5,6 +5,10 @@ version 15.1
 
 vintage_lookup_and_reset
 
+
+cap log close
+log using "${data_processing_results}\wrapper3_data_processing_species_specific.do", replace
+
 /*args for this wrapper, load and save data*/
 local  price_done ${data_main}/dealer_prices_full_${vintage_string}.dta 
 local  subset_stub_out ${data_main}/dealer_prices_final_spp
@@ -33,12 +37,19 @@ restore
  */
 
 
+/* Save the name of the dofile to a global.  This will assist in troubleshooting which code broke. */
+/* If you get an error message, type 
+display "$running_dofile"  
+to narrow down where things broke
+*/
+
 /* merge trade data by species */
 /******************************whiting *******************************/
 local working_nespp3 509 
 /* Tidy up the trade data*/
-do "${processing_code}/A04_imports_month_`working_nespp3'.do"
+global running_dofile "${processing_code}/A04_imports_month_`working_nespp3'.do"
 
+do "${running_dofile}"
 /*Load in data */
 use `price_done' if inlist(nespp3,`working_nespp3'), clear
 
@@ -64,8 +75,9 @@ save `subset_stub_out'_`working_nespp3'_${vintage_string}.dta
 local working_nespp3 147
 
 /* Tidy up the trade data*/
-do "${processing_code}/A04_imports_month_`working_nespp3'.do"
+global running_dofile "${processing_code}/A04_imports_month_`working_nespp3'.do"
 
+do "${running_dofile}"
 /*Load in data */
 use `price_done' if inlist(nespp3,`working_nespp3'), clear
 
@@ -79,3 +91,4 @@ save `subset_stub_out'_`working_nespp3'_${vintage_string}.dta
 */
 /******************************ADJUST AS NEEDED *******************************/
 
+log close
