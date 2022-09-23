@@ -19,7 +19,7 @@ global oracle_cxn "conn("$mysole_conn") lower";
 
 /*minyangWin is setup to connect to oracle yet */
 if strmatch("$user","minyangWin"){;
-global my_projdir "C:/Users/Min-Yang.Lee/Documents/EconomicFishCondition";
+global my_projdir "C:/Users/Min-Yang.Lee/Documents/READ-SSB-Lee-EconomicFishCondition";
 quietly do "C:/Users/Min-Yang.Lee/Documents/common/odbc_setup_macros.do";
 };
 
