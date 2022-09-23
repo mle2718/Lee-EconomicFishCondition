@@ -58,9 +58,9 @@ global data_intermediate "${my_datadir}/intermediate";
 
 /* setup results folders */
 global intermediate_results "${my_projdir}/intermediate_results";
-global my_results "${my_projdir}/results";
-
-
+global my_results  "${my_projdir}/results";
+global data_processing_results  "${my_results}/data_processing";
+cap mkdir $data_processing_results;
 /* setup tables folders */
 
 global my_tables "${my_projdir}/tables";
