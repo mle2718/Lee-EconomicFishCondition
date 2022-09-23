@@ -19,3 +19,4 @@ R_credentials.R
 *.smcl
 *.ster
 EconomicFishCondition.tex
+/presentations/*
