@@ -3,6 +3,10 @@ I've put in in the aceprice folder, but  there is not good reason for it to be h
 version 15.1
 #delimit cr
 
+cap log close
+log using "${data_processing_results}\wrapper1_data_extraction.smcl", replace
+
+
 /* args for do "${extraction_code}/extractA01_dealer_prices_hedonic.do"*/
 /*don't extract observations with prices higher thatn 40 per pound */
 global upper_price 40
@@ -74,21 +78,33 @@ Takes a long while
 Requires VPN
 */
 
-do "${extraction_code}/extractA01_dealer_prices_hedonic.do"
+
+/* Save the name of the dofile to a global.  This will assist in troubleshooting which code broke. */
+/* If you get an error message, type 
+display "$running_dofile"  
+to narrow down where things broke
+*/
+
+
+global running_dofile "${extraction_code}/extractA01_dealer_prices_hedonic.do"
+
+do "${running_dofile}"
+
+
+global running_dofile "${extraction_code}/extractA01b_aggregate_wild_fish.do"
+do "${running_dofile}"
 
 
 
-do "${extraction_code}/extractA01b_aggregate_wild_fish.do"
-
-do "${extraction_code}/extractA02_dealer_length.do"
-
-
-do "${extraction_code}/extractA03_dealer_code_names.do"
+global running_dofile "${extraction_code}/extractA02_dealer_length.do"
+do "${running_dofile}"
 
 
+global running_dofile "${extraction_code}/extractA03_dealer_code_names.do"
+do "${running_dofile}"
 
-
-do "${extraction_code}/extractA10_state_codes.do"
+global running_dofile "${extraction_code}/extractA10_state_codes.do"
+do "${running_dofile}"
 
 
 
@@ -97,20 +113,30 @@ do "${extraction_code}/extractA10_state_codes.do"
 
 /* External data extraction: These are pretty small and run quickly. */
 
-do "${extraction_code}/extractC01_fish_conditions.do"
+global running_dofile "${extraction_code}/extractC01_fish_conditions.do"
+do "${running_dofile}"
 
 
-do "${extraction_code}/extractZ01_external_data_FRED.do"
-do "${extraction_code}/extractZ03_external_data_FRED_recession.do"
+
+global running_dofile "${extraction_code}/extractZ01_external_data_FRED.do"
+do "${running_dofile}"
+
+global running_dofile "${extraction_code}/extractZ03_external_data_FRED_recession.do"
+do "${running_dofile}"
 
 /* note, this does a trade data extraction unique to whiting. I'd suggest saving this do file with a new name and modifying it. Then just add it to the list */
-do "${extraction_code}/extractZ02_external_data_NMFS_trade_whiting.do"
+global running_dofile "${extraction_code}/extractZ02_external_data_NMFS_trade_whiting.do"
+do "${running_dofile}"
 
 /*for example:
 do "${extraction_code}/extractZ02_external_data_NMFS_trade_haddock.do"
 */
 
 /*construct annual condition and price dataset */
-do "${extraction_code}/extractA09_annual_prices_condition.do"
+global running_dofile "${extraction_code}/extractA09_annual_prices_condition.do"
+do "${running_dofile}"
 
+
+global running_dofile
+log close
 
