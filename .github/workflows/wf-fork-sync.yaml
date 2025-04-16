@@ -23,7 +23,7 @@ jobs:
         # REQUIRED 'target_repo_token' exactly like this!
         target_repo_token: ${{ secrets.MY_WORKFLOW_TOKEN}}
         upstream_sync_branch: master
-        upstream_sync_repo:  https://github.com/NEFSC/READ-SSB-Lee-EconomicFishCondition
+        upstream_sync_repo: NEFSC/READ-SSB-Lee-EconomicFishCondition
         # Set test_mode true to run tests instead of the true action!!
         test_mode: false
 
